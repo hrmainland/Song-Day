@@ -1,0 +1,4 @@
+.env
+node_modules
+pad
+pad.js

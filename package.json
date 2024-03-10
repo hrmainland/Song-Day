@@ -1,0 +1,15 @@
+{
+  "name": "song_day",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install_all": "npm install && cd client && npm install && cd ../server && npm install",
+    "server": "cd server && nodemon app.js",
+    "client": "cd client && npm run dev",
+    "deploy": "cd client && npm run build && cd ../server && node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
