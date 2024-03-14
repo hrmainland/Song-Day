@@ -2,17 +2,17 @@ import React, { useState, useEffect } from "react";
 import baseURL from "../../utils/urlPrefix";
 
 function NewSession() {
-  const [name, setName] = useState([]);
+  const [tracks, setTracks] = useState([]);
   useEffect(() => {
     const callBackendAPI = async () => {
       try {
         // maybe add this line to client package.json: "proxy": "http://localhost:3500"
-        const response = await fetch(`${baseURL}/spotify/displayName`);
+        const response = await fetch(`${baseURL}/dev/tracks`);
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
         const body = await response.json();
-        setName(body);
+        setTracks(body);
       } catch (error) {
         console.error(error.message);
       }
@@ -21,12 +21,11 @@ function NewSession() {
   }, []);
 
   return (
-    <>
-      <h1>{name}</h1>
-      <form action={`${baseURL}/spotify/auth`}>
-        <button>Login</button>
-      </form>
-    </>
+    <div>
+      {tracks.map((track, i) => (
+        <h2 key={i}>{track}</h2>
+      ))}
+    </div>
   );
 }
 
