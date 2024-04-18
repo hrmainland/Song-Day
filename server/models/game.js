@@ -11,6 +11,7 @@ const gameConfigSchema = new Schema({
 const gameSchema = new Schema({
   title: String,
   config: gameConfigSchema,
+  code: String,
   leader: User,
   tracks: [
     {

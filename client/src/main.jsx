@@ -3,6 +3,9 @@ import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import NewSession from "./routes/newSession";
 import Root from "./routes/root";
+import Login from "./routes/login";
+import Test from "./routes/test";
+
 import "./index.css";
 
 // this creates the router object
@@ -14,6 +17,14 @@ const router = createBrowserRouter([
   {
     path: "/new-session",
     element: <NewSession />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/test",
+    element: <Test />,
   },
 ]);
 
