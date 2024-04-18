@@ -1,22 +1,19 @@
 const spotifyRouteSuffix = "/spotify";
 const callbackSuffix = "/callback";
+const redirectSuffix = "/new-session";
 
-const port = process.env.PORT || 3500;
 const nodeEnv = process.env.NODE_ENV;
 
-// base case - dev mode
-var redirectUrl = process.env.DEV_REDIRECT_URL;
-var callbackUrl =
-  `http://localhost:${port}` + spotifyRouteSuffix + callbackSuffix;
-
-if (nodeEnv === "test") {
-  redirectUrl = process.env.TEST_REDIRECT_URL;
+if (nodeEnv === "dev") {
+  var urlBase = process.env.DEV_URL_BASE;
+} else if (nodeEnv === "test") {
+  var urlBase = process.env.TEST_URL_BASE;
 } else if (nodeEnv === "production") {
-  // these two env variables don't exist in the dev environment (as you might expect)
-  redirectUrl = process.env.PROD_REDIRECT_URL;
-  callbackUrl =
-    process.env.RENDER_EXTERNAL_URL + spotifyRouteSuffix + callbackSuffix;
+  var urlBase = process.env.RENDER_EXTERNAL_URL;
 }
+
+const redirectUrl = urlBase + redirectSuffix;
+const callbackUrl = urlBase + spotifyRouteSuffix + callbackSuffix;
 
 console.log("callbackUrl :>> ", callbackUrl);
 
