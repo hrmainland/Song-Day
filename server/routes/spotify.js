@@ -1,12 +1,24 @@
-const port = process.env.PORT || 3500;
+const spotifyRouteSuffix = "/spotify";
+const callbackSuffix = "/callback";
 
+const port = process.env.PORT || 3500;
 const nodeEnv = process.env.NODE_ENV;
+
+// base case - dev mode
 var redirectUrl = process.env.DEV_REDIRECT_URL;
+const callbackUrl =
+  `http://localhost:${port}` + spotifyRouteSuffix + callbackSuffix;
+
+console.log("callbackUrl :>> ", callbackUrl);
 
 if (nodeEnv === "test") {
   redirectUrl = process.env.TEST_REDIRECT_URL;
 } else if (nodeEnv === "production") {
   redirectUrl = process.env.PROD_REDIRECT_URL;
+  callbackUrl =
+    process.env.PROD_SPOTIFY_CALLBACK_BASE +
+    spotifyRouteSuffix +
+    callbackSuffix;
 }
 
 const express = require("express");
@@ -31,7 +43,7 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: `http://localhost:${port}/spotify/callback`,
+      callbackURL: callbackUrl,
       passReqToCallback: true,
     },
     async (req, accessToken, refreshToken, expires_in, profile, done) => {

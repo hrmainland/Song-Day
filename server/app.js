@@ -50,7 +50,6 @@ main().catch((err) => console.log(err));
 // For test and deploy set NODE_ENV to "test" (and update urlPrefix in client)
 
 if (process.env.NODE_ENV !== "dev") {
-  console.log("process.env.NODE_ENV :>> ", process.env.NODE_ENV);
   // Serve static files from the 'dist' directory
   app.use(express.static(path.join(__dirname, "../client/dist")));
 
