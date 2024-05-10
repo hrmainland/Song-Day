@@ -1,27 +1,24 @@
-const spotifyRouteSuffix = "/spotify";
-const callbackSuffix = "/callback";
-const redirectSuffix = "/new-session";
-
-const nodeEnv = process.env.NODE_ENV;
-
-if (nodeEnv === "dev") {
-  var urlBase = process.env.DEV_URL_BASE;
-} else if (nodeEnv === "test") {
-  var urlBase = process.env.TEST_URL_BASE;
-} else if (nodeEnv === "production") {
-  var urlBase = process.env.RENDER_EXTERNAL_URL;
-}
-
-const redirectUrl = urlBase + redirectSuffix;
-const callbackUrl = urlBase + spotifyRouteSuffix + callbackSuffix;
-
-console.log("callbackUrl :>> ", callbackUrl);
-
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const SpotifyStrategy = require("passport-spotify").Strategy;
 const User = require("../models/user");
+
+const spotifyRouteSuffix = "/spotify";
+const callbackSuffix = "/callback";
+const redirectSuffix = "/new-session";
+
+// set callback url and redirect url based on the envrionment
+if (process.env.NODE_ENV === "production") {
+  clientUrlBase = process.env.RENDER_EXTERNAL_URL;
+  serverUrlBase = process.env.RENDER_EXTERNAL_URL;
+} else {
+  clientUrlBase = process.env.CLIENT_URL_BASE;
+  serverUrlBase = process.env.SERVER_URL_BASE;
+}
+const callbackUrl = serverUrlBase + spotifyRouteSuffix + callbackSuffix;
+const redirectUrl = clientUrlBase + redirectSuffix;
+console.log("callbackUrl :>> ", callbackUrl);
 
 router.use(passport.initialize());
 router.use(passport.session());
@@ -83,7 +80,7 @@ router.get(
       "playlist-read-private", // Read access to user's private playlists
       "playlist-modify-public", // Write access to a user's public playlists
     ],
-    showDialog: false,
+    showDialog: true,
   })
 );
 

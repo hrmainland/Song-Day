@@ -1,10 +1,13 @@
+/* eslint-disable no-undef */
 import * as React from "react";
-import Box from "@mui/material/Box";
-import Stepper from "@mui/material/Stepper";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
+import {
+  Stepper,
+  Box,
+  Step,
+  StepLabel,
+  Button,
+  Typography,
+} from "@mui/material";
 import baseURL from "../../utils/urlPrefix";
 // import Login from "./login";
 
