@@ -12,7 +12,7 @@ const gameSchema = new Schema({
   title: String,
   config: gameConfigSchema,
   code: String,
-  leader: User,
+  host: User,
   tracks: [
     {
       type: Schema.Types.ObjectId,

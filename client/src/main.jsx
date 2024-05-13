@@ -6,7 +6,7 @@ import Root from "./routes/root";
 import Login from "./routes/login";
 import Test from "./routes/test";
 
-import "./index.css";
+import "./styles.css";
 
 // this creates the router object
 const router = createBrowserRouter([
