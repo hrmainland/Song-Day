@@ -12,6 +12,7 @@ const session = require("express-session");
 const devRouter = require("./routes/dev.js");
 // const spotifyRouter = require("./routes/spotify.js");
 const userRouter = require("./routes/user.js");
+const padRouter = require("./routes/pad.js");
 
 // TODO update secret
 const sessionConfig = {
@@ -38,6 +39,7 @@ app.use(cors());
 app.use("/dev", devRouter);
 // app.use("/spotify", spotifyRouter);
 app.use("/user", userRouter);
+app.use("/pad", padRouter);
 
 async function main() {
   await mongoose.connect(dbUrl);
@@ -48,8 +50,6 @@ async function main() {
 main().catch((err) => console.log(err));
 
 // ############################################
-
-// For test and deploy set NODE_ENV to "test" (and update urlPrefix in client)
 
 if (process.env.NODE_ENV !== "dev") {
   // Serve static files from the 'dist' directory

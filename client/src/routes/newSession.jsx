@@ -9,10 +9,11 @@ import {
   Typography,
 } from "@mui/material";
 import baseURL from "../../utils/urlPrefix";
-// import Login from "./login";
+import { useNavigate } from "react-router-dom";
 
 function NewSession() {
   const steps = ["Login", "Set Rules", "Add Players"];
+  const navigate = useNavigate();
 
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
@@ -71,6 +72,9 @@ function NewSession() {
           throw new Error("Failed to fetch data");
         }
         const body = await response.json();
+        if (body === "None") {
+          navigate("/login");
+        }
         setName(body);
       } catch (error) {
         console.error(error.message);

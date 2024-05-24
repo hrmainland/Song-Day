@@ -10,7 +10,7 @@ function Login() {
           <h1>Login</h1>
         </Grid>
         <Grid item xs={8}>
-          <form action={`${baseUrl}/user/auth`}>
+          <form action={`${baseUrl}/user/auth?jeff=hello`}>
             <Button
               type="submit"
               textAlign={"center"}
