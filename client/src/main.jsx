@@ -5,6 +5,8 @@ import NewSession from "./routes/newSession";
 import Root from "./routes/root";
 import Login from "./routes/login";
 import Test from "./routes/test";
+import Grid from "./routes/grid";
+import Home from "./routes/home";
 
 import "./styles.css";
 
@@ -13,6 +15,10 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Root />,
+  },
+  {
+    path: "/home",
+    element: <Home />,
   },
   {
     path: "/new-session",
@@ -25,6 +31,10 @@ const router = createBrowserRouter([
   {
     path: "/test",
     element: <Test />,
+  },
+  {
+    path: "/grid",
+    element: <Grid />,
   },
 ]);
 

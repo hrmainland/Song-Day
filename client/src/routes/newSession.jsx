@@ -66,7 +66,7 @@ function NewSession() {
     const callBackendAPI = async () => {
       try {
         // maybe add this line to client package.json: "proxy": "http://localhost:3500"
-        const response = await fetch(`${baseURL}/spotify/display-name`);
+        const response = await fetch(`${baseURL}/user/display-name`);
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }

@@ -1,24 +1,24 @@
 import baseUrl from "../../utils/urlPrefix";
 import * as React from "react";
-import { Container, Grid, Button } from "@mui/material";
+import { Container, Grid, Button, Box } from "@mui/material";
 
 function Login() {
-  const styles = { width: "100%" };
   return (
-    <Container maxWidth="md">
-      <Grid container justifyContent="center" spacing={5}>
-        <Grid item xs={8}>
-          <h1>Log In</h1>
+    <Container maxWidth="sm">
+      <Grid container spacing={1} justifyContent="center">
+        <Grid item xs={12} textAlign={"center"}>
+          <h1>Login</h1>
         </Grid>
         <Grid item xs={8}>
-          <form action={`${baseUrl}/spotify/auth`}>
-            <Grid container justifyContent="center" spacing={5}>
-              <Grid item xs={8}>
-                <Button type="submit" style={styles} variant="contained">
-                  Continue with Spotify
-                </Button>
-              </Grid>
-            </Grid>
+          <form action={`${baseUrl}/user/auth`}>
+            <Button
+              type="submit"
+              textAlign={"center"}
+              variant="contained"
+              sx={{ width: "100%" }}
+            >
+              Continue with Spotify
+            </Button>
           </form>
         </Grid>
       </Grid>

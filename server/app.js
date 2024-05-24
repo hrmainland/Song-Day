@@ -10,7 +10,8 @@ const querystring = require("querystring");
 const session = require("express-session");
 
 const devRouter = require("./routes/dev.js");
-const spotifyRouter = require("./routes/spotify.js");
+// const spotifyRouter = require("./routes/spotify.js");
+const userRouter = require("./routes/user.js");
 
 // TODO update secret
 const sessionConfig = {
@@ -35,7 +36,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(session(sessionConfig));
 app.use(cors());
 app.use("/dev", devRouter);
-app.use("/spotify", spotifyRouter);
+// app.use("/spotify", spotifyRouter);
+app.use("/user", userRouter);
 
 async function main() {
   await mongoose.connect(dbUrl);

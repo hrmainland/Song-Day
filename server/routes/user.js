@@ -4,7 +4,7 @@ const passport = require("passport");
 const SpotifyStrategy = require("passport-spotify").Strategy;
 const User = require("../models/user");
 
-const spotifyRouteSuffix = "/spotify";
+const userRouteSuffix = "/user";
 const callbackSuffix = "/callback";
 const redirectSuffix = "/new-session";
 
@@ -16,9 +16,8 @@ if (process.env.NODE_ENV === "production") {
   clientUrlBase = process.env.CLIENT_URL_BASE;
   serverUrlBase = process.env.SERVER_URL_BASE;
 }
-const callbackUrl = serverUrlBase + spotifyRouteSuffix + callbackSuffix;
+const callbackUrl = serverUrlBase + userRouteSuffix + callbackSuffix;
 const redirectUrl = clientUrlBase + redirectSuffix;
-console.log("callbackUrl :>> ", callbackUrl);
 
 router.use(passport.initialize());
 router.use(passport.session());
@@ -67,6 +66,14 @@ router.get("/display-name", (req, res) => {
     res.json(req.user.spotify_display_name);
   } else {
     res.json("None");
+  }
+});
+
+router.get("/isLoggedIn", (req, res, next) => {
+  if (req.isAuthenticated()) {
+    res.send("You're logged in");
+  } else {
+    res.send("not logged in");
   }
 });
 

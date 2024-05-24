@@ -1,4 +1,54 @@
-.test-div {
-    background-color: red;
-    text-align: center;
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+
+HTML, body {
+  margin: 0px;
+  padding: 0px;
+    border: 0px;
   }
+
+*{
+  font-family: "Roboto", sans-serif;
+  /* color: rgb(54, 54, 54); */
+}
+
+.test{
+  width: 100%;
+  background-color: lightgreen;
+}
+
+.comic{
+  font-family: "Comic Neue", cursive;
+}
+
+.home-background {
+  background-image: url("https://images.unsplash.com/photo-1603850121303-d4ade9e5ba65?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"); /* Replace with the path to your image */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.home-background h1 {
+  color: white;
+  font-size: 100px;
+  margin: 20px 0;
+}
+
+.home-background form {
+  margin: 10px 0;
+}
+
+.home-background button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.home-btn{
+  color: white;
+}
