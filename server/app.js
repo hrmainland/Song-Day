@@ -10,6 +10,7 @@ const querystring = require("querystring");
 const session = require("express-session");
 
 const devRouter = require("./routes/dev.js");
+const sessionRouter = require("./routes/session.js");
 // const spotifyRouter = require("./routes/spotify.js");
 const userRouter = require("./routes/user.js");
 const padRouter = require("./routes/pad.js");
@@ -37,6 +38,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(session(sessionConfig));
 app.use(cors());
 app.use("/dev", devRouter);
+app.use("/session", sessionRouter);
 // app.use("/spotify", spotifyRouter);
 app.use("/user", userRouter);
 app.use("/pad", padRouter);

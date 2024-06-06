@@ -2,12 +2,18 @@
 import React from "react";
 import baseUrl from "../../utils/urlPrefix";
 import { Container, Grid, Button, Box } from "@mui/material";
+import { useSearchParams } from "react-router-dom";
 
 function Pad() {
+  const [searchParams] = useSearchParams();
+  const paramsObj = Object.fromEntries([...searchParams]);
+  // console.log(paramsObj["from"]);
   return (
     <>
       <form action={`${baseUrl}/pad`} method="GET">
-        <input type="hidden" name="bla" value="tody" />
+        {paramsObj["from"] && (
+          <input type="hidden" name="from" value={`${paramsObj["from"]}`} />
+        )}
         <Button type="submit">Submit</Button>
       </form>
       {/* <a href={`${baseUrl}/pad?name=tony`}>go</a> */}

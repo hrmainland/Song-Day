@@ -20,7 +20,6 @@ export default function Test() {
   useEffect(() => {
     const callBackendAPI = async () => {
       try {
-        console.log("output");
         // maybe add this line to client package.json: "proxy": "http://localhost:3500"
         const response = await fetch(`${baseURL}/dev/tracks`);
         if (!response.ok) {

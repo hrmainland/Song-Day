@@ -67,12 +67,19 @@ function NewSession() {
     const callBackendAPI = async () => {
       try {
         // maybe add this line to client package.json: "proxy": "http://localhost:3500"
+        // TODO make a proper check for logged in user
         const response = await fetch(`${baseURL}/user/display-name`);
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
         const body = await response.json();
         if (body === "None") {
+          // add this page to the session so it knows where to return to
+          // TODO change from test
+          fetch("/api/session/redirect/test", {
+            method: "PUT",
+          }).catch((error) => console.error("Error:", error));
+
           navigate("/login");
         }
         setName(body);
@@ -145,6 +152,7 @@ function NewSession() {
         <div>
           <h5>{name}</h5>
           <form action="/login">
+            {/* <input type="hidden" name="from" value="newSession" /> */}
             <button>Login</button>
           </form>
         </div>
