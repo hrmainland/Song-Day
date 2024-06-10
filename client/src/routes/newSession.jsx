@@ -6,63 +6,27 @@ import {
   Step,
   StepLabel,
   Button,
+  TextField,
   Typography,
+  Container,
+  Grid,
 } from "@mui/material";
 import baseURL from "../../utils/urlPrefix";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../navbar";
+import CreateStepper from "../createStepper";
+import NumberInput from "../numberInput";
+import { FormControl } from "@mui/base/FormControl";
 
 function NewSession() {
-  const steps = ["Login", "Set Rules", "Add Players"];
   const navigate = useNavigate();
-
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [skipped, setSkipped] = React.useState(new Set());
-
-  const isStepOptional = (step) => {
-    return step === 1;
-  };
-
-  const isStepSkipped = (step) => {
-    return skipped.has(step);
-  };
-
-  const handleNext = () => {
-    let newSkipped = skipped;
-    if (isStepSkipped(activeStep)) {
-      newSkipped = new Set(newSkipped.values());
-      newSkipped.delete(activeStep);
-    }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped(newSkipped);
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleSkip = () => {
-    if (!isStepOptional(activeStep)) {
-      // You probably want to guard against something like this,
-      // it should never occur unless someone's actively trying to break something.
-      throw new Error("You can't skip a step that isn't optional.");
-    }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped((prevSkipped) => {
-      const newSkipped = new Set(prevSkipped.values());
-      newSkipped.add(activeStep);
-      return newSkipped;
-    });
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
-  };
-
-  ///
-
   const [name, setName] = React.useState([]);
+  const [numSongs, setNumSongs] = React.useState([]);
+  const [gameName, setGameName] = React.useState([]);
+
+  // TODO update this
+  const [players, setPlayers] = React.useState([]);
+
   React.useEffect(() => {
     const callBackendAPI = async () => {
       try {
@@ -76,10 +40,6 @@ function NewSession() {
         if (body === "None") {
           // add this page to the session so it knows where to return to
           // TODO change from test
-          fetch("/api/session/redirect/test", {
-            method: "PUT",
-          }).catch((error) => console.error("Error:", error));
-
           navigate("/login");
         }
         setName(body);
@@ -90,78 +50,83 @@ function NewSession() {
     callBackendAPI();
   }, []);
 
+  const submit = () => {
+    fetch("api/game/new", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        gameName,
+        numSongs,
+        players,
+      }),
+    });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    submit();
+  };
+
   return (
     <>
-      <Box sx={{ width: "100%" }}>
-        <Stepper activeStep={activeStep}>
-          {steps.map((label, index) => {
-            const stepProps = {};
-            const labelProps = {};
-            if (isStepOptional(index)) {
-              labelProps.optional = (
-                <Typography variant="caption">Optional</Typography>
-              );
-            }
-            if (isStepSkipped(index)) {
-              stepProps.completed = false;
-            }
-            return (
-              <Step key={label} {...stepProps}>
-                <StepLabel {...labelProps}>{label}</StepLabel>
-              </Step>
-            );
-          })}
-        </Stepper>
-        {activeStep === steps.length ? (
-          <React.Fragment>
-            <Typography sx={{ mt: 2, mb: 1 }}>
-              All steps completed - you&apos;re finished
-            </Typography>
-            <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-              <Box sx={{ flex: "1 1 auto" }} />
-              <Button onClick={handleReset}>Reset</Button>
-            </Box>
-          </React.Fragment>
-        ) : (
-          <React.Fragment>
-            <Typography sx={{ mt: 2, mb: 1 }}>Step {activeStep + 1}</Typography>
-            <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-              <Button
-                color="inherit"
-                disabled={activeStep === 0}
-                onClick={handleBack}
-                sx={{ mr: 1 }}
-              >
-                Back
-              </Button>
-              <Box sx={{ flex: "1 1 auto" }} />
-              {isStepOptional(activeStep) && (
-                <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-                  Skip
-                </Button>
-              )}
-
-              <Button onClick={handleNext}>
-                {activeStep === steps.length - 1 ? "Finish" : "Next"}
-              </Button>
-            </Box>
-          </React.Fragment>
-        )}
-      </Box>
-      {activeStep === 0 && (
-        <div>
-          <h5>{name}</h5>
-          <form action="/login">
-            {/* <input type="hidden" name="from" value="newSession" /> */}
-            <button>Login</button>
-          </form>
-        </div>
-      )}
+      <Navbar></Navbar>
+      <Container
+        fixed
+        className="top-container"
+        sx={{
+          mt: 5,
+        }}
+      >
+        {/* form goes here */}
+        <Box display="flex" justifyContent="center">
+          <Grid container maxWidth={600}>
+            <Grid item xs={12}>
+              <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      onChange={(e) => {
+                        setGameName(e.target.value);
+                      }}
+                      label="Game Name"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      inputProps={{ type: "number" }}
+                      onChange={(e) => {
+                        setNumSongs(e.target.value);
+                      }}
+                      label="Songs Per Player"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      onChange={(e) => {
+                        setPlayers(e.target.value.split(","));
+                      }}
+                      label="Players (comma separated)"
+                    />
+                  </Grid>
+                  <Grid item xs={12} display="flex" justifyContent="center">
+                    <Button type="submit" variant="contained" color="primary">
+                      Submit
+                    </Button>
+                  </Grid>
+                </Grid>
+              </form>
+            </Grid>
+          </Grid>
+        </Box>
+      </Container>
     </>
   );
 }
 
 export default NewSession;
-// export default function NewSession() {
-//   return <h1>new session</h1>;
-// }

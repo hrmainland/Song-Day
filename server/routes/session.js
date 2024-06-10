@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-router.get("/bla", (req, res) => {
-  res.send("bla");
-});
+router.get("/all", (req, res) => {
+  res.status(200).json(req.session);
+})
 
 router.put("/:key/:value", (req, res) => {
   const key = req.params.key;

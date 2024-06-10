@@ -6,7 +6,7 @@ const User = require("../models/user");
 
 const userRouteSuffix = "/user";
 const callbackSuffix = "/callback";
-const redirectSuffix = "/new-session";
+const redirectSuffix = "/";
 
 // set callback url and redirect url based on the envrionment
 if (process.env.NODE_ENV === "production") {
@@ -80,11 +80,6 @@ router.get("/isLoggedIn", (req, res, next) => {
 // Authentication route this adds the current User to req.user once you're in
 router.get(
   "/auth",
-  (req, res, next) => {
-    const jeff = req.query.jeff;
-    console.log(jeff);
-    next();
-  },
   passport.authenticate("spotify", {
     scope: [
       "user-read-private", // Read access to user's private information

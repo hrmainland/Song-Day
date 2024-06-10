@@ -1,6 +1,9 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config({ path: "../.env" });
 }
+
+const bodyParser = require('body-parser');
+
 const cors = require("cors");
 const express = require("express");
 const app = express();
@@ -9,10 +12,11 @@ const mongoose = require("mongoose");
 const querystring = require("querystring");
 const session = require("express-session");
 
-const devRouter = require("./routes/dev.js");
 const sessionRouter = require("./routes/session.js");
-// const spotifyRouter = require("./routes/spotify.js");
 const userRouter = require("./routes/user.js");
+const gameRouter = require("./routes/game.js");
+
+const devRouter = require("./routes/dev.js");
 const padRouter = require("./routes/pad.js");
 
 // TODO update secret
@@ -37,10 +41,14 @@ const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/song-day";
 app.use(express.urlencoded({ extended: true }));
 app.use(session(sessionConfig));
 app.use(cors());
-app.use("/dev", devRouter);
+// Middleware to parse JSON bodies
+app.use(bodyParser.json());
+
 app.use("/session", sessionRouter);
-// app.use("/spotify", spotifyRouter);
 app.use("/user", userRouter);
+app.use("/game", gameRouter);
+
+app.use("/dev", devRouter);
 app.use("/pad", padRouter);
 
 async function main() {

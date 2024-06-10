@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-// const Track = require("./track");
-// const User = require("./user");
+const Track = require("./track");
+const User = require("./user");
 
 const gameConfigSchema = new Schema({
   negativeVote: Boolean,
@@ -12,7 +12,10 @@ const gameSchema = new Schema({
   title: String,
   config: gameConfigSchema,
   code: String,
-  host: User,
+  host: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
   tracks: [
     {
       type: Schema.Types.ObjectId,
