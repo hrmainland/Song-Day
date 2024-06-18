@@ -26,4 +26,8 @@ router.get("/getsession", (req, res) => {
   res.send(req.session);
 });
 
+router.get("/dingo", (req, res) => {
+  res.send(req.user);
+});
+
 module.exports = router;

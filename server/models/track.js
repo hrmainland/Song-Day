@@ -2,8 +2,10 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const trackSchema = new Schema({
-  title: String,
+  _id: false,
   spotify_id: String,
+  title: String,
+  artist: String,
   submittedBy: {
     type: Schema.Types.ObjectId,
     ref: "User",

@@ -26,6 +26,7 @@ router.use(express.json());
 passport.serializeUser(function (user, done) {
   done(null, user);
 });
+
 passport.deserializeUser(function (obj, done) {
   done(null, obj);
 });
@@ -64,6 +65,15 @@ passport.use(
 router.get("/display-name", (req, res) => {
   if (req.user !== undefined) {
     res.json(req.user.spotify_display_name);
+  } else {
+    res.json("None");
+  }
+});
+
+router.get("/get-id", (req, res) => {
+  if (req.user !== undefined) {
+    console.log("req.user._id :>> ", req.user._id);
+    res.json(req.user._id);
   } else {
     res.json("None");
   }

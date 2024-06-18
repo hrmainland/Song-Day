@@ -2,7 +2,7 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config({ path: "../.env" });
 }
 
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 
 const cors = require("cors");
 const express = require("express");
@@ -18,6 +18,9 @@ const gameRouter = require("./routes/game.js");
 
 const devRouter = require("./routes/dev.js");
 const padRouter = require("./routes/pad.js");
+
+// ************************** passport
+const passport = require("passport");
 
 // TODO update secret
 const sessionConfig = {
@@ -44,6 +47,26 @@ app.use(cors());
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
+// can these be here?
+// ************************** passport
+// app.use(passport.initialize());
+app.use(passport.session());
+
+const userRouteSuffix = "/user";
+const callbackSuffix = "/callback";
+const redirectSuffix = "/";
+
+// set callback url and redirect url based on the envrionment
+if (process.env.NODE_ENV === "production") {
+  clientUrlBase = process.env.RENDER_EXTERNAL_URL;
+  serverUrlBase = process.env.RENDER_EXTERNAL_URL;
+} else {
+  clientUrlBase = process.env.CLIENT_URL_BASE;
+  serverUrlBase = process.env.SERVER_URL_BASE;
+}
+const callbackUrl = serverUrlBase + userRouteSuffix + callbackSuffix;
+const redirectUrl = clientUrlBase + redirectSuffix;
+
 app.use("/session", sessionRouter);
 app.use("/user", userRouter);
 app.use("/game", gameRouter);
@@ -58,6 +81,10 @@ async function main() {
 }
 
 main().catch((err) => console.log(err));
+
+app.get("/jeff", (req, res) => {
+  res.send(req.user);
+});
 
 // ############################################
 

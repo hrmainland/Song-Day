@@ -1,3 +1,5 @@
+import baseUrl from "../../utils/urlPrefix";
+
 /* eslint-disable no-undef */
 import * as React from "react";
 import {
@@ -24,9 +26,6 @@ function NewSession() {
   const [numSongs, setNumSongs] = React.useState([]);
   const [gameName, setGameName] = React.useState([]);
 
-  // TODO update this
-  const [players, setPlayers] = React.useState([]);
-
   React.useEffect(() => {
     const callBackendAPI = async () => {
       try {
@@ -51,7 +50,7 @@ function NewSession() {
   }, []);
 
   const submit = () => {
-    fetch("api/game/new", {
+    fetch(`${baseURL}/game/new`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -60,9 +59,23 @@ function NewSession() {
       body: JSON.stringify({
         gameName,
         numSongs,
-        players,
       }),
-    });
+    })
+      .then((response) => {
+        if (!response.ok) {
+          // If response is not OK (not in the range 200-299), throw an error
+          throw new Error("Network response was not ok");
+        }
+        // Otherwise, proceed to parse the JSON
+        return response.json();
+      })
+      .then((data) => {
+        navigate(`/new-session/game-code/${data.gameCode}`);
+      })
+      .catch((error) => {
+        // Handle errors
+        console.error("There was a problem with your fetch operation:", error);
+      });
   };
 
   const handleSubmit = (event) => {
@@ -83,6 +96,7 @@ function NewSession() {
         {/* form goes here */}
         <Box display="flex" justifyContent="center">
           <Grid container maxWidth={600}>
+            <h1>Create New Session</h1>
             <Grid item xs={12}>
               <form onSubmit={handleSubmit} style={{ width: "100%" }}>
                 <Grid container spacing={2}>
@@ -103,15 +117,6 @@ function NewSession() {
                         setNumSongs(e.target.value);
                       }}
                       label="Songs Per Player"
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      onChange={(e) => {
-                        setPlayers(e.target.value.split(","));
-                      }}
-                      label="Players (comma separated)"
                     />
                   </Grid>
                   <Grid item xs={12} display="flex" justifyContent="center">
