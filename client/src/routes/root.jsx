@@ -1,5 +1,5 @@
 import { Container, Grid, Button, Box } from "@mui/material";
-import Navbar from "../navbar";
+import Navbar from "../components/navbar";
 
 function Root() {
   return (

@@ -2,8 +2,8 @@ import * as React from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Container, Button, Grid, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-import Navbar from "../navbar";
-import Sessions from "../sessions";
+import Navbar from "../components/navbar";
+import Sessions from "../components/sessions";
 
 const theme = createTheme();
 
@@ -59,7 +59,9 @@ function Home() {
               </Button>
             </Grid>
             <Grid item>
-              <Button variant="outlined">Join Session</Button>
+              <Button variant="outlined" component={Link} to={"/join-session"}>
+                Join Session
+              </Button>
             </Grid>
           </Grid>
         </Grid>

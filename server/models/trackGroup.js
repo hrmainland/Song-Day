@@ -21,4 +21,4 @@ const trackGroupSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model("trackGroup", trackGroupSchema);
+module.exports = mongoose.model("TrackGroup", trackGroupSchema);

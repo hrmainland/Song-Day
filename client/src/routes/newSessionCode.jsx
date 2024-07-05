@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import * as React from "react";
 import { Box, Container, Grid, Button } from "@mui/material";
 
-import Navbar from "../navbar";
+import Navbar from "../components/navbar";
 
 function NewSessionCode() {
   const { gameCode } = useParams();

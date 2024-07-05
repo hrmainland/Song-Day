@@ -15,9 +15,9 @@ import {
 } from "@mui/material";
 import baseURL from "../../utils/urlPrefix";
 import { useNavigate, useParams } from "react-router-dom";
-import Navbar from "../navbar";
-import CreateStepper from "../createStepper";
-import NumberInput from "../numberInput";
+import Navbar from "../components/navbar";
+import CreateStepper from "../components/createStepper";
+import NumberInput from "../components/numberInput";
 import { FormControl } from "@mui/base/FormControl";
 import { useEffect, useState } from "react";
 
@@ -43,10 +43,6 @@ function Session() {
     };
     fetchUser();
   }, []);
-
-  useEffect(() => {
-    console.log("userId :>> ", userId);
-  }, [userId]);
 
   useEffect(() => {
     // TODO add proper redirect for bad id

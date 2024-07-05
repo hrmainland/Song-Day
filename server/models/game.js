@@ -5,7 +5,7 @@ const VoteGroup = require("./voteGroup");
 const User = require("./user");
 
 const gameConfigSchema = new Schema({
-  nSongs : Number,
+  nSongs: Number,
   negativeVote: Boolean,
   _id: false,
 });
@@ -32,4 +32,4 @@ const gameSchema = new Schema({
   ],
 });
 
-module.exports = mongoose.model("game", gameSchema);
+module.exports = mongoose.model("Game", gameSchema);

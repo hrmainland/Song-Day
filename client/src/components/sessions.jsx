@@ -1,6 +1,6 @@
 // TODO update some from baseURL to baseUrl
 
-import baseUrl from "../utils/urlPrefix";
+import baseUrl from "../../utils/urlPrefix";
 
 import { Container, Button, Grid, Typography } from "@mui/material";
 import Navbar from "./navbar";
@@ -8,9 +8,10 @@ import Session from "./session";
 import { useState, useEffect } from "react";
 
 function Sessions() {
-  const [userId, setUserId] = useState();
-  const [mySessions, setMySessions] = useState();
+  const [userId, setUserId] = useState(null);
+  const [mySessions, setMySessions] = useState(null);
 
+  // set user id
   useEffect(() => {
     const fetchUser = async () => {
       const response = await fetch(`${baseUrl}/user/get-id`, {
@@ -27,18 +28,19 @@ function Sessions() {
     fetchUser();
   }, []);
 
+  // set my sessions
   useEffect(() => {
     const fetchMySessions = async () => {
-      // TODO update this from hardcoded id
       // TODO add error handling here
-      const response = await fetch(
-        `${baseUrl}/session/all-sessions/65ee9aaaa4937b757ed3e53f`
-      );
+      const response = await fetch(`${baseUrl}/user/my-games`);
+
       const data = await response.json();
       setMySessions(data);
     };
-    fetchMySessions();
-  }, []);
+    if (userId) {
+      fetchMySessions();
+    }
+  }, [userId]);
 
   if (!mySessions) {
     return <h1>No sessions</h1>;

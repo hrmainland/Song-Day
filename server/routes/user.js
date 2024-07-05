@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require("passport");
 const SpotifyStrategy = require("passport-spotify").Strategy;
 const User = require("../models/user");
+const Game = require("../models/game");
 
 const userRouteSuffix = "/user";
 const callbackSuffix = "/callback";
@@ -22,14 +23,6 @@ const redirectUrl = clientUrlBase + redirectSuffix;
 router.use(passport.initialize());
 router.use(passport.session());
 router.use(express.json());
-
-passport.serializeUser(function (user, done) {
-  done(null, user);
-});
-
-passport.deserializeUser(function (obj, done) {
-  done(null, obj);
-});
 
 passport.use(
   new SpotifyStrategy(
@@ -62,6 +55,50 @@ passport.use(
   )
 );
 
+router.put("/game/:code", async (req, res) => {
+  try {
+    const { code } = req.params;
+    const game = await Game.findOne({ gameCode: code });
+
+    if (!game) {
+      return res
+        .status(404)
+        .json({ error: `Game with code ${code} not found` });
+    }
+
+    req.user.games.push(game._id);
+    await req.user.save();
+
+    res.status(200).json({ message: "Game added to user successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// router.get("/host-games/:id", async (req, res) => {
+//   const { id } = req.params;
+//   const sessions = await Game.find({ host: new ObjectId(id) });
+//   res.status(200).json(sessions);
+// });
+
+router.get("/my-games", async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate("games");
+
+    // this should never happen once we have proper route protection on
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    const games = user.games;
+    res.status(200).json(games);
+  } catch (error) {
+    console.error("Error fetching user games:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 router.get("/display-name", (req, res) => {
   if (req.user !== undefined) {
     res.json(req.user.spotify_display_name);
@@ -72,7 +109,6 @@ router.get("/display-name", (req, res) => {
 
 router.get("/get-id", (req, res) => {
   if (req.user !== undefined) {
-    console.log("req.user._id :>> ", req.user._id);
     res.json(req.user._id);
   } else {
     res.json("None");
@@ -97,7 +133,7 @@ router.get(
       "playlist-read-private", // Read access to user's private playlists
       "playlist-modify-public", // Write access to a user's public playlists
     ],
-    showDialog: true,
+    showDialog: false,
   })
 );
 

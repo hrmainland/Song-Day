@@ -3,11 +3,11 @@ const router = express.Router();
 const Game = require("../models/game");
 const { MongoClient, ObjectId } = require("mongodb");
 
-router.get("/all-sessions/:id", async (req, res) => {
-  const { id } = req.params;
-  const sessions = await Game.find({ host: new ObjectId(id) });
-  res.status(200).json(sessions);
-});
+// router.get("/all-sessions/:id", async (req, res) => {
+//   const { id } = req.params;
+//   const sessions = await Game.find({ host: new ObjectId(id) });
+//   res.status(200).json(sessions);
+// });
 
 router.get("/all", (req, res) => {
   res.status(200).json(req.session);

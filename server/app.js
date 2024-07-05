@@ -19,8 +19,23 @@ const gameRouter = require("./routes/game.js");
 const devRouter = require("./routes/dev.js");
 const padRouter = require("./routes/pad.js");
 
+const User = require("./models/user.js");
+
 // ************************** passport
 const passport = require("passport");
+
+passport.serializeUser(function (user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(async function (id, done) {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err);
+  }
+});
 
 // TODO update secret
 const sessionConfig = {
@@ -28,7 +43,7 @@ const sessionConfig = {
   name: "session",
   secret: "thisshouldbeabettersecret!",
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
     httpOnly: true,
     // secure: true,

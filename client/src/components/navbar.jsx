@@ -31,11 +31,13 @@ function Navbar() {
             sx={{ mr: 2 }}
             onClick={handleHome}
           >
-            SD
+            SongDay
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            News
-          </Typography>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 1 }}
+          ></Typography>
           <Button color="inherit" onClick={handleLogin}>
             Login
           </Button>

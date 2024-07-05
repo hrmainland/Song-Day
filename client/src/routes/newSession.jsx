@@ -15,39 +15,40 @@ import {
 } from "@mui/material";
 import baseURL from "../../utils/urlPrefix";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../navbar";
-import CreateStepper from "../createStepper";
-import NumberInput from "../numberInput";
+import Navbar from "../components/navbar";
+import CreateStepper from "../components/createStepper";
+import NumberInput from "../components/numberInput";
 import { FormControl } from "@mui/base/FormControl";
 
 function NewSession() {
   const navigate = useNavigate();
-  const [name, setName] = React.useState([]);
   const [numSongs, setNumSongs] = React.useState([]);
   const [gameName, setGameName] = React.useState([]);
 
-  React.useEffect(() => {
-    const callBackendAPI = async () => {
-      try {
-        // maybe add this line to client package.json: "proxy": "http://localhost:3500"
-        // TODO make a proper check for logged in user
-        const response = await fetch(`${baseURL}/user/display-name`);
+  const addGameToPlayer = (gameId) => {
+    fetch(`${baseURL}/user/game/${gameId}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
         if (!response.ok) {
-          throw new Error("Failed to fetch data");
+          // If response is not OK (not in the range 200-299), throw an error
+          throw new Error("Network response was not ok");
         }
-        const body = await response.json();
-        if (body === "None") {
-          // add this page to the session so it knows where to return to
-          // TODO change from test
-          navigate("/login");
-        }
-        setName(body);
-      } catch (error) {
-        console.error(error.message);
-      }
-    };
-    callBackendAPI();
-  }, []);
+        // Otherwise, proceed to parse the JSON
+        return response.json();
+      })
+      .catch((error) => {
+        // Handle errors
+        console.error(
+          "There was a problem adding the game to the current user",
+          error
+        );
+      });
+  };
 
   const submit = () => {
     fetch(`${baseURL}/game/new`, {
@@ -70,11 +71,17 @@ function NewSession() {
         return response.json();
       })
       .then((data) => {
+        // add the game to the current user
+        addGameToPlayer(data.gameCode);
+
         navigate(`/new-session/game-code/${data.gameCode}`);
       })
       .catch((error) => {
         // Handle errors
-        console.error("There was a problem with your fetch operation:", error);
+        console.error(
+          "There was a problem adding the game to the database:",
+          error
+        );
       });
   };
 

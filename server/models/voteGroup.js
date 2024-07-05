@@ -28,4 +28,4 @@ const voteGroupSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model("voteGroup", voteGroupSchema);
+module.exports = mongoose.model("VoteGroup", voteGroupSchema);

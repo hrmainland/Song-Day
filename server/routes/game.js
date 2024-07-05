@@ -4,6 +4,7 @@ const Game = require("../models/game");
 const router = express.Router();
 const generateGameCode = require("../utils/gameCode");
 const passport = require("passport");
+const { MongoClient, ObjectId } = require("mongodb");
 
 const isLoggedIn = function (req, res, next) {
   if (!req.isAuthenticated()) {
@@ -12,6 +13,12 @@ const isLoggedIn = function (req, res, next) {
   console.log("logged in");
   next();
 };
+
+router.get("/host-games/:id", async (req, res) => {
+  const { id } = req.params;
+  const games = await Game.find({ host: new ObjectId(id) });
+  res.status(200).json(games);
+});
 
 router.post("/new", async (req, res, next) => {
   const { gameName, numSongs } = req.body;
