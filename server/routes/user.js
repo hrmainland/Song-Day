@@ -55,10 +55,11 @@ passport.use(
   )
 );
 
-router.put("/game/:code", async (req, res) => {
+router.put("/game/:id", async (req, res) => {
   try {
-    const { code } = req.params;
-    const game = await Game.findOne({ gameCode: code });
+    const { id } = req.params;
+    // const game = await Game.findOne({ gameCode: code });
+    const game = await Game.findById(id);
 
     if (!game) {
       return res
@@ -69,18 +70,12 @@ router.put("/game/:code", async (req, res) => {
     req.user.games.push(game._id);
     await req.user.save();
 
-    res.status(200).json({ message: "Game added to user successfully" });
+    res.status(200).json(req.user);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
   }
 });
-
-// router.get("/host-games/:id", async (req, res) => {
-//   const { id } = req.params;
-//   const sessions = await Game.find({ host: new ObjectId(id) });
-//   res.status(200).json(sessions);
-// });
 
 router.get("/my-games", async (req, res) => {
   try {
@@ -107,19 +102,11 @@ router.get("/display-name", (req, res) => {
   }
 });
 
-router.get("/get-id", (req, res) => {
+router.get("/id", (req, res) => {
   if (req.user !== undefined) {
-    res.json(req.user._id);
+    res.status(200).json(req.user._id);
   } else {
-    res.json("None");
-  }
-});
-
-router.get("/isLoggedIn", (req, res, next) => {
-  if (req.isAuthenticated()) {
-    res.send("You're logged in");
-  } else {
-    res.send("not logged in");
+    res.status(404).json("None");
   }
 });
 

@@ -1,5 +1,3 @@
-import baseUrl from "../../utils/urlPrefix";
-
 /* eslint-disable no-undef */
 import * as React from "react";
 import {
@@ -13,7 +11,7 @@ import {
   Container,
   Grid,
 } from "@mui/material";
-import baseURL from "../../utils/urlPrefix";
+import baseUrl from "../../utils/urlPrefix";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/navbar";
 import CreateStepper from "../components/createStepper";
@@ -30,7 +28,7 @@ function Session() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const response = await fetch(`${baseURL}/user/get-id`, {
+      const response = await fetch(`${baseUrl}/user/id`, {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -48,7 +46,7 @@ function Session() {
     // TODO add proper redirect for bad id
     const fetchGame = async () => {
       try {
-        const response = await fetch(`${baseURL}/game/${gameCode}`, {
+        const response = await fetch(`${baseUrl}/game/${gameCode}`, {
           method: "GET",
           headers: {
             Accept: "application/json",

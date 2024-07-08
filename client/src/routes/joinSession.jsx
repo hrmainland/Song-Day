@@ -1,23 +1,39 @@
 import baseUrl from "../../utils/urlPrefix";
+import {
+  addGameToMe,
+  addMeToGame,
+  fetchGame,
+  fetchUserId,
+} from "../../utils/apiCalls";
 
 /* eslint-disable no-undef */
 import * as React from "react";
-import {
-  Box,
-  Button,
-  TextField,
-  Container,
-  Grid,
-} from "@mui/material";
+import { Box, Button, TextField, Container, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/navbar";
 
 function JoinSession() {
   const navigate = useNavigate();
   const [sessionCode, setSessionCode] = React.useState([]);
+  const [errorMsg, setErrorMsg] = React.useState([]);
 
-  const submit = () => {
-
+  const submit = async () => {
+    const game = await fetchGame(sessionCode);
+    if (!game) {
+      // TODO update this
+      setErrorMsg("Couldn't find that game");
+      return;
+    }
+    const userId = await fetchUserId();
+    if (game.players.includes(userId)) {
+      setErrorMsg("You're already part of that game");
+      // TODO navigate to that game
+      return;
+    }
+    addGameToMe(game._id);
+    console.log("here");
+    addMeToGame(game._id);
+    navigate(`/session/${game.gameCode}`);
   };
 
   const handleSubmit = (event) => {
@@ -42,6 +58,14 @@ function JoinSession() {
             <Grid item xs={12}>
               <form onSubmit={handleSubmit} style={{ width: "100%" }}>
                 <Grid container spacing={2}>
+                  {errorMsg !== "" && (
+                    <Grid item xs={12}>
+                      <Box component="p" sx={{ color: "red" }}>
+                        {errorMsg}
+                      </Box>
+                    </Grid>
+                  )}
+
                   <Grid item xs={12}>
                     <TextField
                       fullWidth

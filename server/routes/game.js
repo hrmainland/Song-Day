@@ -4,23 +4,25 @@ const Game = require("../models/game");
 const router = express.Router();
 const generateGameCode = require("../utils/gameCode");
 const passport = require("passport");
+const { isLoggedIn } = require("../middleware");
 const { MongoClient, ObjectId } = require("mongodb");
+const { rawListeners } = require("../models/track");
 
-const isLoggedIn = function (req, res, next) {
-  if (!req.isAuthenticated()) {
-    console.log("not logged in");
-  }
-  console.log("logged in");
-  next();
-};
-
-router.get("/host-games/:id", async (req, res) => {
+router.put("/:id/add-me", isLoggedIn, async (req, res) => {
   const { id } = req.params;
-  const games = await Game.find({ host: new ObjectId(id) });
-  res.status(200).json(games);
+  const game = await Game.findById(id);
+  if (!game) {
+    res.status(404).json({ message: `No game found with ID ${id}` });
+    return;
+  }
+  console.log("game :>> ", game);
+  game.players.push(req.user._id);
+  await game.save();
+
+  res.status(200).json(game);
 });
 
-router.post("/new", async (req, res, next) => {
+router.post("/new", isLoggedIn, async (req, res, next) => {
   const { gameName, numSongs } = req.body;
   const gameCode = generateGameCode();
 
@@ -35,18 +37,13 @@ router.post("/new", async (req, res, next) => {
     config,
     gameCode,
     host: userId,
+    players: [userId],
   };
 
   const thisGame = new Game(params);
   await thisGame.save();
 
-  // Send a response back to the client
-  res.status(200).json({
-    message: "Game created successfully",
-    gameName,
-    numSongs,
-    gameCode,
-  });
+  res.status(200).json(thisGame);
 });
 
 // TODO put this in useEffect
@@ -56,7 +53,7 @@ router.get("/:gameCode", async (req, res) => {
   if (game != undefined) {
     res.status(200).json(game);
   } else {
-    res.status(400).json({ error: `Game with code '${gameCode}' not found` });
+    res.status(404).json({ error: `Game with code '${gameCode}' not found` });
   }
 });
 

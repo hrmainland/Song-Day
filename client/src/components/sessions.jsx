@@ -1,5 +1,3 @@
-// TODO update some from baseURL to baseUrl
-
 import baseUrl from "../../utils/urlPrefix";
 
 import { Container, Button, Grid, Typography } from "@mui/material";
@@ -14,7 +12,7 @@ function Sessions() {
   // set user id
   useEffect(() => {
     const fetchUser = async () => {
-      const response = await fetch(`${baseUrl}/user/get-id`, {
+      const response = await fetch(`${baseUrl}/user/id`, {
         method: "GET",
         headers: {
           Accept: "application/json",

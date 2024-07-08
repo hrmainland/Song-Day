@@ -18,6 +18,12 @@ const gameSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
+  players: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   trackGroups: [
     {
       type: Schema.Types.ObjectId,

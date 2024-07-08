@@ -13,7 +13,7 @@
 // ];
 
 import { useState, useEffect } from "react";
-import baseURL from "../../utils/urlPrefix";
+import baseUrl from "../../utils/urlPrefix";
 
 export default function Test() {
   const [tracks, setTracks] = useState([]);
@@ -21,7 +21,7 @@ export default function Test() {
     const callBackendAPI = async () => {
       try {
         // maybe add this line to client package.json: "proxy": "http://localhost:3500"
-        const response = await fetch(`${baseURL}/dev/tracks`);
+        const response = await fetch(`${baseUrl}/dev/tracks`);
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
