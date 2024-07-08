@@ -89,6 +89,11 @@ app.use("/game", gameRouter);
 app.use("/dev", devRouter);
 app.use("/pad", padRouter);
 
+// TODO - something about this
+app.use((err, req, res, next) => {
+  res.send(`${err}`);
+});
+
 async function main() {
   await mongoose.connect(dbUrl);
   console.log("Connection Open - Yay");
@@ -96,10 +101,6 @@ async function main() {
 }
 
 main().catch((err) => console.log(err));
-
-app.get("/jeff", (req, res) => {
-  res.send(req.user);
-});
 
 // ############################################
 

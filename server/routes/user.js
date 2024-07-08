@@ -4,6 +4,7 @@ const passport = require("passport");
 const SpotifyStrategy = require("passport-spotify").Strategy;
 const User = require("../models/user");
 const Game = require("../models/game");
+const { isLoggedIn } = require("../middleware");
 
 const userRouteSuffix = "/user";
 const callbackSuffix = "/callback";
@@ -55,6 +56,13 @@ passport.use(
   )
 );
 
+router.get("/isLoggedIn", async (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.status(200).json("logged in");
+  }
+  res.status(401).json("not logged in");
+});
+
 router.put("/game/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -94,7 +102,7 @@ router.get("/my-games", async (req, res) => {
   }
 });
 
-router.get("/display-name", (req, res) => {
+router.get("/display-name", isLoggedIn, (req, res) => {
   if (req.user !== undefined) {
     res.json(req.user.spotify_display_name);
   } else {

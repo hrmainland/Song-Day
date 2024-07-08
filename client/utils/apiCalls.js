@@ -133,3 +133,25 @@ export async function addMeToGame(gameId) {
     throw error;
   }
 }
+
+export async function isLoggedIn() {
+  try {
+    const response = await fetch(`${baseUrl}/user/isLoggedIn`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      return false;
+    }
+    return true;
+  } catch {
+    console.error(
+      "There was a problem checking the login status of the current user",
+      error
+    );
+    throw error;
+  }
+}

@@ -31,7 +31,6 @@ function JoinSession() {
       return;
     }
     addGameToMe(game._id);
-    console.log("here");
     addMeToGame(game._id);
     navigate(`/session/${game.gameCode}`);
   };

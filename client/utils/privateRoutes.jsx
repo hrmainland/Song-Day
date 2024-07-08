@@ -1,37 +1,26 @@
 import baseUrl from "./urlPrefix";
 import { Outlet, Navigate } from "react-router-dom";
 import * as React from "react";
+import { isLoggedIn } from "./apiCalls";
 
 const PrivateRoutes = () => {
-  // const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [authenticated, setAuthenticated] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
 
-  // React.useEffect(() => {
-  //   const callBackendAPI = async () => {
-  //     try {
-  //       // maybe add this line to client package.json: "proxy": "http://localhost:3500"
-  //       // TODO make a proper check for logged in user
-  //       const response = await fetch(`${baseUrl}/user/display-name`);
-  //       if (!response.ok) {
-  //         throw new Error("Failed to fetch data");
-  //       }
-  //       const body = await response.json();
-  //       if (body) {
-  //         setIsLoggedIn(true);
-  //       }
-  //       // if (body === "None") {
-  //       //   // add this page to the session so it knows where to return to
-  //       //   return false;
-  //       // }
-  //       // return true;
-  //     } catch (error) {
-  //       console.error(error.message);
-  //     }
-  //   };
-  //   callBackendAPI();
-  // }, []);
+  React.useEffect(() => {
+    const callBackend = async () => {
+      const loggedIn = await isLoggedIn();
+      setAuthenticated(loggedIn);
+      setLoading(false);
+    };
+    callBackend();
+  }, []);
 
-  // let auth = { token: true };
-  return true ? <Outlet /> : <Navigate to="/login" />;
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  return authenticated ? <Outlet /> : <Navigate to="/login" />;
 };
 
 export default PrivateRoutes;
