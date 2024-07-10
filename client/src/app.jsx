@@ -7,6 +7,8 @@ import NewSession from "./routes/newSession";
 import NewSessionCode from "./routes/newSessionCode";
 import JoinSession from "./routes/joinSession";
 import Session from "./routes/session";
+import AddSongs from "./routes/addSongs";
+import VoteSongs from "./routes/voteSongs";
 import Login from "./routes/login";
 import Test from "./routes/test";
 import Grid from "./routes/grid";
@@ -31,6 +33,8 @@ function App() {
           />
           <Route path="/join-session" element={<JoinSession />} />
           <Route path="/session/:gameCode" element={<Session />} />
+          <Route path="/session/:gameCode/add-songs" element={<AddSongs />} />
+          <Route path="/session/:gameCode/vote" element={<VoteSongs />} />
         </Route>
 
         {/* TODO remove these tests */}

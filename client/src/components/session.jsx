@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
+import * as React from "react";
 
-function Session({ name }) {
+function Session({ name, onClick }) {
   return (
     <>
       <Box
@@ -11,7 +12,9 @@ function Session({ name }) {
           p: 2,
           pt: 1,
           mt: 2,
+          cursor: "pointer",
         }}
+        onClick={onClick}
       >
         <h3>{name}</h3>
         Lorem, ipsum dolor sit amet consectetur adipisicing elit.

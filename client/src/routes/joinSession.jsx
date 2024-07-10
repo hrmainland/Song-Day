@@ -3,7 +3,7 @@ import {
   addGameToMe,
   addMeToGame,
   fetchGame,
-  fetchUserId,
+  fetchMe,
 } from "../../utils/apiCalls";
 
 /* eslint-disable no-undef */
@@ -15,7 +15,7 @@ import Navbar from "../components/navbar";
 function JoinSession() {
   const navigate = useNavigate();
   const [sessionCode, setSessionCode] = React.useState([]);
-  const [errorMsg, setErrorMsg] = React.useState([]);
+  const [errorMsg, setErrorMsg] = React.useState(null);
 
   const submit = async () => {
     const game = await fetchGame(sessionCode);
@@ -24,7 +24,8 @@ function JoinSession() {
       setErrorMsg("Couldn't find that game");
       return;
     }
-    const userId = await fetchUserId();
+    const me = await fetchMe();
+    const userId = me._id;
     if (game.players.includes(userId)) {
       setErrorMsg("You're already part of that game");
       // TODO navigate to that game
@@ -57,7 +58,7 @@ function JoinSession() {
             <Grid item xs={12}>
               <form onSubmit={handleSubmit} style={{ width: "100%" }}>
                 <Grid container spacing={2}>
-                  {errorMsg !== "" && (
+                  {Boolean(errorMsg) && (
                     <Grid item xs={12}>
                       <Box component="p" sx={{ color: "red" }}>
                         {errorMsg}

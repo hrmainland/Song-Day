@@ -110,9 +110,19 @@ router.get("/display-name", isLoggedIn, (req, res) => {
   }
 });
 
+// TODO update or delete
 router.get("/id", (req, res) => {
   if (req.user !== undefined) {
     res.status(200).json(req.user._id);
+  } else {
+    res.status(404).json("None");
+  }
+});
+
+// TODO proper error handling here
+router.get("/me", isLoggedIn, (req, res) => {
+  if (req.user !== undefined) {
+    res.status(200).json(req.user);
   } else {
     res.status(404).json("None");
   }

@@ -12,12 +12,12 @@ import {
   Grid,
 } from "@mui/material";
 import baseUrl from "../../utils/urlPrefix";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Navbar from "../components/navbar";
-import CreateStepper from "../components/createStepper";
-import NumberInput from "../components/numberInput";
-import { FormControl } from "@mui/base/FormControl";
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+
+import { fetchMe, getProfile, searchTracks } from "../../utils/apiCalls";
 
 function Session() {
   const { gameCode } = useParams();
@@ -43,7 +43,7 @@ function Session() {
   }, []);
 
   useEffect(() => {
-    // TODO add proper redirect for bad id
+    // TODO move this fetch
     const fetchGame = async () => {
       try {
         const response = await fetch(`${baseUrl}/game/${gameCode}`, {
@@ -71,6 +71,7 @@ function Session() {
     fetchGame();
   }, [gameCode]);
 
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -86,12 +87,46 @@ function Session() {
   return (
     <>
       <Navbar></Navbar>
-      <h1>{game.title}</h1>
-      {game.host === userId ? (
-        <p>You are the host</p>
-      ) : (
-        <p>You are not the host</p>
-      )}
+      <Container
+        fixed
+        className="top-container"
+        sx={{
+          mt: 5,
+        }}
+      >
+        <Box display="flex" justifyContent="center">
+          <Grid container maxWidth={600}>
+            <Grid item xs={12}>
+              <h1>{game.title}</h1>
+            </Grid>
+
+            {game.host === userId ? (
+              <p>You are the host</p>
+            ) : (
+              <p>You are not the host</p>
+            )}
+
+            <Grid item xs={12}>
+              <Button
+                variant="outlined"
+                component={Link}
+                to={`/session/${gameCode}/add-songs`}
+              >
+                Add Songs
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                variant="outlined"
+                component={Link}
+                to={`/session/${gameCode}/vote`}
+              >
+                Vote
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+      </Container>
     </>
   );
 }

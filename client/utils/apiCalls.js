@@ -1,3 +1,5 @@
+// TODO split these up
+
 import baseUrl from "./urlPrefix";
 
 export async function fetchGame(gameCode) {
@@ -57,9 +59,9 @@ export async function newGame(gameName, numSongs) {
   }
 }
 
-export async function fetchUserId() {
+export async function fetchMe() {
   try {
-    const response = await fetch(`${baseUrl}/user/id`, {
+    const response = await fetch(`${baseUrl}/user/me`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -152,6 +154,45 @@ export async function isLoggedIn() {
       "There was a problem checking the login status of the current user",
       error
     );
+    throw error;
+  }
+}
+
+export async function getProfile(accessToken) {
+  const response = await fetch("https://api.spotify.com/v1/me", {
+    headers: {
+      Authorization: "Bearer " + accessToken,
+    },
+  });
+
+  const data = await response.json();
+  return data;
+}
+
+export async function searchTracks(accessToken, query) {
+  const type = "track";
+
+  try {
+    const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(
+      query
+    )}&type=${encodeURIComponent(type)}&limit=5`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error - status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(`There was a problem with the search: ${query}`, error);
     throw error;
   }
 }

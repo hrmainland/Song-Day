@@ -1,29 +1,26 @@
 import baseUrl from "../../utils/urlPrefix";
 
+import { v4 as uuidv4 } from "uuid";
 import { Container, Button, Grid, Typography } from "@mui/material";
 import Navbar from "./navbar";
 import Session from "./session";
 import { useState, useEffect } from "react";
+import { fetchMe } from "../../utils/apiCalls";
+import { useNavigate } from "react-router-dom";
 
 function Sessions() {
+  const navigate = useNavigate();
+
   const [userId, setUserId] = useState(null);
   const [mySessions, setMySessions] = useState(null);
 
   // set user id
   useEffect(() => {
-    const fetchUser = async () => {
-      const response = await fetch(`${baseUrl}/user/id`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      });
-
-      const data = await response.json();
-      setUserId(data);
+    const callBackend = async () => {
+      const me = await fetchMe();
+      setUserId(me._id);
     };
-    fetchUser();
+    callBackend();
   }, []);
 
   // set my sessions
@@ -44,6 +41,10 @@ function Sessions() {
     return <h1>No sessions</h1>;
   }
 
+  const handleSessionClick = (gameCode) => {
+    navigate(`/session/${gameCode}`);
+  };
+
   return (
     <>
       <Grid
@@ -53,7 +54,11 @@ function Sessions() {
         alignItems="center"
       >
         {mySessions.map((session) => (
-          <Session key={session.id} name={session.title} />
+          <Session
+            key={session.gameCode}
+            name={session.title}
+            onClick={() => handleSessionClick(session.gameCode)}
+          />
         ))}
       </Grid>
     </>
