@@ -6,6 +6,7 @@ const trackSchema = new Schema({
   spotify_id: String,
   title: String,
   artist: String,
+  img: String,
   submittedBy: {
     type: Schema.Types.ObjectId,
     ref: "User",

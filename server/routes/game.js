@@ -15,7 +15,6 @@ router.put("/:id/add-me", isLoggedIn, async (req, res) => {
     res.status(404).json({ message: `No game found with ID ${id}` });
     return;
   }
-  console.log("game :>> ", game);
   game.players.push(req.user._id);
   await game.save();
 

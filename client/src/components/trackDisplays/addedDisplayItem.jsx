@@ -9,21 +9,33 @@ import FolderIcon from "@mui/icons-material/Folder";
 import DeleteIcon from "@mui/icons-material/Delete";
 import * as React from "react";
 
-function SearchDisplayItem({ name, artists, img }) {
+function AddedDisplayItem({ track }) {
+  if (track.name.length > 60) {
+    track.name = track.name.substring(0, 59) + "…";
+  }
+  if (track.artists.length > 30) {
+    track.artists = track.artists.substring(0, 29) + "…";
+  }
   return (
     <>
-      <ListItem sx={{ cursor: "pointer" }}>
+      <ListItem
+        secondaryAction={
+          <IconButton edge="end" aria-label="delete">
+            <DeleteIcon />
+          </IconButton>
+        }
+      >
         <ListItemAvatar>
           <Avatar
-            src={img}
+            src={track.img}
             variant="square"
-            sx={{ width: 60, height: 60, paddingRight: "5px" }}
+            sx={{ width: 50, height: 50, paddingRight: "5px" }}
           />
         </ListItemAvatar>
-        <ListItemText primary={name} secondary={artists} />
+        <ListItemText primary={track.name} secondary={track.artists} />
       </ListItem>
     </>
   );
 }
 
-export default SearchDisplayItem;
+export default AddedDisplayItem;

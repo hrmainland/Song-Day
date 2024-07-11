@@ -3,7 +3,7 @@ import List from "@mui/material/List";
 import * as React from "react";
 
 import SearchDisplayItem from "./searchDisplayItem";
-import { artistString } from "../../utils/spotifyApiUtils";
+import { artistString } from "../../../utils/spotifyApiUtils";
 
 function SearchDisplay({ tracks, rhs }) {
   if (rhs) {
@@ -30,9 +30,11 @@ function SearchDisplay({ tracks, rhs }) {
             return (
               <SearchDisplayItem
                 key={track.id}
+                id={track.id}
                 name={track.name}
                 artists={artists}
                 img={img}
+                rhs={rhs}
               ></SearchDisplayItem>
             );
           })}

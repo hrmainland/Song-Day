@@ -8,7 +8,7 @@ const { isLoggedIn } = require("../middleware");
 
 const userRouteSuffix = "/user";
 const callbackSuffix = "/callback";
-const redirectSuffix = "/";
+const redirectSuffix = "/login-redirect";
 
 // set callback url and redirect url based on the envrionment
 if (process.env.NODE_ENV === "production") {

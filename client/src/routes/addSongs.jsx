@@ -4,7 +4,8 @@ import baseUrl from "../../utils/urlPrefix";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
-import SearchDisplay from "../components/searchDisplay";
+import SearchDisplay from "../components/trackDisplays/searchDisplay";
+import AddedDisplay from "../components/trackDisplays/addedDisplay";
 import TrackList from "../components/trackList";
 
 import { fetchMe, searchTracks } from "../../utils/apiCalls";
@@ -17,13 +18,26 @@ function AddSongs() {
     const me = await fetchMe();
     const accessToken = me.access_token;
     const result = await searchTracks(accessToken, searchQuery);
-    console.log("result :>> ", result);
     setSearchResult(result);
+    cookieTest();
   };
+
+  const cookieTest = () => {
+    const tracks = localStorage.getItem("tracks");
+    // console.log("tracks :>> ", tracks);
+  };
+
+  // useEffect(() => {
+  //   localStorage.setItem("tracks", JSON.stringify([]));
+  // }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     submit();
+  };
+
+  const removeAllTracks = () => {
+    localStorage.setItem("tracks", JSON.stringify([]));
   };
 
   return (
@@ -45,7 +59,7 @@ function AddSongs() {
             <Grid item xs={12}>
               <form onSubmit={handleSubmit} style={{ width: "100%" }}>
                 <Grid container spacing={2}>
-                  <Grid item xs={9}>
+                  <Grid item xs={8}>
                     <TextField
                       fullWidth
                       onChange={(e) => {
@@ -55,9 +69,18 @@ function AddSongs() {
                     />
                   </Grid>
 
-                  <Grid item xs={3} display="flex" justifyContent="center">
+                  <Grid item xs={2} display="flex" justifyContent="center">
                     <Button type="submit" variant="contained" color="primary">
-                      Submit
+                      Search
+                    </Button>
+                  </Grid>
+                  <Grid item xs={2} display="flex" justifyContent="center">
+                    <Button
+                      onClick={removeAllTracks}
+                      variant="contained"
+                      color="primary"
+                    >
+                      Clear
                     </Button>
                   </Grid>
                 </Grid>
@@ -74,14 +97,7 @@ function AddSongs() {
             </Grid>
           </Grid>
         </Box>
-        {Boolean(searchResult) && (
-          <Grid item xs={12}>
-            <SearchDisplay
-              tracks={searchResult.tracks.items}
-              rhs={true}
-            ></SearchDisplay>
-          </Grid>
-        )}
+        <AddedDisplay></AddedDisplay>
       </Container>
     </>
   );

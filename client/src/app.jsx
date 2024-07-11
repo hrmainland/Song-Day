@@ -14,6 +14,7 @@ import Test from "./routes/test";
 import Grid from "./routes/grid";
 import Pad from "./routes/pad";
 import Root from "./routes/root";
+import LoginRedirect from "./routes/loginRedirect";
 import NotFound from "./routes/notFound";
 
 import PrivateRoutes from "../utils/privateRoutes";
@@ -24,6 +25,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Root />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/login-redirect" element={<LoginRedirect />} />
         <Route element={<PrivateRoutes />}>
           <Route path="/home" element={<Home />} />
           <Route path="/new-session" element={<NewSession />} />
