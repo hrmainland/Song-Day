@@ -1,4 +1,5 @@
 import { Container, Grid, Button, Box } from "@mui/material";
+import { Link } from "react-router-dom";
 import Navbar from "../components/navbar";
 
 function Root() {
@@ -9,24 +10,21 @@ function Root() {
           <Grid item xs={12} textAlign={"center"}>
             <h1>Song Day</h1>
           </Grid>
+          <Grid item xs={12} textAlign="center">
+            <Button variant="contained" component={Link} to={"/home"}>
+              Home
+            </Button>
+          </Grid>
           <Grid item xs={3} textAlign="center">
-            <Box>
-              <form action="/join-session">
-                <Button type="submit" variant="contained">
-                  Join Session
-                </Button>
-              </form>
-            </Box>
+            <Button variant="contained" component={Link} to={"/join-session"}>
+              Join Session
+            </Button>
           </Grid>
 
           <Grid item xs={3} textAlign="center">
-            <Box>
-              <form action="/new-session">
-                <Button type="submit" variant="contained">
-                  New Session
-                </Button>
-              </form>
-            </Box>
+            <Button variant="contained" component={Link} to={"/new-session"}>
+              New Session
+            </Button>
           </Grid>
         </Grid>
       </div>

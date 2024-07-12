@@ -5,36 +5,26 @@ import * as React from "react";
 import SearchDisplayItem from "./searchDisplayItem";
 import { artistString } from "../../../utils/spotifyApiUtils";
 
-function SearchDisplay({ tracks, rhs }) {
-  if (rhs) {
-    var sx = {
-      width: "100%",
-      maxWidth: 280,
-      bgcolor: "background.paper",
-      position: "absolute",
-      top: 0,
-      right: 0,
-    };
-  } else {
-    var sx = {};
-  }
-
+function SearchDisplay({ tracks, addFunc }) {
   return (
     <>
-      <Box sx={sx}>
-        <List dense={rhs}>
+      <Box>
+        <List>
           {tracks.map((track) => {
             const artists = artistString(track.artists);
             // TODO add error handling here
             const img = track.album.images[2].url;
+            const formattedTrack = {
+              id: track.id,
+              name: track.name,
+              artists,
+              img,
+            };
             return (
               <SearchDisplayItem
                 key={track.id}
-                id={track.id}
-                name={track.name}
-                artists={artists}
-                img={img}
-                rhs={rhs}
+                track={formattedTrack}
+                addFunc={addFunc}
               ></SearchDisplayItem>
             );
           })}

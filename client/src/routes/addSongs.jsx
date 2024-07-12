@@ -13,23 +13,56 @@ import { fetchMe, searchTracks } from "../../utils/apiCalls";
 function AddSongs() {
   const [searchQuery, setSearchQuery] = useState([]);
   const [searchResult, setSearchResult] = useState(null);
+  const [addedTracks, setAddedTracks] = useState([]);
+  const [loadingAdded, setLoadingAdded] = useState(true);
+
+  // get tracks from session on first render
+  useEffect(() => {
+    const tracks = getSessionTracks();
+    setAddedTracks(tracks);
+    setLoadingAdded(false);
+  }, []);
+
+  // update the session when the state changes
+  useEffect(() => {
+    localStorage.setItem("tracks", JSON.stringify(addedTracks));
+    console.log(
+      'localStorage.getItem("tracks") :>> ',
+      localStorage.getItem("tracks")
+    );
+  }, [addedTracks]);
+
+  const getSessionTracks = () => {
+    let tracks = localStorage.getItem("tracks");
+    try {
+      return JSON.parse(tracks);
+    } catch {
+      return [];
+    }
+  };
+
+  // reverse this so it gets added to the local storage and then pulled into the state
+
+  const addTrack = (track) => {
+    setAddedTracks((prevAddedTracks) => {
+      const newAddedTracks = [...prevAddedTracks, track];
+      return newAddedTracks;
+    });
+  };
+
+  // const addTrack = (track) => {
+  //   let tracks = getAddedTracks();
+  //   tracks.push(track);
+  //   localStorage.setItem("tracks", JSON.stringify(tracks));
+  //   console.log(localStorage.getItem("tracks"));
+  // };
 
   const submit = async () => {
     const me = await fetchMe();
     const accessToken = me.access_token;
     const result = await searchTracks(accessToken, searchQuery);
     setSearchResult(result);
-    cookieTest();
   };
-
-  const cookieTest = () => {
-    const tracks = localStorage.getItem("tracks");
-    // console.log("tracks :>> ", tracks);
-  };
-
-  // useEffect(() => {
-  //   localStorage.setItem("tracks", JSON.stringify([]));
-  // }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -38,6 +71,7 @@ function AddSongs() {
 
   const removeAllTracks = () => {
     localStorage.setItem("tracks", JSON.stringify([]));
+    setAddedTracks([]);
   };
 
   return (
@@ -91,13 +125,14 @@ function AddSongs() {
                 <Grid item xs={12}>
                   <SearchDisplay
                     tracks={searchResult.tracks.items}
+                    addFunc={addTrack}
                   ></SearchDisplay>
                 </Grid>
               )}
             </Grid>
           </Grid>
         </Box>
-        <AddedDisplay></AddedDisplay>
+        {!loadingAdded && <AddedDisplay />}
       </Container>
     </>
   );

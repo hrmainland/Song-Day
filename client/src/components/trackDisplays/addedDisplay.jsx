@@ -7,7 +7,6 @@ import { artistString } from "../../../utils/spotifyApiUtils";
 
 function AddedDisplay() {
   const tracks = JSON.parse(localStorage.getItem("tracks")) || [];
-  console.log("tracks from new:>> ", tracks);
 
   return (
     <>
