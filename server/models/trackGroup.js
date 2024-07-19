@@ -15,10 +15,6 @@ const trackGroupSchema = new Schema({
       ref: "Track",
     },
   ],
-  submitted: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 module.exports = mongoose.model("TrackGroup", trackGroupSchema);

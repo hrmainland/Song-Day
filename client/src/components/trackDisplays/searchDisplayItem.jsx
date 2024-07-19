@@ -15,17 +15,6 @@ function SearchDisplayItem({ track, addFunc }) {
   const handleClick = () => {
     addFunc(track);
   };
-  // const selectTrack = () => {
-  //   const thisTrack = { id, name, artists, img };
-  //   let tracks = localStorage.getItem("tracks");
-  //   if (!tracks) {
-  //     tracks = [thisTrack];
-  //   } else {
-  //     tracks = JSON.parse(tracks);
-  //     tracks.push(thisTrack);
-  //   }
-  //   localStorage.setItem("tracks", JSON.stringify(tracks));
-  // };
 
   return (
     <>

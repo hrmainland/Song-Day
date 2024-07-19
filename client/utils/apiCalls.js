@@ -136,6 +136,31 @@ export async function addMeToGame(gameId) {
   }
 }
 
+export async function addTrackGroupToGame(gameId, trackGroupId) {
+  try {
+    const response = await fetch(`${baseUrl}/game/${gameId}/${trackGroupId}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error - status: ${response.status}`);
+    }
+
+    const game = await response.json();
+    return game;
+  } catch (error) {
+    console.error(
+      "There was a problem adding the track group user to the game",
+      error
+    );
+    throw error;
+  }
+}
+
 export async function isLoggedIn() {
   try {
     const response = await fetch(`${baseUrl}/user/isLoggedIn`, {
@@ -193,6 +218,50 @@ export async function searchTracks(accessToken, query) {
     return data;
   } catch (error) {
     console.error(`There was a problem with the search: ${query}`, error);
+    throw error;
+  }
+}
+
+export async function addSessionTracks(sessionTracks) {
+  try {
+    const response = await fetch(`${baseUrl}/track-group`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: sessionTracks,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error - status: ${response.status}`);
+    }
+
+    const trackGroup = await response.json();
+    return trackGroup;
+  } catch (error) {
+    console.error("There was a problem adding the track group", error);
+    throw error;
+  }
+}
+
+export async function isMyTrackGroupSubmitted(gameId) {
+  try {
+    const response = await fetch(`${baseUrl}/game/${gameId}/my-submitted`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error - status: ${response.status}`);
+    }
+    const jsonResponse = await response.json();
+    const isSubmitted = jsonResponse.isSubmitted;
+    return isSubmitted;
+  } catch (error) {
+    console.error("There was a problem checking the user's track group", error);
     throw error;
   }
 }

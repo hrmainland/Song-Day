@@ -1,13 +1,13 @@
-import { Box, ImageListItemBar } from "@mui/material";
+import { Box, ImageListItemBar, Button } from "@mui/material";
 import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+
 import * as React from "react";
 
 import AddedDisplayItem from "./addedDisplayItem";
 import { artistString } from "../../../utils/spotifyApiUtils";
 
-function AddedDisplay() {
-  const tracks = JSON.parse(localStorage.getItem("tracks")) || [];
-
+function AddedDisplay({ tracks, removeFunc, submitFunc }) {
   return (
     <>
       <Box
@@ -23,9 +23,18 @@ function AddedDisplay() {
         <List dense={true}>
           {tracks.map((track) => {
             return (
-              <AddedDisplayItem key={track.id} track={track}></AddedDisplayItem>
+              <AddedDisplayItem
+                key={track.id}
+                track={track}
+                removeFunc={removeFunc}
+              ></AddedDisplayItem>
             );
           })}
+          <ListItem>
+            <Button variant="outlined" onClick={submitFunc}>
+              Submit
+            </Button>
+          </ListItem>
         </List>
       </Box>
     </>

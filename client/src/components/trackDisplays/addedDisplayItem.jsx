@@ -9,18 +9,23 @@ import FolderIcon from "@mui/icons-material/Folder";
 import DeleteIcon from "@mui/icons-material/Delete";
 import * as React from "react";
 
-function AddedDisplayItem({ track }) {
+function AddedDisplayItem({ track, removeFunc }) {
   if (track.name.length > 60) {
     track.name = track.name.substring(0, 59) + "…";
   }
   if (track.artists.length > 30) {
     track.artists = track.artists.substring(0, 29) + "…";
   }
+
+  const handleDelete = () => {
+    removeFunc(track);
+  };
+
   return (
     <>
       <ListItem
         secondaryAction={
-          <IconButton edge="end" aria-label="delete">
+          <IconButton edge="end" aria-label="delete" onClick={handleDelete}>
             <DeleteIcon />
           </IconButton>
         }

@@ -1,6 +1,8 @@
 const bodyParser = require("body-parser");
 const express = require("express");
 const Game = require("../models/game");
+const TrackGroup = require("../models/trackGroup");
+const Track = require("../models/track");
 const router = express.Router();
 const generateGameCode = require("../utils/gameCode");
 const passport = require("passport");
@@ -16,6 +18,19 @@ router.put("/:id/add-me", isLoggedIn, async (req, res) => {
     return;
   }
   game.players.push(req.user._id);
+  await game.save();
+
+  res.status(200).json(game);
+});
+
+router.put("/:id/:trackGroupId", isLoggedIn, async (req, res) => {
+  const { id, trackGroupId } = req.params;
+  const game = await Game.findById(id);
+  if (!game) {
+    res.status(404).json({ message: `No game found with ID ${id}` });
+    return;
+  }
+  game.trackGroups.push(trackGroupId);
   await game.save();
 
   res.status(200).json(game);
@@ -45,7 +60,7 @@ router.post("/new", isLoggedIn, async (req, res, next) => {
   res.status(200).json(thisGame);
 });
 
-// TODO put this in useEffect
+// TODO put this in useEffect and store in cookies
 router.get("/:gameCode", async (req, res) => {
   const { gameCode } = req.params;
   const game = await Game.findOne({ gameCode });
@@ -54,6 +69,21 @@ router.get("/:gameCode", async (req, res) => {
   } else {
     res.status(404).json({ error: `Game with code '${gameCode}' not found` });
   }
+});
+
+router.get("/:gameId/my-submitted", isLoggedIn, async (req, res) => {
+  const { gameId } = req.params;
+  const game = await Game.findById(gameId).populate("trackGroups", "player");
+  if (!game) {
+    res.status(404).json({ message: `No game found with ID ${id}` });
+    return;
+  }
+  for (let trackGroup of game.trackGroups) {
+    if (trackGroup.player.equals(req.user._id)) {
+      return res.status(200).json({ isSubmitted: true });
+    }
+  }
+  return res.status(200).json({ isSubmitted: false });
 });
 
 module.exports = router;

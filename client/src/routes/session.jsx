@@ -10,9 +10,11 @@ import {
   Typography,
   Container,
   Grid,
+  Alert,
 } from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
 import baseUrl from "../../utils/urlPrefix";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import Navbar from "../components/navbar";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -20,11 +22,16 @@ import { useEffect, useState } from "react";
 import { fetchMe, getProfile, searchTracks } from "../../utils/apiCalls";
 
 function Session() {
+  const location = useLocation();
   const { gameCode } = useParams();
   const [game, setGame] = useState();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [userId, setUserId] = useState();
+  const [alertOpen, setAlertOpen] = useState(!!location.state?.alertMsg);
+  const [alertMsg, setAlertMsg] = useState(
+    location.state?.alertMsg || "Success!"
+  );
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -71,7 +78,6 @@ function Session() {
     fetchGame();
   }, [gameCode]);
 
-
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -87,6 +93,19 @@ function Session() {
   return (
     <>
       <Navbar></Navbar>
+
+      {alertOpen && (
+        <Alert
+          icon={<CheckIcon fontSize="inherit" />}
+          severity="success"
+          onClose={() => {
+            setAlertOpen(false);
+          }}
+        >
+          {alertMsg}
+        </Alert>
+      )}
+
       <Container
         fixed
         className="top-container"
@@ -97,14 +116,24 @@ function Session() {
         <Box display="flex" justifyContent="center">
           <Grid container maxWidth={600}>
             <Grid item xs={12}>
-              <h1>{game.title}</h1>
+              <Typography variant="h4" gutterBottom>
+                {game.title}
+              </Typography>
             </Grid>
 
-            {game.host === userId ? (
-              <p>You are the host</p>
-            ) : (
-              <p>You are not the host</p>
-            )}
+            <Grid item xs={12}>
+              <Typography variant="h6" gutterBottom>
+                Game Code: {gameCode}
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Typography variant="body1" gutterBottom>
+                {game.host === userId
+                  ? "You are the host"
+                  : "You are not the host"}
+              </Typography>
+            </Grid>
 
             <Grid item xs={12}>
               <Button
