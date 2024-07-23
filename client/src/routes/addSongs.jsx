@@ -30,6 +30,7 @@ function AddSongs() {
   const [loading, setLoading] = useState(true);
   const [mySubmitted, setMySubmitted] = useState(false);
 
+  // TODO turn this on
   useEffect(() => {
     const isSubmitted = async () => {
       const game = await fetchGame(gameCode);

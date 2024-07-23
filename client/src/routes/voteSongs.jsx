@@ -4,8 +4,7 @@ import baseUrl from "../../utils/urlPrefix";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
-import SearchDisplay from "../components/trackDisplays/searchDisplay";
-import AddedDisplay from "../components/trackDisplays/addedDisplay";
+import VoteDisplay from "../components/trackDisplays/voteDisplay";
 import TrackList from "../components/trackList";
 
 import {
@@ -15,10 +14,21 @@ import {
   addSessionTracks,
   addTrackGroupToGame,
   isMyTrackGroupSubmitted,
+  getAllGameTracks,
 } from "../../utils/apiCalls";
 
 function VoteSongs() {
   const { gameCode } = useParams();
+  const [allTracks, SetAllTracks] = useState([]);
+
+  useEffect(() => {
+    const asyncFunc = async () => {
+      const game = await fetchGame(gameCode);
+      const allTracksResponse = await getAllGameTracks(game._id);
+      SetAllTracks(allTracksResponse);
+    };
+    asyncFunc();
+  }, []);
 
   return (
     <>
@@ -28,14 +38,10 @@ function VoteSongs() {
         className="top-container"
         sx={{
           mt: 5,
-          display: "grid",
-          gridTemplateColumns: "1fr 360px",
-          gap: 2,
-          position: "relative",
         }}
       >
         <Box display="flex" justifyContent="center">
-          Vote For songs
+          <VoteDisplay tracks={allTracks}></VoteDisplay>
         </Box>
       </Container>
     </>
