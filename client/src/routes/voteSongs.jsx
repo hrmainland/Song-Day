@@ -15,17 +15,19 @@ import {
   addTrackGroupToGame,
   isMyTrackGroupSubmitted,
   getAllGameTracks,
+  getAllVotableTracks,
 } from "../../utils/apiCalls";
 
 function VoteSongs() {
   const { gameCode } = useParams();
-  const [allTracks, SetAllTracks] = useState([]);
+  const [votableTracks, SetVotableTracks] = useState([]);
 
   useEffect(() => {
     const asyncFunc = async () => {
+      const me = await fetchMe();
       const game = await fetchGame(gameCode);
-      const allTracksResponse = await getAllGameTracks(game._id);
-      SetAllTracks(allTracksResponse);
+      const tracksResponse = await getAllVotableTracks(game._id);
+      SetVotableTracks(tracksResponse);
     };
     asyncFunc();
   }, []);
@@ -41,7 +43,7 @@ function VoteSongs() {
         }}
       >
         <Box display="flex" justifyContent="center">
-          <VoteDisplay tracks={allTracks}></VoteDisplay>
+          <VoteDisplay tracks={votableTracks}></VoteDisplay>
         </Box>
       </Container>
     </>

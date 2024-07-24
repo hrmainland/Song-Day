@@ -267,6 +267,28 @@ export async function getAllGameTracks(gameId) {
   }
 }
 
+export async function getAllVotableTracks(gameId) {
+  try {
+    const response = await fetch(`${baseUrl}/game/${gameId}/votable-tracks`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error - status: ${response.status}`);
+    }
+
+    const tracks = await response.json();
+    return tracks;
+  } catch (error) {
+    console.error("There was a problem getting votable tracks", error);
+    throw error;
+  }
+}
+
 export async function isMyTrackGroupSubmitted(gameId) {
   try {
     const response = await fetch(`${baseUrl}/game/${gameId}/my-submitted`, {

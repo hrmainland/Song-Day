@@ -86,4 +86,50 @@ router.get("/:gameId/my-submitted", isLoggedIn, async (req, res) => {
   return res.status(200).json({ isSubmitted: false });
 });
 
+router.get("/:gameId/all-tracks", async (req, res) => {
+  const { gameId } = req.params;
+  const game = await Game.findById(gameId).populate({
+    path: "trackGroups",
+    populate: {
+      path: "tracks",
+      model: "Track", // Ensure this is the correct model name
+    },
+  });
+  if (!game) {
+    res.status(404).json({ message: `No game found with ID ${id}` });
+    return;
+  }
+  let tracks = [];
+
+  for (let trackGroup of game.trackGroups) {
+    tracks = tracks.concat(trackGroup.tracks);
+  }
+
+  return res.status(200).json(tracks);
+});
+
+router.get("/:gameId/votable-tracks", async (req, res) => {
+  const { gameId } = req.params;
+  const game = await Game.findById(gameId).populate({
+    path: "trackGroups",
+    populate: {
+      path: "tracks",
+      model: "Track",
+    },
+  });
+  if (!game) {
+    res.status(404).json({ message: `No game found with ID ${id}` });
+    return;
+  }
+  let tracks = [];
+
+  for (let trackGroup of game.trackGroups) {
+    if (!trackGroup.player._id.equals(req.user._id)) {
+      tracks = tracks.concat(trackGroup.tracks);
+    }
+  }
+
+  return res.status(200).json(tracks);
+});
+
 module.exports = router;
