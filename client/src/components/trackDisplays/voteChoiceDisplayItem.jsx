@@ -2,7 +2,7 @@ import { ListItem, ListItemAvatar, ListItemText, Avatar } from "@mui/material";
 import { Draggable } from "react-beautiful-dnd";
 import * as React from "react";
 
-function VoteDisplayItem({ track, index }) {
+function VoteChoiceDisplayItem({ track, index }) {
   const { name, artists, img, _id } = track;
   const id = _id;
 
@@ -16,10 +16,13 @@ function VoteDisplayItem({ track, index }) {
             {...provided.dragHandleProps}
           >
             <ListItemAvatar>
+              <Avatar>{index + 1}</Avatar>
+            </ListItemAvatar>
+            <ListItemAvatar>
               <Avatar
                 src={img}
                 variant="square"
-                sx={{ width: 60, height: 60, paddingRight: "5px" }}
+                sx={{ width: 50, height: 50, paddingRight: "5px" }}
               />
             </ListItemAvatar>
             <ListItemText primary={name} secondary={artists} />
@@ -30,4 +33,4 @@ function VoteDisplayItem({ track, index }) {
   );
 }
 
-export default VoteDisplayItem;
+export default VoteChoiceDisplayItem;

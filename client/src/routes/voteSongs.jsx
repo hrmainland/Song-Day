@@ -4,23 +4,17 @@ import baseUrl from "../../utils/urlPrefix";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
-import VoteDisplay from "../components/trackDisplays/voteDisplay";
+import VoteChoiceDisplay from "../components/trackDisplays/voteChoiceDisplay";
+import VoteListDisplay from "../components/trackDisplays/voteListDisplay";
 import TrackList from "../components/trackList";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
-import {
-  fetchMe,
-  fetchGame,
-  searchTracks,
-  addSessionTracks,
-  addTrackGroupToGame,
-  isMyTrackGroupSubmitted,
-  getAllGameTracks,
-  getAllVotableTracks,
-} from "../../utils/apiCalls";
+import { fetchMe, fetchGame, getAllVotableTracks } from "../../utils/apiCalls";
 
 function VoteSongs() {
   const { gameCode } = useParams();
   const [votableTracks, SetVotableTracks] = useState([]);
+  const [chosenTracks, SetChosenTracks] = useState([]);
 
   useEffect(() => {
     const asyncFunc = async () => {
@@ -31,6 +25,29 @@ function VoteSongs() {
     };
     asyncFunc();
   }, []);
+
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
+
+    const newOrder = Array.from(votableTracks);
+    const [reorderedItem] = newOrder.splice(result.source.index, 1);
+    newOrder.splice(result.destination.index, 0, reorderedItem);
+
+    SetVotableTracks(newOrder);
+  };
+
+  const removeTrackAtIndex = (index) => {
+    SetVotableTracks((prev) => {
+      const newTracks = [...prev];
+      newTracks.splice(index, 1);
+      return newTracks;
+    });
+  };
+
+  const addTrack = (track, index) => {
+    SetChosenTracks((prevChosenTracks) => [...prevChosenTracks, track]);
+    removeTrackAtIndex(index);
+  };
 
   return (
     <>
@@ -43,7 +60,13 @@ function VoteSongs() {
         }}
       >
         <Box display="flex" justifyContent="center">
-          <VoteDisplay tracks={votableTracks}></VoteDisplay>
+          <VoteListDisplay
+            tracks={votableTracks}
+            addFunc={addTrack}
+          ></VoteListDisplay>
+          <DragDropContext onDragEnd={onDragEnd}>
+            <VoteChoiceDisplay tracks={chosenTracks}></VoteChoiceDisplay>
+          </DragDropContext>
         </Box>
       </Container>
     </>
