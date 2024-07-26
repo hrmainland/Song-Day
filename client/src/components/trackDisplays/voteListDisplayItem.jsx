@@ -25,7 +25,7 @@ function VoteListDisplayItem({ track, addFunc, index }) {
     <>
       <ListItem
         secondaryAction={
-          <IconButton edge="end" aria-label="delete" onClick={handleAdd}>
+          <IconButton edge="end" aria-label="add" onClick={handleAdd}>
             <AddIcon />
           </IconButton>
         }

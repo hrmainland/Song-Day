@@ -1,8 +1,15 @@
-import { ListItem, ListItemAvatar, ListItemText, Avatar } from "@mui/material";
+import {
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Avatar,
+  IconButton,
+} from "@mui/material";
 import { Draggable } from "react-beautiful-dnd";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import * as React from "react";
 
-function VoteChoiceDisplayItem({ track, index }) {
+export default function ShortlistDisplayItem({ track, index, removeFunc }) {
   const { name, artists, img, _id } = track;
   const id = _id;
 
@@ -14,6 +21,15 @@ function VoteChoiceDisplayItem({ track, index }) {
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
+            secondaryAction={
+              <IconButton
+                edge="end"
+                aria-label="remove"
+                onClick={() => removeFunc(track, index)}
+              >
+                <RemoveCircleOutlineIcon />
+              </IconButton>
+            }
           >
             <ListItemAvatar>
               <Avatar>{index + 1}</Avatar>
@@ -33,4 +49,3 @@ function VoteChoiceDisplayItem({ track, index }) {
   );
 }
 
-export default VoteChoiceDisplayItem;

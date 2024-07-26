@@ -47,6 +47,7 @@ function Home() {
           </Grid>
           <Grid
             container
+            item
             direction="row"
             justifyContent="space-around"
             alignItems="center"

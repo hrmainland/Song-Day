@@ -3,20 +3,21 @@ import List from "@mui/material/List";
 import * as React from "react";
 import { Droppable } from "react-beautiful-dnd";
 
-import VoteDisplayItem from "./voteChoiceDisplayItem";
+import ShortlistDisplayItem from "./shortlistDisplayItem";
 
-function VoteChoiceDisplay({ tracks }) {
+export default function ShortlistDisplay({ tracks, removeFunc }) {
   return (
     <Droppable droppableId="main-column">
       {(provided) => (
         <List ref={provided.innerRef} {...provided.droppableProps}>
           {tracks.map((track, index) => {
             return (
-              <VoteDisplayItem
+              <ShortlistDisplayItem
                 key={track._id}
                 track={track}
                 index={index}
-              ></VoteDisplayItem>
+                removeFunc={removeFunc}
+              ></ShortlistDisplayItem>
             );
           })}
           {provided.placeholder}
@@ -25,5 +26,3 @@ function VoteChoiceDisplay({ tracks }) {
     </Droppable>
   );
 }
-
-export default VoteChoiceDisplay;
