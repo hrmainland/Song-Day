@@ -9,7 +9,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import * as React from "react";
 
-function VoteListDisplayItem({ track, addFunc, index }) {
+function OptionsDisplayItem({ track, addFunc, index }) {
   if (track.name.length > 60) {
     track.name = track.name.substring(0, 59) + "…";
   }
@@ -25,10 +25,12 @@ function VoteListDisplayItem({ track, addFunc, index }) {
     <>
       <ListItem
         secondaryAction={
-          <IconButton edge="end" aria-label="add" onClick={handleAdd}>
+          <IconButton edge="end" aria-label="add">
             <AddIcon />
           </IconButton>
         }
+        onClick={handleAdd}
+        sx={{cursor:"pointer"}}
       >
         <ListItemAvatar>
           <Avatar
@@ -43,4 +45,4 @@ function VoteListDisplayItem({ track, addFunc, index }) {
   );
 }
 
-export default VoteListDisplayItem;
+export default OptionsDisplayItem;
