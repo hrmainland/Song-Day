@@ -6,6 +6,7 @@ const User = require("./user");
 
 const gameConfigSchema = new Schema({
   nSongs: Number,
+  nVotes: Number,
   negativeVote: Boolean,
   _id: false,
 });

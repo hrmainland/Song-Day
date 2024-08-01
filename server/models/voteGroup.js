@@ -9,8 +9,9 @@ const voteGroupSchema = new Schema({
     ref: "User",
     required: true,
   },
-  tracks: [
+  items: [
     {
+      _id: false,
       track: {
         type: Schema.Types.ObjectId,
         ref: "Track",
@@ -22,10 +23,6 @@ const voteGroupSchema = new Schema({
       },
     },
   ],
-  submitted: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 module.exports = mongoose.model("VoteGroup", voteGroupSchema);
