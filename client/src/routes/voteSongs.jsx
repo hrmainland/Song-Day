@@ -197,8 +197,6 @@ function VoteSongs() {
     });
   };
 
-  // TODO add logic for disabled button until song count reached
-
   if (loading) {
     return loading;
   }
