@@ -175,9 +175,9 @@ router.get("/:gameId/votable-tracks", async (req, res) => {
   return res.status(200).json(tracks);
 });
 
-const createPlaylist = async (req, playlistName) => {
-  const user_id = req.user.spotify_id;
-  const accessToken = req.user.access_token;
+const createPlaylist = async (user, playlistName) => {
+  const user_id = user.spotify_id;
+  const accessToken = user.access_token;
   const playlist = await fetch(
     `https://api.spotify.com/v1/users/${user_id}/playlists`,
     {
@@ -196,10 +196,37 @@ const createPlaylist = async (req, playlistName) => {
   return playlist;
 };
 
+const addTracksToPlaylist = async (user, playlistId, trackURIs) => {
+  console.log("playlistId :>> ", playlistId);
+  const accessToken = user.access_token;
+  const addTracksResponse = await fetch(
+    `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        uris: trackURIs,
+      }),
+    }
+  );
+
+  if (!addTracksResponse.ok) {
+    const addTracksData = await addTracksResponse.json();
+    throw new Error(`Error adding tracks: ${addTracksData.error.message}`);
+  }
+};
+
 router.get("/:gameId/create-playlist", isLoggedIn, async (req, res) => {
   const { gameId } = req.params;
   const game = await Game.findById(gameId).populate({
     path: "voteGroups",
+    populate: {
+      path: "items.track",
+      model: "Track",
+    },
   });
   const nVotes = game.config.nVotes;
 
@@ -207,7 +234,7 @@ router.get("/:gameId/create-playlist", isLoggedIn, async (req, res) => {
   const scoresMap = new Map();
   for (let voteGroup of voteGroups) {
     for (let item of voteGroup.items) {
-      const trackId = item.track._id;
+      const trackId = item.track.spotifyId;
       const vote = item.vote;
       const score = nVotes - vote;
       if (scoresMap.has(trackId)) {
@@ -219,16 +246,16 @@ router.get("/:gameId/create-playlist", isLoggedIn, async (req, res) => {
     }
   }
   const sortedScores = new Map(
-    [...scoresMap.entries()].sort((a, b) => b[1] - a[1])
+    [...scoresMap.entries()].sort((a, b) => a[1] - b[1])
   );
-  for (let [trackId, score] of sortedScores.entries()) {
-    const track = await Track.findById(trackId);
-    const spotifyId = track.spotifyId;
-  }
 
-  const playlistData = await createPlaylist(req, game.title);
-  const playlistJson = await playlistData.json();
-  console.log("playlistJson :>> ", playlistJson);
+  const sortedIds = Array.from(sortedScores.keys());
+  const sortedURIs = sortedIds.map((id) => "spotify:track:" + id);
+
+  const playlistData = await createPlaylist(req.user, game.title);
+  const playlistJSON = await playlistData.json();
+  await addTracksToPlaylist(req.user, playlistJSON.id, sortedURIs);
+  res.json(playlistJSON.id);
 });
 
 module.exports = router;
