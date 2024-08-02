@@ -33,7 +33,7 @@ export async function fetchGame(gameCode) {
   }
 }
 
-export async function newGame(gameName, numSongs) {
+export async function newGame(gameName, settings) {
   try {
     const response = await fetch(`${baseUrl}/game/new`, {
       method: "POST",
@@ -43,7 +43,7 @@ export async function newGame(gameName, numSongs) {
       },
       body: JSON.stringify({
         gameName,
-        numSongs,
+        settings,
       }),
     });
 
@@ -138,13 +138,16 @@ export async function addMeToGame(gameId) {
 
 export async function addTrackGroupToGame(gameId, trackGroupId) {
   try {
-    const response = await fetch(`${baseUrl}/game/${gameId}/${trackGroupId}`, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${baseUrl}/game/${gameId}/track-group/${trackGroupId}`,
+      {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error - status: ${response.status}`);
@@ -155,6 +158,34 @@ export async function addTrackGroupToGame(gameId, trackGroupId) {
   } catch (error) {
     console.error(
       "There was a problem adding the track group user to the game",
+      error
+    );
+    throw error;
+  }
+}
+
+export async function addVoteGroupToGame(gameId, voteGroupId) {
+  try {
+    const response = await fetch(
+      `${baseUrl}/game/${gameId}/vote-group/${voteGroupId}`,
+      {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error - status: ${response.status}`);
+    }
+
+    const game = await response.json();
+    return game;
+  } catch (error) {
+    console.error(
+      "There was a problem adding the vote group user to the game",
       error
     );
     throw error;
@@ -289,9 +320,9 @@ export async function getAllVotableTracks(gameId) {
   }
 }
 
-export async function isMyTrackGroupSubmitted(gameId) {
+export async function getMyTrackGroup(gameId) {
   try {
-    const response = await fetch(`${baseUrl}/game/${gameId}/my-submitted`, {
+    const response = await fetch(`${baseUrl}/game/${gameId}/my-track-group`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -301,11 +332,73 @@ export async function isMyTrackGroupSubmitted(gameId) {
     if (!response.ok) {
       throw new Error(`HTTP error - status: ${response.status}`);
     }
-    const jsonResponse = await response.json();
-    const isSubmitted = jsonResponse.isSubmitted;
-    return isSubmitted;
+    const trackGroup = await response.json();
+    return trackGroup;
   } catch (error) {
     console.error("There was a problem checking the user's track group", error);
+    throw error;
+  }
+}
+
+export async function getMyVoteGroup(gameId) {
+  try {
+    const response = await fetch(`${baseUrl}/game/${gameId}/my-vote-group`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error - status: ${response.status}`);
+    }
+    const voteGroup = await response.json();
+    return voteGroup;
+  } catch (error) {
+    console.error("There was a problem checking the user's vote group", error);
+    throw error;
+  }
+}
+
+export async function newVoteGroup(gameId, items) {
+  try {
+    const response = await fetch(`${baseUrl}/game/${gameId}/vote-group`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        items,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error - status: ${response.status}`);
+    }
+    const voteGroup = await response.json();
+    return voteGroup;
+  } catch (error) {
+    console.error("There was a problem adding your vote group", error);
+    throw error;
+  }
+}
+
+export async function createPlaylist(gameId) {
+  try {
+    const response = await fetch(`${baseUrl}/game/${gameId}/create-playlist`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error - status: ${response.status}`);
+    }
+    const playlistId = await response.json();
+    return playlistId;
+  } catch (error) {
+    console.error("There was a problem creating the playlist", error);
     throw error;
   }
 }

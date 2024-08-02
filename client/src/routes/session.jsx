@@ -13,10 +13,10 @@ import {
   Alert,
 } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import baseUrl from "../../utils/urlPrefix";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, Link } from "react-router-dom";
 import Navbar from "../components/navbar";
-import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { fetchMe, getProfile, searchTracks } from "../../utils/apiCalls";
@@ -93,6 +93,9 @@ function Session() {
   return (
     <>
       <Navbar></Navbar>
+      <Button component={Link} to={`/home`}>
+        <ArrowBackIcon />
+      </Button>
 
       {alertOpen && (
         <Alert
@@ -128,15 +131,8 @@ function Session() {
             </Grid>
 
             <Grid item xs={12}>
-              <Typography variant="body1" gutterBottom>
-                {game.host === userId
-                  ? "You are the host"
-                  : "You are not the host"}
-              </Typography>
-            </Grid>
-
-            <Grid item xs={12}>
               <Button
+                sx={{ width: "100%" }}
                 variant="outlined"
                 component={Link}
                 to={`/session/${gameCode}/add-songs`}
@@ -146,6 +142,7 @@ function Session() {
             </Grid>
             <Grid item xs={12}>
               <Button
+                sx={{ width: "100%" }}
                 variant="outlined"
                 component={Link}
                 to={`/session/${gameCode}/vote`}
@@ -153,6 +150,19 @@ function Session() {
                 Vote
               </Button>
             </Grid>
+
+            {game.host === userId && (
+              <Grid item xs={12}>
+                <Button
+                  sx={{ width: "100%" }}
+                  variant="outlined"
+                  component={Link}
+                  to={`/session/${gameCode}/create-playlist`}
+                >
+                  Create Playlist
+                </Button>
+              </Grid>
+            )}
           </Grid>
         </Box>
       </Container>

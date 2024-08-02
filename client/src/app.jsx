@@ -9,6 +9,7 @@ import JoinSession from "./routes/joinSession";
 import Session from "./routes/session";
 import AddSongs from "./routes/addSongs";
 import VoteSongs from "./routes/voteSongs";
+import CreatePlaylist from "./routes/createPlaylist";
 import Login from "./routes/login";
 import Test from "./routes/test";
 import Grid from "./routes/grid";
@@ -37,6 +38,10 @@ function App() {
           <Route path="/session/:gameCode" element={<Session />} />
           <Route path="/session/:gameCode/add-songs" element={<AddSongs />} />
           <Route path="/session/:gameCode/vote" element={<VoteSongs />} />
+          <Route
+            path="/session/:gameCode/create-playlist"
+            element={<CreatePlaylist />}
+          />
         </Route>
 
         {/* TODO remove these tests */}

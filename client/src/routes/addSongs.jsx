@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Box, Button, TextField, Container, Grid } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import baseUrl from "../../utils/urlPrefix";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
 import SearchDisplay from "../components/trackDisplays/searchDisplay";
@@ -14,7 +15,7 @@ import {
   searchTracks,
   addSessionTracks,
   addTrackGroupToGame,
-  isMyTrackGroupSubmitted,
+  getMyTrackGroup,
 } from "../../utils/apiCalls";
 
 function AddSongs() {
@@ -30,10 +31,14 @@ function AddSongs() {
   const [loading, setLoading] = useState(true);
   const [mySubmitted, setMySubmitted] = useState(false);
 
+  const [trackLimit, setTrackLimit] = useState(null);
+
   useEffect(() => {
     const isSubmitted = async () => {
       const game = await fetchGame(gameCode);
-      const isSubmitted = await isMyTrackGroupSubmitted(game._id);
+      setTrackLimit(game.config.nSongs);
+      const trackGroup = await getMyTrackGroup(game._id);
+      const isSubmitted = Boolean(trackGroup);
       setMySubmitted(isSubmitted);
       setLoading(false);
     };
@@ -80,9 +85,11 @@ function AddSongs() {
   };
 
   const addTrack = (track) => {
-    addTrackToSession(track);
-    const sessionTracks = getSessionTracks();
-    setAddedTracks(sessionTracks);
+    if (trackLimit - getSessionTracks().length > 0) {
+      addTrackToSession(track);
+      const sessionTracks = getSessionTracks();
+      setAddedTracks(sessionTracks);
+    }
   };
 
   const removeTrack = (track) => {
@@ -127,6 +134,9 @@ function AddSongs() {
   return (
     <>
       <Navbar />
+      <Button component={Link} to={`/session/${gameCode}`}>
+        <ArrowBackIcon />
+      </Button>
       <Container
         fixed
         className="top-container"
@@ -195,6 +205,7 @@ function AddSongs() {
               tracks={getSessionTracks()}
               removeFunc={removeTrack}
               submitFunc={handleSubmit}
+              missingTracks={trackLimit - getSessionTracks().length}
             />
           </>
         )}

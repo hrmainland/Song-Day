@@ -1,13 +1,12 @@
-import { Box, ImageListItemBar, Button } from "@mui/material";
+import { Box, ImageListItemBar, Button, Tooltip } from "@mui/material";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 
 import * as React from "react";
 
 import AddedDisplayItem from "./addedDisplayItem";
-import { artistString } from "../../../utils/spotifyApiUtils";
 
-function AddedDisplay({ tracks, removeFunc, submitFunc }) {
+function AddedDisplay({ tracks, removeFunc, submitFunc, missingTracks }) {
   return (
     <>
       <Box
@@ -30,11 +29,31 @@ function AddedDisplay({ tracks, removeFunc, submitFunc }) {
               ></AddedDisplayItem>
             );
           })}
-          <ListItem>
-            <Button variant="outlined" onClick={submitFunc}>
-              Submit
-            </Button>
-          </ListItem>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              mt: 2, // Add some margin-top to separate from the list items
+            }}
+          >
+            {missingTracks ? (
+              <Tooltip
+                title={`You need to add ${missingTracks} more track${
+                  missingTracks > 1 ? "s" : ""
+                }`}
+              >
+                <span>
+                  <Button variant="outlined" disabled onClick={submitFunc}>
+                    Submit
+                  </Button>
+                </span>
+              </Tooltip>
+            ) : (
+              <Button variant="outlined" onClick={submitFunc}>
+                Submit
+              </Button>
+            )}
+          </Box>
         </List>
       </Box>
     </>

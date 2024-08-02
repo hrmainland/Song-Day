@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Box, Button, TextField, Container, Grid } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import baseUrl from "../../utils/urlPrefix";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
 import ShortlistDisplay from "../components/trackDisplays/shortlistDisplay";
@@ -9,38 +10,61 @@ import OptionsDisplay from "../components/trackDisplays/optionsDisplay";
 import TrackList from "../components/trackList";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
-import { fetchMe, fetchGame, getAllVotableTracks } from "../../utils/apiCalls";
+import {
+  fetchMe,
+  fetchGame,
+  getAllVotableTracks,
+  newVoteGroup,
+  getMyVoteGroup,
+  addVoteGroupToGame,
+} from "../../utils/apiCalls";
 
 function VoteSongs() {
+  const navigate = useNavigate();
   const { gameCode } = useParams();
 
   const OPTIONS_KEY = `${gameCode}: options`;
   const SHORTLIST_KEY = `${gameCode}: shortlist`;
 
   const [initialIds, setInitialIds] = useState([]);
+  const [voteLimit, setVoteLimit] = useState(null);
   const [options, setOptions] = useState([]);
   const [shortlist, setShortlist] = useState([]);
+  const [votesSubmitted, setVotesSubmitted] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  // TODO cleanup so game isn't being retrieved three times
   useEffect(() => {
-    fetchAndSetIds();
+    const asyncFunc = async () => {
+      const game = await fetchGame(gameCode);
+      setVoteLimit(game.config.nVotes);
+      const myVoteGroup = await getMyVoteGroup(game._id);
 
-    const sessionShortlist = getSessionShortlist();
-    if (sessionShortlist.length === 0) {
-      setOptionsFromDb();
-    } else {
-      setOptions(getSessionOptions());
-      setShortlist(getSessionShortlist());
-    }
+      if (myVoteGroup) {
+        setVotesSubmitted(true);
+      } else {
+        setVotesSubmitted(false);
+      }
+      setLoading(false);
+
+      fetchAndSetIds(game);
+      const sessionShortlist = getSessionShortlist();
+      if (sessionShortlist.length === 0) {
+        setOptionsFromDb(game);
+      } else {
+        setOptions(getSessionOptions());
+        setShortlist(getSessionShortlist());
+      }
+    };
+    asyncFunc();
   }, []);
 
-  const fetchAndSetIds = async () => {
-    const game = await fetchGame(gameCode);
+  const fetchAndSetIds = async (game) => {
     const tracksResponse = await getAllVotableTracks(game._id);
     setInitialIds(tracksResponse.map((elem) => elem._id));
   };
 
-  const setOptionsFromDb = async () => {
-    const game = await fetchGame(gameCode);
+  const setOptionsFromDb = async (game) => {
     const tracksResponse = await getAllVotableTracks(game._id);
     setSessionOptions(tracksResponse);
     setOptions(tracksResponse);
@@ -51,14 +75,13 @@ function VoteSongs() {
     setSessionShortlist([]);
     setShortlist([]);
     setOptions([]);
+    setOptionsFromDb();
   };
 
   const getSessionArray = (sessionKey) => {
     let raw = localStorage.getItem(sessionKey);
     try {
       const result = JSON.parse(raw);
-      console.log("sessionKey :>> ", sessionKey);
-      console.log("result :>> ", result);
       if (!result) {
         return [];
       }
@@ -95,7 +118,6 @@ function VoteSongs() {
     setSessionShortlist(sessionShortlist);
 
     // state
-
     setShortlist(sessionShortlist);
   };
 
@@ -120,16 +142,18 @@ function VoteSongs() {
   };
 
   const addTrackToShortlist = (track, index) => {
-    // remove track from option
-    removeOption(index);
+    if (voteLimit - getSessionShortlist().length) {
+      // remove track from option
+      removeOption(index);
 
-    // local storage
-    const sessionShortlist = getSessionShortlist();
-    sessionShortlist.push(track);
-    setSessionShortlist(sessionShortlist);
+      // local storage
+      const sessionShortlist = getSessionShortlist();
+      sessionShortlist.push(track);
+      setSessionShortlist(sessionShortlist);
 
-    // state
-    setShortlist(sessionShortlist);
+      // state
+      setShortlist(sessionShortlist);
+    }
   };
 
   const shortlistToOptions = (track, shortlistIndex) => {
@@ -156,15 +180,35 @@ function VoteSongs() {
     setOptions(sessionOptions);
   };
 
-  const submitShortlist = () => {
-    console.log("I've been submitted");
+  const submitShortlist = async () => {
+    const game = await fetchGame(gameCode);
+    const sessionShortlist = getSessionShortlist();
+    var items = [];
+    for (let [index, track] of sessionShortlist.entries()) {
+      const item = { track: track._id, vote: index };
+      items.push(item);
+    }
+
+    const voteGroup = await newVoteGroup(game._id, items);
+    await addVoteGroupToGame(game._id, voteGroup._id);
+
+    navigate(`/session/${gameCode}`, {
+      state: { alertMsg: "Your votes were successfully recorded" },
+    });
   };
 
   // TODO add logic for disabled button until song count reached
 
+  if (loading) {
+    return loading;
+  }
+
   return (
     <>
       <Navbar />
+      <Button component={Link} to={`/session/${gameCode}`}>
+        <ArrowBackIcon />
+      </Button>
       <Container
         fixed
         className="top-container"
@@ -172,22 +216,31 @@ function VoteSongs() {
           mt: 5,
         }}
       >
-        <Button onClick={clearLocalStorage}>Clear</Button>
-
-        <Box display="flex" justifyContent="center">
-          <OptionsDisplay
-            // tracks={options}
-            tracks={getSessionOptions()}
-            addFunc={addTrackToShortlist}
-          ></OptionsDisplay>
-          <DragDropContext onDragEnd={onDragEnd}>
-            <ShortlistDisplay
-              tracks={getSessionShortlist()}
-              removeFunc={shortlistToOptions}
-              submitFunc={submitShortlist}
-            ></ShortlistDisplay>
-          </DragDropContext>
-        </Box>
+        {votesSubmitted ? (
+          <Box display="flex" justifyContent="center">
+            <h2>You've already submitted your votes</h2>
+          </Box>
+        ) : (
+          <>
+            <Button onClick={clearLocalStorage}>Clear</Button>
+            <Box display="flex" justifyContent="center">
+              <OptionsDisplay
+                tracks={getSessionOptions()}
+                addFunc={addTrackToShortlist}
+                // todo add tooltip on list item by passing this through
+                missingTracks={voteLimit - getSessionShortlist().length}
+              ></OptionsDisplay>
+              <DragDropContext onDragEnd={onDragEnd}>
+                <ShortlistDisplay
+                  tracks={getSessionShortlist()}
+                  removeFunc={shortlistToOptions}
+                  submitFunc={submitShortlist}
+                  missingTracks={voteLimit - getSessionShortlist().length}
+                ></ShortlistDisplay>
+              </DragDropContext>
+            </Box>
+          </>
+        )}
       </Container>
     </>
   );

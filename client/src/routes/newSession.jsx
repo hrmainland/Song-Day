@@ -17,10 +17,12 @@ import { addGameToMe, newGame } from "../../utils/apiCalls";
 function NewSession() {
   const navigate = useNavigate();
   const [numSongs, setNumSongs] = React.useState([]);
+  const [numVotes, setNumVotes] = React.useState([]);
   const [gameName, setGameName] = React.useState([]);
 
   const submit = async () => {
-    const game = await newGame(gameName, numSongs);
+    const settings = {numSongs, numVotes}
+    const game = await newGame(gameName, settings);
     await addGameToMe(game._id);
     navigate(`/new-session/game-code/${game.gameCode}`);
   };
@@ -66,6 +68,18 @@ function NewSession() {
                       label="Songs Per Player"
                     />
                   </Grid>
+
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      inputProps={{ type: "number" }}
+                      onChange={(e) => {
+                        setNumVotes(e.target.value);
+                      }}
+                      label="Votes Per Player"
+                    />
+                  </Grid>
+
                   <Grid item xs={12} display="flex" justifyContent="center">
                     <Button type="submit" variant="contained" color="primary">
                       Submit
