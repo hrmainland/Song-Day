@@ -6,7 +6,6 @@ The idea of this project is to build a website that allows users to create and l
 It emulates countdowns such as [Tripple J Hottest 100](https://www.abc.net.au/triplej/hottest100/) but amongst a smaller group.
 
 It works as follows:
-
 - Each player signs in and joins the session
 - Each player submits a set number of songs (ie. their top 10 songs of all time)
 - Each player then votes all all submitted songs (except their own)
