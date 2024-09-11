@@ -8,7 +8,9 @@ import { artistString } from "../../../utils/spotifyApiUtils";
 function SearchDisplay({ tracks, addFunc }) {
   return (
     <>
-      <Box>
+      <Box sx={{ height: "70vh", overflow: "auto" }}>
+        {" "}
+        {/* Set the height and enable scrolling */}
         <List>
           {tracks.map((track) => {
             const artists = artistString(track.artists);
@@ -25,7 +27,7 @@ function SearchDisplay({ tracks, addFunc }) {
                 key={track.id}
                 track={formattedTrack}
                 addFunc={addFunc}
-              ></SearchDisplayItem>
+              />
             );
           })}
         </List>

@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import * as React from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Stepper,
@@ -13,8 +13,8 @@ import {
 function CreateStepper() {
   const steps = ["Login", "Set Rules", "Add Players"];
 
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [skipped, setSkipped] = React.useState(new Set());
+  const [activeStep, setActiveStep] = useState(0);
+  const [skipped, setSkipped] = useState(new Set());
 
   const isStepOptional = (step) => {
     return step === 1;

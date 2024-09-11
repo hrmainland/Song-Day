@@ -1,8 +1,6 @@
-import baseUrl from "../../utils/urlPrefix";
 import { useParams } from "react-router-dom";
 
 /* eslint-disable no-undef */
-import * as React from "react";
 import { Box, Container, Grid, Button } from "@mui/material";
 
 import Navbar from "../components/navbar";

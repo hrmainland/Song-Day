@@ -1,5 +1,4 @@
 import { Box, List, ListItem, Button, Tooltip } from "@mui/material";
-import * as React from "react";
 import { Droppable } from "react-beautiful-dnd";
 
 import ShortlistDisplayItem from "./shortlistDisplayItem";

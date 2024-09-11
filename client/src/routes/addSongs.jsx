@@ -1,13 +1,10 @@
-import * as React from "react";
 import { Box, Button, TextField, Container, Grid } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import baseUrl from "../../utils/urlPrefix";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
 import SearchDisplay from "../components/trackDisplays/searchDisplay";
 import AddedDisplay from "../components/trackDisplays/addedDisplay";
-import TrackList from "../components/trackList";
 
 import {
   fetchMe,

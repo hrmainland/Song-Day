@@ -1,6 +1,5 @@
-import { Container, Grid, Button, Box } from "@mui/material";
+import { Grid, Button } from "@mui/material";
 import { Link } from "react-router-dom";
-import Navbar from "../components/navbar";
 
 function Root() {
   return (

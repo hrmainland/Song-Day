@@ -1,5 +1,4 @@
 import { Box } from "@mui/material";
-import * as React from "react";
 
 function Session({ name, onClick }) {
   return (

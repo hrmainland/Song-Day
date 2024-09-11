@@ -231,7 +231,7 @@ export async function searchTracks(accessToken, query) {
   try {
     const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(
       query
-    )}&type=${encodeURIComponent(type)}&limit=5`;
+    )}&type=${encodeURIComponent(type)}&limit=30`;
 
     const response = await fetch(url, {
       method: "GET",

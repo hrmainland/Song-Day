@@ -1,11 +1,7 @@
-import { Box, ImageListItemBar, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-
-import * as React from "react";
 
 import OptionsDisplayItem from "./optionsDisplayItem";
-import { artistString } from "../../../utils/spotifyApiUtils";
 
 function OptionsDisplay({ tracks, addFunc }) {
   return (

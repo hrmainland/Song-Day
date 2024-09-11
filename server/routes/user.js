@@ -139,7 +139,7 @@ router.get(
       "playlist-modify-public", // Write access to a user's public playlists
       "playlist-modify-private",
     ],
-    showDialog: false,
+    showDialog: true,
   })
 );
 

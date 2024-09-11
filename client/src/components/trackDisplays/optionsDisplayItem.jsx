@@ -1,13 +1,9 @@
-import { Box, Grow } from "@mui/material";
-import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import * as React from "react";
 
 function OptionsDisplayItem({ track, addFunc, index }) {
   if (track.name.length > 60) {

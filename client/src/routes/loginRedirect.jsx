@@ -1,7 +1,4 @@
-import baseUrl from "../../utils/urlPrefix";
-import { Outlet, Navigate, useLocation } from "react-router-dom";
-import * as React from "react";
-import { isLoggedIn } from "../../utils/apiCalls";
+import { Navigate } from "react-router-dom";
 
 const LoginRedirect = () => {
   const returnTo = localStorage.getItem("returnTo");

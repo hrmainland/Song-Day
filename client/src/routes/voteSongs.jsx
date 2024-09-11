@@ -1,13 +1,10 @@
-import * as React from "react";
-import { Box, Button, TextField, Container, Grid } from "@mui/material";
+import { Box, Button, Container } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import baseUrl from "../../utils/urlPrefix";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
 import ShortlistDisplay from "../components/trackDisplays/shortlistDisplay";
 import OptionsDisplay from "../components/trackDisplays/optionsDisplay";
-import TrackList from "../components/trackList";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import {

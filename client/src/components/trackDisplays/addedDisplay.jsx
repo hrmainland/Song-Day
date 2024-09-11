@@ -1,8 +1,5 @@
-import { Box, ImageListItemBar, Button, Tooltip } from "@mui/material";
+import { Box, Button, Tooltip } from "@mui/material";
 import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-
-import * as React from "react";
 
 import AddedDisplayItem from "./addedDisplayItem";
 

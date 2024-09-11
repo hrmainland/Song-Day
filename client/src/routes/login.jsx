@@ -1,5 +1,4 @@
 import baseUrl from "../../utils/urlPrefix";
-import * as React from "react";
 import { Container, Grid, Button, Box } from "@mui/material";
 
 function Login() {

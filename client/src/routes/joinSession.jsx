@@ -1,4 +1,3 @@
-import baseUrl from "../../utils/urlPrefix";
 import {
   addGameToMe,
   addMeToGame,
@@ -7,15 +6,15 @@ import {
 } from "../../utils/apiCalls";
 
 /* eslint-disable no-undef */
-import * as React from "react";
+import {useState} from "react";
 import { Box, Button, TextField, Container, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/navbar";
 
 function JoinSession() {
   const navigate = useNavigate();
-  const [sessionCode, setSessionCode] = React.useState([]);
-  const [errorMsg, setErrorMsg] = React.useState(null);
+  const [sessionCode, setSessionCode] = useState([]);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   const submit = async () => {
     const game = await fetchGame(sessionCode);

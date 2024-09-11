@@ -1,7 +1,6 @@
 // MyComponent.js
-import React from "react";
 import baseUrl from "../../utils/urlPrefix";
-import { Container, Grid, Button, Box } from "@mui/material";
+import { Button} from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 
 function Pad() {

@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import * as React from "react";
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -16,12 +16,12 @@ import { addGameToMe, newGame } from "../../utils/apiCalls";
 
 function NewSession() {
   const navigate = useNavigate();
-  const [numSongs, setNumSongs] = React.useState([]);
-  const [numVotes, setNumVotes] = React.useState([]);
-  const [gameName, setGameName] = React.useState([]);
+  const [numSongs, setNumSongs] = useState([]);
+  const [numVotes, setNumVotes] = useState([]);
+  const [gameName, setGameName] = useState([]);
 
   const submit = async () => {
-    const settings = {numSongs, numVotes}
+    const settings = { numSongs, numVotes };
     const game = await newGame(gameName, settings);
     await addGameToMe(game._id);
     navigate(`/new-session/game-code/${game.gameCode}`);
