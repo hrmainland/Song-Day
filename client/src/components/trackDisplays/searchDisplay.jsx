@@ -1,6 +1,5 @@
-import { Box, ImageListItemBar } from "@mui/material";
+import { Box } from "@mui/material";
 import List from "@mui/material/List";
-import * as React from "react";
 
 import SearchDisplayItem from "./searchDisplayItem";
 import { artistString } from "../../../utils/spotifyApiUtils";

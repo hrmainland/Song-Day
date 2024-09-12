@@ -6,8 +6,6 @@ import {
 } from "@mui/material";
 import Navbar from "../components/navbar";
 
-import { addGameToMe, newGame } from "../../utils/apiCalls";
-
 function Template() {
   return (
     <>

@@ -197,7 +197,7 @@ const createPlaylist = async (user, playlistName) => {
 };
 
 const addTracksToPlaylist = async (user, playlistId, trackURIs) => {
-  console.log("playlistId :>> ", playlistId);
+
   const accessToken = user.access_token;
   const addTracksResponse = await fetch(
     `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,

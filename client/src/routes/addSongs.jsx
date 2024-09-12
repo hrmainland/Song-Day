@@ -9,11 +9,12 @@ import AddedDisplay from "../components/trackDisplays/addedDisplay";
 import {
   fetchMe,
   fetchGame,
-  searchTracks,
   addSessionTracks,
   addTrackGroupToGame,
   getMyTrackGroup,
 } from "../../utils/apiCalls";
+
+import { searchTracks } from "../../utils/spotifyCalls";
 
 function AddSongs() {
   const navigate = useNavigate();
@@ -110,9 +111,8 @@ function AddSongs() {
   const handleSubmit = async () => {
     // add error handling here
     const game = await fetchGame(gameCode);
-    const trackGroup = await addSessionTracks(
-      JSON.stringify({ sessionTracks: getSessionTracks() })
-    );
+    getSessionTracks();
+    const trackGroup = await addSessionTracks(getSessionTracks());
     const updatedGame = await addTrackGroupToGame(game._id, trackGroup._id);
     // TODO add some error handling before displaying this success message
     navigate(`/session/${gameCode}`, {

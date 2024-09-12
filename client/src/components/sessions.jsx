@@ -1,8 +1,6 @@
 import baseUrl from "../../utils/urlPrefix";
 
-import { v4 as uuidv4 } from "uuid";
-import { Container, Button, Grid, Typography } from "@mui/material";
-import Navbar from "./navbar";
+import { Grid } from "@mui/material";
 import Session from "./session";
 import { useState, useEffect } from "react";
 import { fetchMe } from "../../utils/apiCalls";

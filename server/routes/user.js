@@ -66,7 +66,6 @@ router.get("/isLoggedIn", async (req, res) => {
 router.put("/game/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    // const game = await Game.findOne({ gameCode: code });
     const game = await Game.findById(id);
 
     if (!game) {
@@ -139,7 +138,7 @@ router.get(
       "playlist-modify-public", // Write access to a user's public playlists
       "playlist-modify-private",
     ],
-    showDialog: true,
+    showDialog: false,
   })
 );
 

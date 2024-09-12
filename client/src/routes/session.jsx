@@ -14,7 +14,6 @@ import { useParams, useLocation, Link } from "react-router-dom";
 import Navbar from "../components/navbar";
 import { useEffect, useState } from "react";
 
-import { fetchMe, getProfile, searchTracks } from "../../utils/apiCalls";
 
 function Session() {
   const location = useLocation();

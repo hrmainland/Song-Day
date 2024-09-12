@@ -1,404 +1,104 @@
-// TODO split these up
-
 import baseUrl from "./urlPrefix";
 
-export async function fetchGame(gameCode) {
+async function apiRequest(
+  endpoint,
+  method = "GET",
+  body = null,
+  accessToken = null
+) {
   try {
-    const response = await fetch(`${baseUrl}/game/${gameCode}`, {
-      method: "GET",
+    const options = {
+      method,
       headers: {
+        Authorization: `Bearer ${accessToken}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-    });
+    };
+
+    if (body) {
+      options.body = JSON.stringify(body);
+    }
+
+    const response = await fetch(`${baseUrl}${endpoint}`, options);
 
     if (response.status === 404) {
       return false;
     }
 
     if (!response.ok) {
-      throw new Error("Could not fetch game");
+      throw new Error(`HTTP error - status: ${response.status}`);
     }
 
     const data = await response.json();
-
-    if (!data) {
-      return false;
-    }
-
     return data;
   } catch (error) {
-    console.error("There was a problem finding the given game", error);
-    throw error; // Re-throw the error to handle it where the function is called
+    console.error(`There was a problem with the request to ${endpoint}`, error);
+    throw error;
   }
+}
+
+export async function fetchGame(gameCode) {
+  return await apiRequest(`/game/${gameCode}`);
 }
 
 export async function newGame(gameName, settings) {
-  try {
-    const response = await fetch(`${baseUrl}/game/new`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        gameName,
-        settings,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error - status: ${response.status}`);
-    }
-
-    const game = await response.json();
-    return game;
-  } catch (error) {
-    console.error("There was a problem creating the new game", error);
-    throw error;
-  }
+  return await apiRequest("/game/new", "POST", { gameName, settings });
 }
 
 export async function fetchMe() {
-  try {
-    const response = await fetch(`${baseUrl}/user/me`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (response.status === 404) {
-      return false;
-    }
-
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    }
-  } catch (error) {
-    console.error("There was a problem finding the given user", error);
-    throw error; // Re-throw the error to handle it where the function is called
-  }
+  return await apiRequest("/user/me");
 }
 
-// TODO add better error handling here (for no user, no game, & other cases)
-
 export async function addGameToMe(gameId) {
-  try {
-    const response = await fetch(`${baseUrl}/user/game/${gameId}`, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (response.status === 404) {
-      return false;
-    }
-    if (response.ok) {
-      const user = await response.json();
-      return user;
-    }
-  } catch (error) {
-    console.error(
-      "There was a problem adding the game to the current user",
-      error
-    );
-    throw error;
-  }
+  return await apiRequest(`/user/game/${gameId}`, "PUT");
 }
 
 export async function addMeToGame(gameId) {
-  try {
-    const response = await fetch(`${baseUrl}/game/${gameId}/add-me`, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error - status: ${response.status}`);
-    }
-
-    const game = await response.json();
-    return game;
-  } catch (error) {
-    console.error(
-      "There was a problem adding the current user to the game",
-      error
-    );
-    throw error;
-  }
+  return await apiRequest(`/game/${gameId}/add-me`, "PUT");
 }
 
 export async function addTrackGroupToGame(gameId, trackGroupId) {
-  try {
-    const response = await fetch(
-      `${baseUrl}/game/${gameId}/track-group/${trackGroupId}`,
-      {
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error - status: ${response.status}`);
-    }
-
-    const game = await response.json();
-    return game;
-  } catch (error) {
-    console.error(
-      "There was a problem adding the track group user to the game",
-      error
-    );
-    throw error;
-  }
+  return await apiRequest(`/game/${gameId}/track-group/${trackGroupId}`, "PUT");
 }
 
 export async function addVoteGroupToGame(gameId, voteGroupId) {
-  try {
-    const response = await fetch(
-      `${baseUrl}/game/${gameId}/vote-group/${voteGroupId}`,
-      {
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error - status: ${response.status}`);
-    }
-
-    const game = await response.json();
-    return game;
-  } catch (error) {
-    console.error(
-      "There was a problem adding the vote group user to the game",
-      error
-    );
-    throw error;
-  }
+  return await apiRequest(`/game/${gameId}/vote-group/${voteGroupId}`, "PUT");
 }
 
 export async function isLoggedIn() {
   try {
-    const response = await fetch(`${baseUrl}/user/isLoggedIn`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      return false;
-    }
-    return true;
+    const response = await apiRequest("/user/isLoggedIn");
+    return !!response;
   } catch {
-    console.error(
-      "There was a problem checking the login status of the current user",
-      error
-    );
-    throw error;
-  }
-}
-
-export async function getProfile(accessToken) {
-  const response = await fetch("https://api.spotify.com/v1/me", {
-    headers: {
-      Authorization: "Bearer " + accessToken,
-    },
-  });
-
-  const data = await response.json();
-  return data;
-}
-
-export async function searchTracks(accessToken, query) {
-  const type = "track";
-
-  try {
-    const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(
-      query
-    )}&type=${encodeURIComponent(type)}&limit=30`;
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error - status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(`There was a problem with the search: ${query}`, error);
-    throw error;
+    return false;
   }
 }
 
 export async function addSessionTracks(sessionTracks) {
-  try {
-    const response = await fetch(`${baseUrl}/track-group`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: sessionTracks,
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error - status: ${response.status}`);
-    }
-
-    const trackGroup = await response.json();
-    return trackGroup;
-  } catch (error) {
-    console.error("There was a problem adding the track group", error);
-    throw error;
-  }
+  return await apiRequest("/track-group", "POST", { sessionTracks });
 }
 
 export async function getAllGameTracks(gameId) {
-  try {
-    const response = await fetch(`${baseUrl}/game/${gameId}/all-tracks`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error - status: ${response.status}`);
-    }
-
-    const tracks = await response.json();
-    return tracks;
-  } catch (error) {
-    console.error("There was a problem getting all game tracks", error);
-    throw error;
-  }
+  return await apiRequest(`/game/${gameId}/all-tracks`);
 }
 
 export async function getAllVotableTracks(gameId) {
-  try {
-    const response = await fetch(`${baseUrl}/game/${gameId}/votable-tracks`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error - status: ${response.status}`);
-    }
-
-    const tracks = await response.json();
-    return tracks;
-  } catch (error) {
-    console.error("There was a problem getting votable tracks", error);
-    throw error;
-  }
+  return await apiRequest(`/game/${gameId}/votable-tracks`);
 }
 
 export async function getMyTrackGroup(gameId) {
-  try {
-    const response = await fetch(`${baseUrl}/game/${gameId}/my-track-group`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error - status: ${response.status}`);
-    }
-    const trackGroup = await response.json();
-    return trackGroup;
-  } catch (error) {
-    console.error("There was a problem checking the user's track group", error);
-    throw error;
-  }
+  return await apiRequest(`/game/${gameId}/my-track-group`);
 }
 
 export async function getMyVoteGroup(gameId) {
-  try {
-    const response = await fetch(`${baseUrl}/game/${gameId}/my-vote-group`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error - status: ${response.status}`);
-    }
-    const voteGroup = await response.json();
-    return voteGroup;
-  } catch (error) {
-    console.error("There was a problem checking the user's vote group", error);
-    throw error;
-  }
+  return await apiRequest(`/game/${gameId}/my-vote-group`);
 }
 
 export async function newVoteGroup(gameId, items) {
-  try {
-    const response = await fetch(`${baseUrl}/game/${gameId}/vote-group`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        items,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error - status: ${response.status}`);
-    }
-    const voteGroup = await response.json();
-    return voteGroup;
-  } catch (error) {
-    console.error("There was a problem adding your vote group", error);
-    throw error;
-  }
+  return await apiRequest(`/game/${gameId}/vote-group`, "POST", { items });
 }
 
 export async function createPlaylist(gameId) {
-  try {
-    const response = await fetch(`${baseUrl}/game/${gameId}/create-playlist`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error - status: ${response.status}`);
-    }
-    const playlistId = await response.json();
-    return playlistId;
-  } catch (error) {
-    console.error("There was a problem creating the playlist", error);
-    throw error;
-  }
+  return await apiRequest(`/game/${gameId}/create-playlist`);
 }
