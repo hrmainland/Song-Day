@@ -1,19 +1,12 @@
 /* eslint-disable no-undef */
-import {
-  Box,
-  Button,
-  Typography,
-  Container,
-  Grid,
-  Alert,
-} from "@mui/material";
+import { Box, Button, Typography, Container, Grid, Alert } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import baseUrl from "../../utils/urlPrefix";
 import { useParams, useLocation, Link } from "react-router-dom";
 import Navbar from "../components/navbar";
 import { useEffect, useState } from "react";
-
+import { fetchGame, fetchMe } from "../../utils/apiCalls";
 
 function Session() {
   const location = useLocation();
@@ -29,37 +22,16 @@ function Session() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const response = await fetch(`${baseUrl}/user/id`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      });
-
-      const data = await response.json();
+      const data = await fetchMe();
       setUserId(data);
     };
     fetchUser();
   }, []);
 
   useEffect(() => {
-    // TODO move this fetch
-    const fetchGame = async () => {
+    const fetchGameAndSet = async () => {
       try {
-        const response = await fetch(`${baseUrl}/game/${gameCode}`, {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const data = await response.json();
+        const data = await fetchGame(gameCode);
         setGame(data);
       } catch (error) {
         console.error("Error fetching game data:", error);
@@ -68,8 +40,7 @@ function Session() {
         setLoading(false);
       }
     };
-
-    fetchGame();
+    fetchGameAndSet();
   }, [gameCode]);
 
   if (loading) {

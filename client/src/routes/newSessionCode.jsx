@@ -21,7 +21,7 @@ function NewSessionCode() {
         {/* form goes here */}
         <Box display="flex" justifyContent="center">
           <Grid container maxWidth={600}>
-            <h1>Create New Session</h1>
+            <h1>Create Session</h1>
             <Grid item xs={12}>
               <p>
                 Your Game Code is: <b>{gameCode}</b>

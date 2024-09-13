@@ -22,7 +22,7 @@ function Root() {
 
           <Grid item xs={3} textAlign="center">
             <Button variant="contained" component={Link} to={"/new-session"}>
-              New Session
+              Create Session
             </Button>
           </Grid>
         </Grid>

@@ -45,7 +45,7 @@ function NewSession() {
         {/* form goes here */}
         <Box display="flex" justifyContent="center">
           <Grid container maxWidth={600}>
-            <h1>Create New Session</h1>
+            <h1>Create Session</h1>
             <Grid item xs={12}>
               <form onSubmit={handleSubmit} style={{ width: "100%" }}>
                 <Grid container spacing={2}>

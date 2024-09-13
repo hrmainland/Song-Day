@@ -58,9 +58,9 @@ passport.use(
 
 router.get("/isLoggedIn", async (req, res) => {
   if (req.isAuthenticated()) {
-    return res.status(200).json("logged in");
+    return res.status(200).json(true);
   }
-  res.status(401).json("not logged in");
+  res.status(200).json(false);
 });
 
 router.put("/game/:id", async (req, res) => {

@@ -38,13 +38,7 @@ async function apiRequest(
   }
 }
 
-export async function fetchGame(gameCode) {
-  return await apiRequest(`/game/${gameCode}`);
-}
-
-export async function newGame(gameName, settings) {
-  return await apiRequest("/game/new", "POST", { gameName, settings });
-}
+// User endoints
 
 export async function fetchMe() {
   return await apiRequest("/user/me");
@@ -52,6 +46,24 @@ export async function fetchMe() {
 
 export async function addGameToMe(gameId) {
   return await apiRequest(`/user/game/${gameId}`, "PUT");
+}
+
+export async function isLoggedIn() {
+  return await apiRequest("/user/isLoggedIn");
+}
+
+export async function fetchMyGames() {
+  return await apiRequest("/user/my-games");
+}
+
+// Game endpoints
+
+export async function fetchGame(gameCode) {
+  return await apiRequest(`/game/${gameCode}`);
+}
+
+export async function newGame(gameName, settings) {
+  return await apiRequest("/game/new", "POST", { gameName, settings });
 }
 
 export async function addMeToGame(gameId) {
@@ -64,19 +76,6 @@ export async function addTrackGroupToGame(gameId, trackGroupId) {
 
 export async function addVoteGroupToGame(gameId, voteGroupId) {
   return await apiRequest(`/game/${gameId}/vote-group/${voteGroupId}`, "PUT");
-}
-
-export async function isLoggedIn() {
-  try {
-    const response = await apiRequest("/user/isLoggedIn");
-    return !!response;
-  } catch {
-    return false;
-  }
-}
-
-export async function addSessionTracks(sessionTracks) {
-  return await apiRequest("/track-group", "POST", { sessionTracks });
 }
 
 export async function getAllGameTracks(gameId) {
@@ -101,4 +100,10 @@ export async function newVoteGroup(gameId, items) {
 
 export async function createPlaylist(gameId) {
   return await apiRequest(`/game/${gameId}/create-playlist`);
+}
+
+// Trackgroup endpoints
+
+export async function addSessionTracks(sessionTracks) {
+  return await apiRequest("/track-group", "POST", { sessionTracks });
 }

@@ -3,14 +3,14 @@ import baseUrl from "../../utils/urlPrefix";
 import { Grid } from "@mui/material";
 import Session from "./session";
 import { useState, useEffect } from "react";
-import { fetchMe } from "../../utils/apiCalls";
+import { fetchMe, fetchMyGames } from "../../utils/apiCalls";
 import { useNavigate } from "react-router-dom";
 
 function Sessions() {
   const navigate = useNavigate();
 
   const [userId, setUserId] = useState(null);
-  const [mySessions, setMySessions] = useState(null);
+  const [myGames, setMyGames] = useState(null);
 
   // set user id
   useEffect(() => {
@@ -21,21 +21,18 @@ function Sessions() {
     callBackend();
   }, []);
 
-  // set my sessions
+  // set my games
   useEffect(() => {
-    const fetchMySessions = async () => {
-      // TODO add error handling here
-      const response = await fetch(`${baseUrl}/user/my-games`);
-
-      const data = await response.json();
-      setMySessions(data);
+    const fetchGameAndSet = async () => {
+      const data = await fetchMyGames();
+      setMyGames(data);
     };
     if (userId) {
-      fetchMySessions();
+      fetchGameAndSet();
     }
   }, [userId]);
 
-  if (!mySessions) {
+  if (!myGames) {
     return <h1>No sessions</h1>;
   }
 
@@ -51,11 +48,11 @@ function Sessions() {
         justifyContent="center"
         alignItems="center"
       >
-        {mySessions.map((session) => (
+        {myGames.map((game) => (
           <Session
-            key={session.gameCode}
-            name={session.title}
-            onClick={() => handleSessionClick(session.gameCode)}
+            key={game.gameCode}
+            name={game.title}
+            onClick={() => handleSessionClick(game.gameCode)}
           />
         ))}
       </Grid>

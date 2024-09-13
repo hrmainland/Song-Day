@@ -135,7 +135,7 @@ router.get("/:gameId/all-tracks", async (req, res) => {
     path: "trackGroups",
     populate: {
       path: "tracks",
-      model: "Track", // Ensure this is the correct model name
+      model: "Track",
     },
   });
   if (!game) {

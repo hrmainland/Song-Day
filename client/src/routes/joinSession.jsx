@@ -6,7 +6,7 @@ import {
 } from "../../utils/apiCalls";
 
 /* eslint-disable no-undef */
-import {useState} from "react";
+import { useState } from "react";
 import { Box, Button, TextField, Container, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/navbar";
@@ -26,7 +26,7 @@ function JoinSession() {
     const me = await fetchMe();
     const userId = me._id;
     if (game.players.includes(userId)) {
-      setErrorMsg("You're already part of that game");
+      setErrorMsg("You're already part of that session");
       // TODO navigate to that game
       return;
     }
