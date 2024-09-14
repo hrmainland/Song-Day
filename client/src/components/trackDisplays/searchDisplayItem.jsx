@@ -3,7 +3,7 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
 import Avatar from "@mui/material/Avatar";
 
-function SearchDisplayItem({ track, addFunc }) {
+export default function SearchDisplayItem({ track, addFunc }) {
   const { id, name, artists, img } = track;
 
   const handleClick = () => {
@@ -26,4 +26,3 @@ function SearchDisplayItem({ track, addFunc }) {
   );
 }
 
-export default SearchDisplayItem;

@@ -5,7 +5,7 @@ import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 
-function OptionsDisplayItem({ track, addFunc, index }) {
+export default function OptionsDisplayItem({ track, addFunc, index }) {
   if (track.name.length > 60) {
     track.name = track.name.substring(0, 59) + "…";
   }
@@ -41,4 +41,3 @@ function OptionsDisplayItem({ track, addFunc, index }) {
   );
 }
 
-export default OptionsDisplayItem;

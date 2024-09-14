@@ -7,7 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import { useNavigate } from "react-router-dom";
 // import MenuIcon from "@mui/icons-material/Menu";
 
-function Navbar() {
+export default function Navbar() {
   const navigate = useNavigate();
 
   const handleHome = () => {
@@ -46,4 +46,3 @@ function Navbar() {
   );
 }
 
-export default Navbar;

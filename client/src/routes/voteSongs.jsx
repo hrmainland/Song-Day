@@ -16,7 +16,7 @@ import {
   addVoteGroupToGame,
 } from "../../utils/apiCalls";
 
-function VoteSongs() {
+export default function VoteSongs() {
   const navigate = useNavigate();
   const { gameCode } = useParams();
 
@@ -241,4 +241,3 @@ function VoteSongs() {
   );
 }
 
-export default VoteSongs;

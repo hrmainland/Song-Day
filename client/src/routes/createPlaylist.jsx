@@ -6,7 +6,7 @@ import Navbar from "../components/navbar";
 
 import { fetchGame, createPlaylist } from "../../utils/apiCalls";
 
-function CreatePlaylist() {
+export default function CreatePlaylist() {
   const { gameCode } = useParams();
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -63,4 +63,3 @@ function CreatePlaylist() {
   );
 }
 
-export default CreatePlaylist;

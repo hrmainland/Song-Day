@@ -2,10 +2,12 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Home from "./routes/home";
-import NewSession from "./routes/newSession";
-import NewSessionCode from "./routes/newSessionCode";
-import JoinSession from "./routes/joinSession";
-import Session from "./routes/session";
+
+import NewGame from "./routes/newGame";
+import NewGameCode from "./routes/newGameCode";
+import JoinGame from "./routes/joinGame";
+import Game from "./routes/game";
+
 import AddSongs from "./routes/addSongs";
 import VoteSongs from "./routes/voteSongs";
 import CreatePlaylist from "./routes/createPlaylist";
@@ -19,7 +21,7 @@ import NotFound from "./routes/notFound";
 
 import PrivateRoutes from "../utils/privateRoutes";
 
-function App() {
+export default function App() {
   return (
     <Router>
       <Routes>
@@ -28,13 +30,13 @@ function App() {
         <Route path="/login-redirect" element={<LoginRedirect />} />
         <Route element={<PrivateRoutes />}>
           <Route path="/home" element={<Home />} />
-          <Route path="/new-session" element={<NewSession />} />
+          <Route path="/new-session" element={<NewGame />} />
           <Route
             path="/new-session/game-code/:gameCode"
-            element={<NewSessionCode />}
+            element={<NewGameCode />}
           />
-          <Route path="/join-session" element={<JoinSession />} />
-          <Route path="/session/:gameCode" element={<Session />} />
+          <Route path="/join-session" element={<JoinGame />} />
+          <Route path="/session/:gameCode" element={<Game />} />
           <Route path="/session/:gameCode/add-songs" element={<AddSongs />} />
           <Route path="/session/:gameCode/vote" element={<VoteSongs />} />
           <Route
@@ -54,4 +56,3 @@ function App() {
   );
 }
 
-export default App;

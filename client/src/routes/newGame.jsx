@@ -14,7 +14,7 @@ import Navbar from "../components/navbar";
 
 import { addGameToMe, newGame } from "../../utils/apiCalls";
 
-function NewSession() {
+export default function NewGame() {
   const navigate = useNavigate();
   const [numSongs, setNumSongs] = useState([]);
   const [numVotes, setNumVotes] = useState([]);
@@ -94,5 +94,3 @@ function NewSession() {
     </>
   );
 }
-
-export default NewSession;

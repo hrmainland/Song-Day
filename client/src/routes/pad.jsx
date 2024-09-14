@@ -3,7 +3,7 @@ import baseUrl from "../../utils/urlPrefix";
 import { Button} from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 
-function Pad() {
+export default function Pad() {
   const [searchParams] = useSearchParams();
   const paramsObj = Object.fromEntries([...searchParams]);
   // console.log(paramsObj["from"]);
@@ -20,4 +20,3 @@ function Pad() {
   );
 }
 
-export default Pad;

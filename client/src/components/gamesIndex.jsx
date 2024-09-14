@@ -1,12 +1,12 @@
 import baseUrl from "../../utils/urlPrefix";
 
 import { Grid } from "@mui/material";
-import Session from "./session";
+import Game from "./gameThumbnail";
 import { useState, useEffect } from "react";
 import { fetchMe, fetchMyGames } from "../../utils/apiCalls";
 import { useNavigate } from "react-router-dom";
 
-function Sessions() {
+export default function GamesIndex() {
   const navigate = useNavigate();
 
   const [userId, setUserId] = useState(null);
@@ -36,7 +36,7 @@ function Sessions() {
     return <h1>No sessions</h1>;
   }
 
-  const handleSessionClick = (gameCode) => {
+  const handleGameClick = (gameCode) => {
     navigate(`/session/${gameCode}`);
   };
 
@@ -48,16 +48,17 @@ function Sessions() {
         justifyContent="center"
         alignItems="center"
       >
-        {myGames.map((game) => (
-          <Session
-            key={game.gameCode}
-            name={game.title}
-            onClick={() => handleSessionClick(game.gameCode)}
-          />
-        ))}
+        {myGames
+          .slice()
+          .reverse()
+          .map((game) => (
+            <Game
+              key={game.gameCode}
+              name={game.title}
+              onClick={() => handleGameClick(game.gameCode)}
+            />
+          ))}
       </Grid>
     </>
   );
 }
-
-export default Sessions;

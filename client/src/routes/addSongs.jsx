@@ -16,7 +16,7 @@ import {
 
 import { searchTracks } from "../../utils/spotifyCalls";
 
-function AddSongs() {
+export default function AddSongs() {
   const navigate = useNavigate();
   const { gameCode } = useParams();
 
@@ -211,4 +211,3 @@ function AddSongs() {
   );
 }
 
-export default AddSongs;

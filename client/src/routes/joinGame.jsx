@@ -11,7 +11,7 @@ import { Box, Button, TextField, Container, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/navbar";
 
-function JoinSession() {
+export default function JoinGame() {
   const navigate = useNavigate();
   const [sessionCode, setSessionCode] = useState([]);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -89,5 +89,3 @@ function JoinSession() {
     </>
   );
 }
-
-export default JoinSession;

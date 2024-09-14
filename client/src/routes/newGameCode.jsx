@@ -5,7 +5,7 @@ import { Box, Container, Grid, Button } from "@mui/material";
 
 import Navbar from "../components/navbar";
 
-function NewSessionCode() {
+export default function NewGameCode() {
   const { gameCode } = useParams();
 
   return (
@@ -38,4 +38,3 @@ function NewSessionCode() {
   );
 }
 
-export default NewSessionCode;

@@ -3,7 +3,7 @@ import List from "@mui/material/List";
 
 import AddedDisplayItem from "./addedDisplayItem";
 
-function AddedDisplay({ tracks, removeFunc, submitFunc, missingTracks }) {
+export default function AddedDisplay({ tracks, removeFunc, submitFunc, missingTracks }) {
   return (
     <>
       <Box
@@ -57,4 +57,4 @@ function AddedDisplay({ tracks, removeFunc, submitFunc, missingTracks }) {
   );
 }
 
-export default AddedDisplay;
+

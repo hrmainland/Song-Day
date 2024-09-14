@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 
-function CreateStepper() {
+export default function CreateStepper() {
   const steps = ["Login", "Set Rules", "Add Players"];
 
   const [activeStep, setActiveStep] = useState(0);
@@ -116,4 +116,3 @@ function CreateStepper() {
   );
 }
 
-export default CreateStepper;

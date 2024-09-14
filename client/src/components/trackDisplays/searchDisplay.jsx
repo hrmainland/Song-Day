@@ -4,7 +4,7 @@ import List from "@mui/material/List";
 import SearchDisplayItem from "./searchDisplayItem";
 import { artistString } from "../../../utils/spotifyApiUtils";
 
-function SearchDisplay({ tracks, addFunc }) {
+export default function SearchDisplay({ tracks, addFunc }) {
   return (
     <>
       <Box sx={{ height: "70vh", overflow: "auto" }}>
@@ -35,4 +35,3 @@ function SearchDisplay({ tracks, addFunc }) {
   );
 }
 
-export default SearchDisplay;

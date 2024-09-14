@@ -6,7 +6,7 @@ import {
 } from "@mui/material";
 import Navbar from "../components/navbar";
 
-function Template() {
+export default function Template() {
   return (
     <>
       <Navbar></Navbar>
@@ -29,4 +29,3 @@ function Template() {
   );
 }
 
-export default Template;

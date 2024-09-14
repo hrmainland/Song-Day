@@ -1,6 +1,6 @@
 // src/routes/NotFound.jsx
 
-function NotFound() {
+export default function NotFound() {
   return (
     <div>
       <h1>404 - Page Not Found</h1>
@@ -9,4 +9,3 @@ function NotFound() {
   );
 }
 
-export default NotFound;

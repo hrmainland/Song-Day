@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 
-function Session({ name, onClick }) {
+export default function GameThumbnail({ name, onClick }) {
   return (
     <>
       <Box
@@ -21,5 +21,3 @@ function Session({ name, onClick }) {
     </>
   );
 }
-
-export default Session;

@@ -1,7 +1,7 @@
 import { Grid, Button } from "@mui/material";
 import { Link } from "react-router-dom";
 
-function Root() {
+export default function Root() {
   return (
     <>
       <div className="home-background">
@@ -31,4 +31,3 @@ function Root() {
   );
 }
 
-export default Root;

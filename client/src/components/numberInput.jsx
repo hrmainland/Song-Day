@@ -31,7 +31,7 @@ const CustomNumberInput = forwardRef(function CustomNumberInput(
   );
 });
 
-function NumberInput() {
+export default function NumberInput() {
   return (
     <CustomNumberInput
       aria-label="Demo number input"
@@ -189,4 +189,3 @@ const StyledButton = styled("button")(
 `
 );
 
-export default NumberInput;

@@ -5,7 +5,7 @@ import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-function AddedDisplayItem({ track, removeFunc }) {
+export default function AddedDisplayItem({ track, removeFunc }) {
   if (track.name.length > 60) {
     track.name = track.name.substring(0, 59) + "…";
   }
@@ -39,4 +39,3 @@ function AddedDisplayItem({ track, removeFunc }) {
   );
 }
 
-export default AddedDisplayItem;

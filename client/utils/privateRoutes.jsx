@@ -2,7 +2,7 @@ import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { isLoggedIn } from "./apiCalls";
 
-const PrivateRoutes = () => {
+export default function PrivateRoutes() {
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
@@ -22,6 +22,4 @@ const PrivateRoutes = () => {
   }
 
   return authenticated ? <Outlet /> : <Navigate to="/login" />;
-};
-
-export default PrivateRoutes;
+}

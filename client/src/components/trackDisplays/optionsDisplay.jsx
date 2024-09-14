@@ -3,7 +3,7 @@ import List from "@mui/material/List";
 
 import OptionsDisplayItem from "./optionsDisplayItem";
 
-function OptionsDisplay({ tracks, addFunc }) {
+export default function OptionsDisplay({ tracks, addFunc }) {
   return (
     <>
       <Box
@@ -31,4 +31,3 @@ function OptionsDisplay({ tracks, addFunc }) {
   );
 }
 
-export default OptionsDisplay;

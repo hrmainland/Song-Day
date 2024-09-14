@@ -2,7 +2,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Container, Button, Grid, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import Navbar from "../components/navbar";
-import Sessions from "../components/sessions";
+import Games from "../components/gamesIndex";
+import GamesIndex from "../components/gamesIndex";
 
 const theme = createTheme();
 
@@ -16,7 +17,7 @@ theme.typography.h3 = {
   },
 };
 
-function Home() {
+export default function Home() {
   return (
     <>
       <Navbar></Navbar>
@@ -65,10 +66,8 @@ function Home() {
             </Grid>
           </Grid>
         </Grid>
-        <Sessions></Sessions>
+        <GamesIndex></GamesIndex>
       </Container>
     </>
   );
 }
-
-export default Home;

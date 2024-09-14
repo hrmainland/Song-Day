@@ -8,7 +8,7 @@ import Navbar from "../components/navbar";
 import { useEffect, useState } from "react";
 import { fetchGame, fetchMe } from "../../utils/apiCalls";
 
-function Session() {
+export default function Game() {
   const location = useLocation();
   const { gameCode } = useParams();
   const [game, setGame] = useState();
@@ -134,5 +134,3 @@ function Session() {
     </>
   );
 }
-
-export default Session;

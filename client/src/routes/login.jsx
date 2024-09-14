@@ -1,7 +1,7 @@
 import baseUrl from "../../utils/urlPrefix";
 import { Container, Grid, Button, Box } from "@mui/material";
 
-function Login() {
+export default function Login() {
   return (
     <Container maxWidth="sm">
       <Grid container spacing={1} justifyContent="center">
@@ -25,4 +25,3 @@ function Login() {
   );
 }
 
-export default Login;
