@@ -18,7 +18,6 @@ const gameRouter = require("./routes/game.js");
 const trackGroupRouter = require("./routes/trackGroup.js");
 
 const devRouter = require("./routes/dev.js");
-const padRouter = require("./routes/pad.js");
 
 const User = require("./models/user.js");
 
@@ -89,7 +88,6 @@ app.use("/game", gameRouter);
 app.use("/track-group", trackGroupRouter);
 
 app.use("/dev", devRouter);
-app.use("/pad", padRouter);
 
 // TODO - something about this
 app.use((err, req, res, next) => {
