@@ -67,20 +67,20 @@ app.use(bodyParser.json());
 // app.use(passport.initialize());
 app.use(passport.session());
 
-const userRouteSuffix = "/user";
-const callbackSuffix = "/callback";
-const redirectSuffix = "/";
+// const userRouteSuffix = "/user";
+// const callbackSuffix = "/callback";
+// const redirectSuffix = "/";
 
 // set callback url and redirect url based on the envrionment
-if (process.env.NODE_ENV === "production") {
-  clientUrlBase = process.env.RENDER_EXTERNAL_URL;
-  serverUrlBase = process.env.RENDER_EXTERNAL_URL;
-} else {
-  clientUrlBase = process.env.CLIENT_URL_BASE;
-  serverUrlBase = process.env.SERVER_URL_BASE;
-}
-const callbackUrl = serverUrlBase + userRouteSuffix + callbackSuffix;
-const redirectUrl = clientUrlBase + redirectSuffix;
+// if (process.env.NODE_ENV === "production") {
+//   clientUrlBase = process.env.RENDER_EXTERNAL_URL;
+//   serverUrlBase = process.env.RENDER_EXTERNAL_URL;
+// } else {
+//   clientUrlBase = process.env.CLIENT_URL_BASE;
+//   serverUrlBase = process.env.SERVER_URL_BASE;
+// }
+// const callbackUrl = serverUrlBase + userRouteSuffix + callbackSuffix;
+// const redirectUrl = clientUrlBase + redirectSuffix;
 
 app.use("/session", sessionRouter);
 app.use("/user", userRouter);

@@ -12,14 +12,21 @@ const redirectSuffix = "/login-redirect";
 
 // set callback url and redirect url based on the envrionment
 if (process.env.NODE_ENV === "production") {
-  clientUrlBase = process.env.RENDER_EXTERNAL_URL;
   serverUrlBase = process.env.RENDER_EXTERNAL_URL;
 } else {
   clientUrlBase = process.env.CLIENT_URL_BASE;
   serverUrlBase = process.env.SERVER_URL_BASE;
 }
+
+var redirectUrl;
+
+if (process.env.NODE_ENV === "dev") {
+  redirectUrl = clientUrlBase + redirectSuffix;
+} else {
+  redirectUrl = serverUrlBase + redirectSuffix;
+}
+
 const callbackUrl = serverUrlBase + userRouteSuffix + callbackSuffix;
-const redirectUrl = clientUrlBase + redirectSuffix;
 
 router.use(passport.initialize());
 router.use(passport.session());
