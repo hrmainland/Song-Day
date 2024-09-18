@@ -1,16 +1,10 @@
 import baseUrl from "./urlPrefix";
 
-async function apiRequest(
-  endpoint,
-  method = "GET",
-  body = null,
-  accessToken = null
-) {
+async function apiRequest(endpoint, method = "GET", body = null) {
   try {
     const options = {
       method,
       headers: {
-        Authorization: `Bearer ${accessToken}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -68,6 +62,10 @@ export async function newGame(gameName, settings) {
 
 export async function addMeToGame(gameId) {
   return await apiRequest(`/game/${gameId}/add-me`, "PUT");
+}
+
+export async function removePlayerFromGame(gameId, userId) {
+  return await apiRequest(`/game/${gameId}/remove-player/${userId}`, "DELETE");
 }
 
 export async function addTrackGroupToGame(gameId, trackGroupId) {

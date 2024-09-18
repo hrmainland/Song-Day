@@ -24,6 +24,21 @@ router.put("/:id/add-me", isLoggedIn, async (req, res) => {
   res.status(200).json(game);
 });
 
+router.delete(
+  "/:gameId/remove-player/:userId",
+  isLoggedIn,
+  async (req, res) => {
+    const { gameId, userId } = req.params;
+    const game = await Game.findById(gameId);
+    if (!game) {
+      res.status(404).json({ message: `No game found with ID ${gameId}` });
+      return;
+    }
+    game.players = game.players.filter((player) => !player.user.equals(userId));
+    await game.save();
+  }
+);
+
 router.put("/:id/track-group/:trackGroupId", isLoggedIn, async (req, res) => {
   const { id, trackGroupId } = req.params;
   const game = await Game.findById(id);

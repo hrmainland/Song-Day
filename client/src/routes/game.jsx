@@ -8,6 +8,9 @@ import Navbar from "../components/navbar";
 import { useEffect, useState } from "react";
 import { fetchGame, fetchMe } from "../../utils/apiCalls";
 
+// TODO remove
+import { removePlayerFromGame } from "../../utils/apiCalls";
+
 export default function Game() {
   const location = useLocation();
   const { gameCode } = useParams();
@@ -81,6 +84,16 @@ export default function Game() {
           mt: 5,
         }}
       >
+        <button
+          onClick={() =>
+            removePlayerFromGame(
+              "66ea1c64bf75d26f9aa18e6b",
+              "66ea1c72bf75d26f9aa18e78"
+            )
+          }
+        >
+          Remove player
+        </button>
         <Box display="flex" justifyContent="center">
           <Grid container maxWidth={600}>
             <Grid item xs={12}>
