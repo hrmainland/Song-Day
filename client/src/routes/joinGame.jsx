@@ -25,7 +25,8 @@ export default function JoinGame() {
     }
     const me = await fetchMe();
     const userId = me._id;
-    if (game.players.includes(userId)) {
+    const player = game.players.find((player) => player.user === userId);
+    if (player) {
       setErrorMsg("You're already part of that session");
       // TODO navigate to that game
       return;

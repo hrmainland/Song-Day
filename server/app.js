@@ -12,7 +12,7 @@ const mongoose = require("mongoose");
 const querystring = require("querystring");
 const session = require("express-session");
 
-const sessionRouter = require("./routes/session.js");
+const browserSessionRouter = require("./routes/browserSession.js");
 const userRouter = require("./routes/user.js");
 const gameRouter = require("./routes/game.js");
 const trackGroupRouter = require("./routes/trackGroup.js");
@@ -54,7 +54,6 @@ const sessionConfig = {
 
 const port = process.env.PORT || 3500;
 const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/song-day";
-// const dbUrl = "mongodb://127.0.0.1:27017/song-day";
 
 app.use(express.urlencoded({ extended: true }));
 app.use(session(sessionConfig));
@@ -62,27 +61,9 @@ app.use(cors());
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
-// can these be here?
-// ************************** passport
-// app.use(passport.initialize());
 app.use(passport.session());
 
-// const userRouteSuffix = "/user";
-// const callbackSuffix = "/callback";
-// const redirectSuffix = "/";
-
-// set callback url and redirect url based on the envrionment
-// if (process.env.NODE_ENV === "production") {
-//   clientUrlBase = process.env.RENDER_EXTERNAL_URL;
-//   serverUrlBase = process.env.RENDER_EXTERNAL_URL;
-// } else {
-//   clientUrlBase = process.env.CLIENT_URL_BASE;
-//   serverUrlBase = process.env.SERVER_URL_BASE;
-// }
-// const callbackUrl = serverUrlBase + userRouteSuffix + callbackSuffix;
-// const redirectUrl = clientUrlBase + redirectSuffix;
-
-app.use("/session", sessionRouter);
+app.use("/browser-session", browserSessionRouter);
 app.use("/user", userRouter);
 app.use("/game", gameRouter);
 app.use("/track-group", trackGroupRouter);

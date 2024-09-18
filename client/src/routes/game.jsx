@@ -23,7 +23,7 @@ export default function Game() {
   useEffect(() => {
     const fetchUser = async () => {
       const data = await fetchMe();
-      setUserId(data);
+      setUserId(data._id);
     };
     fetchUser();
   }, []);

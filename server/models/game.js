@@ -11,6 +11,15 @@ const gameConfigSchema = new Schema({
   _id: false,
 });
 
+const playerSchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
+  displayName: String,
+  _id: false,
+});
+
 const gameSchema = new Schema({
   title: String,
   config: gameConfigSchema,
@@ -19,12 +28,7 @@ const gameSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
-  players: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
+  players: [playerSchema],
   trackGroups: [
     {
       type: Schema.Types.ObjectId,

@@ -18,7 +18,7 @@ router.put("/:id/add-me", isLoggedIn, async (req, res) => {
     res.status(404).json({ message: `No game found with ID ${id}` });
     return;
   }
-  game.players.push(req.user._id);
+  game.players.push({ user: req.user._id, displayName: "Player x" });
   await game.save();
 
   res.status(200).json(game);
@@ -66,7 +66,7 @@ router.post("/new", isLoggedIn, async (req, res, next) => {
     config,
     gameCode,
     host: userId,
-    players: [userId],
+    players: [{ user: userId, displayName: "Host" }],
   };
 
   const thisGame = new Game(params);
@@ -197,7 +197,6 @@ const createPlaylist = async (user, playlistName) => {
 };
 
 const addTracksToPlaylist = async (user, playlistId, trackURIs) => {
-
   const accessToken = user.access_token;
   const addTracksResponse = await fetch(
     `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,

@@ -21,7 +21,7 @@ export default function Navbar() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
-        <Toolbar>
+        <Toolbar sx={{ backgroundColor: "black" }}>
           <IconButton
             size="large"
             edge="start"
@@ -29,8 +29,9 @@ export default function Navbar() {
             aria-label="menu"
             sx={{ mr: 2 }}
             onClick={handleHome}
+            className="heading"
           >
-            SongDay
+            Song Day
           </IconButton>
           <Typography
             variant="h6"
@@ -45,4 +46,3 @@ export default function Navbar() {
     </Box>
   );
 }
-
