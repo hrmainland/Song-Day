@@ -144,13 +144,6 @@ export default function AddSongs() {
       <Container
         fixed
         className="top-container"
-        // sx={{
-        //   mt: 5,
-        //   display: "grid",
-        //   gridTemplateColumns: "1fr 360px",
-        //   gap: 2,
-        //   position: "relative",
-        // }}
       >
         {mySubmitted ? (
           <Box display="flex" justifyContent="center">

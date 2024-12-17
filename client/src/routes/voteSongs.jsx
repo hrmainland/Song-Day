@@ -1,4 +1,4 @@
-import { Box, Button, Container } from "@mui/material";
+import { Box, Button, Container, Grid } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -27,6 +27,7 @@ export default function VoteSongs() {
   const [voteLimit, setVoteLimit] = useState(null);
   const [options, setOptions] = useState([]);
   const [shortlist, setShortlist] = useState([]);
+  const [addView, setAddView] = useState(true);
   const [votesSubmitted, setVotesSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -55,6 +56,11 @@ export default function VoteSongs() {
     };
     asyncFunc();
   }, []);
+
+  const updateView = (event) => {
+    event.preventDefault();
+    setAddView(!addView);
+  }
 
   const fetchAndSetIds = async (game) => {
     const tracksResponse = await getAllVotableTracks(game._id);
@@ -217,14 +223,41 @@ export default function VoteSongs() {
           </Box>
         ) : (
           <>
-            <Button onClick={clearLocalStorage}>Clear</Button>
-            <Box display="flex" justifyContent="center">
+          <Grid container>
+            <Grid item xs={12} display="flex" justifyContent="center" marginY={2}>
+              {addView ? (
+                <Button onClick={() => setAddView(false)} variant="contained">
+                  Order Shortlist
+                </Button>
+              ) : (
+                <Button onClick={() => setAddView(true)} variant="outlined">
+                  Add To Shortlist
+                </Button>
+              )}
+            </Grid>
+          </Grid>
+
+            <Box
+              display="flex"
+              justifyContent="center"
+              sx={{
+                display: addView ? "flex" : "none",
+              }}
+            >
               <OptionsDisplay
                 tracks={getSessionOptions()}
                 addFunc={addTrackToShortlist}
                 // todo add tooltip on list item by passing this through
                 missingTracks={voteLimit - getSessionShortlist().length}
               ></OptionsDisplay>
+            </Box>
+            <Box
+              display="flex"
+              justifyContent="center"
+              sx={{
+                display: addView ? "none" : "flex",
+              }}
+            >
               <DragDropContext onDragEnd={onDragEnd}>
                 <ShortlistDisplay
                   tracks={getSessionShortlist()}
