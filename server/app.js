@@ -53,7 +53,8 @@ const sessionConfig = {
 };
 
 const port = process.env.PORT || 3500;
-const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/song-day";
+// const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/song-day";
+const dbUrl = "mongodb+srv://hrmainland:Parkour99@cluster0.ucmtg2p.mongodb.net/song-day?retryWrites=true&w=majority&appName=Cluster0";
 
 app.use(express.urlencoded({ extended: true }));
 app.use(session(sessionConfig));

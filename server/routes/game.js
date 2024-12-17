@@ -11,11 +11,11 @@ const { isLoggedIn } = require("../middleware");
 const { MongoClient, ObjectId } = require("mongodb");
 const { rawListeners } = require("../models/track");
 
-router.put("/:id/add-me", isLoggedIn, async (req, res) => {
-  const { id } = req.params;
-  const game = await Game.findById(id);
+router.put("/:gameId/add-me", isLoggedIn, async (req, res) => {
+  const { gameId } = req.params;
+  const game = await Game.findById(gameId);
   if (!game) {
-    res.status(404).json({ message: `No game found with ID ${id}` });
+    res.status(404).json({ message: `No game found with ID ${gameId}` });
     return;
   }
   game.players.push({ user: req.user._id, displayName: "Player x" });
@@ -36,27 +36,32 @@ router.delete(
     }
     game.players = game.players.filter((player) => !player.user.equals(userId));
     await game.save();
+    res.status(200).json(game);
   }
 );
 
-router.put("/:id/track-group/:trackGroupId", isLoggedIn, async (req, res) => {
-  const { id, trackGroupId } = req.params;
-  const game = await Game.findById(id);
-  if (!game) {
-    res.status(404).json({ message: `No game found with ID ${id}` });
-    return;
+router.put(
+  "/:gameId/track-group/:trackGroupId",
+  isLoggedIn,
+  async (req, res) => {
+    const { gameId, trackGroupId } = req.params;
+    const game = await Game.findById(gameId);
+    if (!game) {
+      res.status(404).json({ message: `No game found with ID ${gameId}` });
+      return;
+    }
+    game.trackGroups.push(trackGroupId);
+    await game.save();
+
+    res.status(200).json(game);
   }
-  game.trackGroups.push(trackGroupId);
-  await game.save();
+);
 
-  res.status(200).json(game);
-});
-
-router.put("/:id/vote-group/:voteGroupId", isLoggedIn, async (req, res) => {
-  const { id, voteGroupId } = req.params;
-  const game = await Game.findById(id);
+router.put("/:gameId/vote-group/:voteGroupId", isLoggedIn, async (req, res) => {
+  const { gameId, voteGroupId } = req.params;
+  const game = await Game.findById(gameId);
   if (!game) {
-    res.status(404).json({ message: `No game found with ID ${id}` });
+    res.status(404).json({ message: `No game found with ID ${gameId}` });
     return;
   }
   game.voteGroups.push(voteGroupId);
@@ -103,6 +108,18 @@ router.post("/:gameId/vote-group", isLoggedIn, async (req, res) => {
   }
 });
 
+router.delete("/vote-group/:voteGroupId", async (req, res) => {
+  const { voteGroupId } = req.params;
+  try {
+    await VoteGroup.findByIdAndDelete(voteGroupId);
+    return res
+      .status(200)
+      .json({ message: `Deleted VoteGroup with id ${voteGroupId}` });
+  } catch (error) {
+    return res.status(500).json({ error: "Error deleting VoteGroup" });
+  }
+});
+
 // TODO put this in useEffect and store in cookies
 router.get("/:gameCode", async (req, res) => {
   const { gameCode } = req.params;
@@ -118,7 +135,7 @@ router.get("/:gameId/my-track-group", isLoggedIn, async (req, res) => {
   const { gameId } = req.params;
   const game = await Game.findById(gameId).populate("trackGroups", "player");
   if (!game) {
-    res.status(404).json({ message: `No game found with ID ${id}` });
+    res.status(404).json({ message: `No game found with ID ${gameId}` });
     return;
   }
   for (let trackGroup of game.trackGroups) {
@@ -133,7 +150,7 @@ router.get("/:gameId/my-vote-group", isLoggedIn, async (req, res) => {
   const { gameId } = req.params;
   const game = await Game.findById(gameId).populate("voteGroups", "player");
   if (!game) {
-    res.status(404).json({ message: `No game found with ID ${id}` });
+    res.status(404).json({ message: `No game found with ID ${gameId}` });
     return;
   }
   for (let voteGroup of game.voteGroups) {
@@ -154,7 +171,7 @@ router.get("/:gameId/all-tracks", async (req, res) => {
     },
   });
   if (!game) {
-    res.status(404).json({ message: `No game found with ID ${id}` });
+    res.status(404).json({ message: `No game found with ID ${gameId}` });
     return;
   }
   let tracks = [];
@@ -176,7 +193,7 @@ router.get("/:gameId/votable-tracks", async (req, res) => {
     },
   });
   if (!game) {
-    res.status(404).json({ message: `No game found with ID ${id}` });
+    res.status(404).json({ message: `No game found with ID ${gameId}` });
     return;
   }
   let tracks = [];

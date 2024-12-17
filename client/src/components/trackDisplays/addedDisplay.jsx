@@ -11,7 +11,7 @@ export default function AddedDisplay({ tracks, removeFunc, submitFunc, missingTr
           width: "100%",
           maxWidth: 360,
           bgcolor: "background.paper",
-          position: "absolute",
+          // position: "absolute",
           top: 0,
           right: 0,
         }}

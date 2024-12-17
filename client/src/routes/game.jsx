@@ -84,7 +84,9 @@ export default function Game() {
           mt: 5,
         }}
       >
-        <button
+        
+        {/* TODO remove this */}
+        {/* <button
           onClick={() =>
             removePlayerFromGame(
               "66ea1c64bf75d26f9aa18e6b",
@@ -93,7 +95,8 @@ export default function Game() {
           }
         >
           Remove player
-        </button>
+        </button> */}
+
         <Box display="flex" justifyContent="center">
           <Grid container maxWidth={600}>
             <Grid item xs={12}>

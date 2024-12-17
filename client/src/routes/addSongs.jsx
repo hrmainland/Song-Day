@@ -25,6 +25,8 @@ export default function AddSongs() {
   const [searchQuery, setSearchQuery] = useState([]);
   const [searchResult, setSearchResult] = useState(null);
 
+  const [addView, setAddView] = useState(true);
+
   const [addedTracks, setAddedTracks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [mySubmitted, setMySubmitted] = useState(false);
@@ -42,6 +44,11 @@ export default function AddSongs() {
     };
     isSubmitted();
   }, []);
+
+  const updateView = (event) => {
+    event.preventDefault();
+    setAddView(!addView);
+  }
 
   const getSessionTracks = () => {
     let tracks = localStorage.getItem(TRACK_KEY);
@@ -137,13 +144,13 @@ export default function AddSongs() {
       <Container
         fixed
         className="top-container"
-        sx={{
-          mt: 5,
-          display: "grid",
-          gridTemplateColumns: "1fr 360px",
-          gap: 2,
-          position: "relative",
-        }}
+        // sx={{
+        //   mt: 5,
+        //   display: "grid",
+        //   gridTemplateColumns: "1fr 360px",
+        //   gap: 2,
+        //   position: "relative",
+        // }}
       >
         {mySubmitted ? (
           <Box display="flex" justifyContent="center">
@@ -151,8 +158,28 @@ export default function AddSongs() {
           </Box>
         ) : (
           <>
-            <Box display="flex" justifyContent="center">
-              <Grid container maxWidth={600} spacing={2}>
+
+          <Grid container>
+            <Grid item xs={12} display="flex" justifyContent="center" marginY={2}>
+              {addView ? (
+                <Button onClick={() => setAddView(false)} variant="contained">
+                  View My List
+                </Button>
+              ) : (
+                <Button onClick={() => setAddView(true)} variant="outlined">
+                  Add Tracks
+                </Button>
+              )}
+            </Grid>
+          </Grid>
+
+          
+          {addView ? (<Box display="flex" justifyContent="center">
+              <Grid container maxWidth={1000} spacing={2}>
+                <Grid item xs={12}>
+                  <form onSubmit={updateView}>
+                  </form>
+                </Grid>
                 <Grid item xs={12}>
                   <form onSubmit={handleSearch} style={{ width: "100%" }}>
                     <Grid container spacing={2}>
@@ -165,7 +192,7 @@ export default function AddSongs() {
                           label="Search"
                         />
                       </Grid>
-                      <Grid item xs={2} display="flex" justifyContent="center">
+                      <Grid item xs={4} display="flex" justifyContent="center">
                         <Button
                           type="submit"
                           variant="contained"
@@ -174,7 +201,7 @@ export default function AddSongs() {
                           Search
                         </Button>
                       </Grid>
-                      <Grid item xs={2} display="flex" justifyContent="center">
+                      {/* <Grid item xs={2} display="flex" justifyContent="center">
                         <Button
                           onClick={removeAllTracks}
                           variant="contained"
@@ -182,7 +209,7 @@ export default function AddSongs() {
                         >
                           Clear
                         </Button>
-                      </Grid>
+                      </Grid> */}
                     </Grid>
                   </form>
                 </Grid>
@@ -197,13 +224,20 @@ export default function AddSongs() {
                   )}
                 </Grid>
               </Grid>
-            </Box>
-            <AddedDisplay
-              tracks={getSessionTracks()}
-              removeFunc={removeTrack}
-              submitFunc={handleSubmit}
-              missingTracks={trackLimit - getSessionTracks().length}
-            />
+            </Box>) : (<Box display="flex" justifyContent="center">
+              <Grid container maxWidth={1000} spacing={2}>
+                <Grid item xs={12}>
+                  <AddedDisplay
+                  tracks={getSessionTracks()}
+                  removeFunc={removeTrack}
+                  submitFunc={handleSubmit}
+                  missingTracks={trackLimit - getSessionTracks().length}
+                />
+                </Grid>
+              </Grid>
+            </Box>)}
+            
+            
           </>
         )}
       </Container>

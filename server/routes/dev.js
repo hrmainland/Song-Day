@@ -4,9 +4,13 @@ const Track = require("../models/track");
 
 async function trackTitles() {
   const tracks = await Track.find({});
-  const titles = tracks.map((track) => track.title);
+  const titles = tracks.map((track) => track.name);
   return titles;
 }
+
+// router.get("/", (req, res) => {
+//   res.send("hello");
+// })
 
 router.get("/tracks", async (req, res) => {
   const titles = await trackTitles();
