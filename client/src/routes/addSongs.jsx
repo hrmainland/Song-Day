@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Container, Grid } from "@mui/material";
+import { Box, Button, TextField, Container, Grid, Badge } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -94,6 +94,10 @@ export default function AddSongs() {
       addTrackToSession(track);
       const sessionTracks = getSessionTracks();
       setAddedTracks(sessionTracks);
+
+      const idsToRemove = new Set(sessionTracks.map(item => item.id));
+      searchResult.tracks.items = searchResult.tracks.items.filter(track => !idsToRemove.has(track.id));
+      setSearchResult(searchResult);
     }
   };
 
@@ -155,9 +159,11 @@ export default function AddSongs() {
           <Grid container>
             <Grid item xs={12} display="flex" justifyContent="center" marginY={2}>
               {addView ? (
-                <Button onClick={() => setAddView(false)} variant="contained">
-                  View My List
-                </Button>
+                <Badge badgeContent={addedTracks.length} color="warning">
+                  <Button onClick={() => setAddView(false)} variant="contained">
+                    View My List
+                  </Button>
+                </Badge>
               ) : (
                 <Button onClick={() => setAddView(true)} variant="outlined">
                   Add Tracks
@@ -194,15 +200,6 @@ export default function AddSongs() {
                           Search
                         </Button>
                       </Grid>
-                      {/* <Grid item xs={2} display="flex" justifyContent="center">
-                        <Button
-                          onClick={removeAllTracks}
-                          variant="contained"
-                          color="primary"
-                        >
-                          Clear
-                        </Button>
-                      </Grid> */}
                     </Grid>
                   </form>
                 </Grid>

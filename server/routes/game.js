@@ -266,13 +266,22 @@ const addTracksToPlaylist = async (user, playlistId, trackURIs) => {
 
 router.get("/:gameId/create-playlist", isLoggedIn, async (req, res) => {
   const { gameId } = req.params;
-  const game = await Game.findById(gameId).populate({
-    path: "voteGroups",
-    populate: {
-      path: "items.track",
-      model: "Track",
+  const game = await Game.findById(gameId).populate([
+    {
+      path: "voteGroups",
+      populate: {
+        path: "items.track",
+        model: "Track",
+      },
     },
-  });
+    {
+      path: "trackGroups",
+      populate: {
+        path: "tracks",
+        model: "Track",
+      },
+    },
+  ]);
   const nVotes = game.config.nVotes;
 
   const voteGroups = game.voteGroups;
@@ -287,6 +296,15 @@ router.get("/:gameId/create-playlist", isLoggedIn, async (req, res) => {
         scoresMap.set(trackId, current + score);
       } else {
         scoresMap.set(trackId, score);
+      }
+    }
+  }
+
+  for (let trackGroup of game.trackGroups) {
+    console.log('trackGroup :>> ', trackGroup);
+    for (let track of trackGroup.tracks) {
+      if (!scoresMap.has(track.spotifyId)) {
+        scoresMap.set(track.spotifyId, 0);
       }
     }
   }
