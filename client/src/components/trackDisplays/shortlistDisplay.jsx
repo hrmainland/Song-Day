@@ -18,6 +18,7 @@ export default function ShortlistDisplay({
       }}
     >
       <h3>Your Shortlist</h3>
+      Drag and drop to rearrange.
       <Droppable droppableId="main-column">
         {(provided) => (
           <List ref={provided.innerRef} {...provided.droppableProps}>

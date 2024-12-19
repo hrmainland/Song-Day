@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid } from "@mui/material";
+import { Box, Button, Container, Grid, Badge } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -226,9 +226,11 @@ export default function VoteSongs() {
           <Grid container>
             <Grid item xs={12} display="flex" justifyContent="center" marginY={2}>
               {addView ? (
+              <Badge badgeContent={shortlist.length} color="warning">
                 <Button onClick={() => setAddView(false)} variant="contained">
                   Go To Shortlist
                 </Button>
+              </Badge>
               ) : (
                 <Button onClick={() => setAddView(true)} variant="outlined">
                   Back To Options
