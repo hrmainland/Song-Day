@@ -227,11 +227,11 @@ export default function VoteSongs() {
             <Grid item xs={12} display="flex" justifyContent="center" marginY={2}>
               {addView ? (
                 <Button onClick={() => setAddView(false)} variant="contained">
-                  Order Shortlist
+                  Go To Shortlist
                 </Button>
               ) : (
                 <Button onClick={() => setAddView(true)} variant="outlined">
-                  Add To Shortlist
+                  Back To Options
                 </Button>
               )}
             </Grid>

@@ -204,6 +204,20 @@ router.get("/:gameId/votable-tracks", async (req, res) => {
     }
   }
 
+  // sort in alphabetical order
+  tracks.sort((a, b) => {
+    const nameA = a.name.toUpperCase();
+    const nameB = b.name.toUpperCase();
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+    return 0;
+  });
+
+
   return res.status(200).json(tracks);
 });
 
@@ -276,8 +290,13 @@ router.get("/:gameId/create-playlist", isLoggedIn, async (req, res) => {
       }
     }
   }
+
+  const shuffledScores = new Map(
+    [...scoresMap.entries()].sort(() => Math.random() - 0.5)
+  );
+
   const sortedScores = new Map(
-    [...scoresMap.entries()].sort((a, b) => a[1] - b[1])
+    [...shuffledScores.entries()].sort((a, b) => a[1] - b[1])
   );
 
   const sortedIds = Array.from(sortedScores.keys());
