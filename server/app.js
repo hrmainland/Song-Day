@@ -12,12 +12,12 @@ const mongoose = require("mongoose");
 const querystring = require("querystring");
 const session = require("express-session");
 
-const browserSessionRouter = require("./routes/browserSession.js");
+const browserSessionRouter = require("./routes/test_browserSession.js");
 const userRouter = require("./routes/user.js");
 const gameRouter = require("./routes/game.js");
 const trackGroupRouter = require("./routes/trackGroup.js");
 
-const devRouter = require("./routes/dev.js");
+const devRouter = require("./routes/test_dev.js");
 
 const User = require("./models/user.js");
 

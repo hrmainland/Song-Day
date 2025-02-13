@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const Track = require("./track");
-const User = require("./user");
+
+
 
 const trackGroupSchema = new Schema({
   player: {
