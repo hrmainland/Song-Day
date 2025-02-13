@@ -2,23 +2,24 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const Game = require("../models/game");
 const TrackGroup = require("../models/trackGroup");
-const Track = require("../models/track");
+// const Track = require("../models/track");
 const router = express.Router();
 const generateGameCode = require("../utils/gameCode");
 const passport = require("passport");
 const { isLoggedIn } = require("../middleware");
 const { MongoClient, ObjectId } = require("mongodb");
-const { rawListeners } = require("../models/track");
 
-const trackRouter = require("./track");
 
-const createTrack = async (params) => {
-  const track = new Track(params);
-  await track.save();
-  return track;
-};
+// const trackRouter = require("./track");
+
+// const createTrack = async (params) => {
+//   const track = new Track(params);
+//   await track.save();
+//   return track;
+// };
 
 // TODO consider moving this to it's own route
+// this is unused at the Track overhaul
 router.delete("/track/:trackId", async (req, res) => {
   const { trackId } = req.params;
   try {
@@ -33,25 +34,25 @@ router.delete("/track/:trackId", async (req, res) => {
 router.post("/", async (req, res, next) => {
   const { sessionTracks } = req.body;
 
-  var tracks = [];
+  var trackIds = [];
 
   // create each track and add
   for (let sessionTrack of sessionTracks) {
-    const { name, artists, img } = sessionTrack;
-    TrackParams = {
-      // to avoid id confusion with is not destructured
-      spotifyId: sessionTrack.id,
-      name,
-      artists,
-      img,
-      submittedBy: req.user._id,
-    };
+    // const { name, artists, img } = sessionTrack;
+    // TrackParams = {
+    //   // to avoid id confusion with is not destructured
+    //   spotifyId: sessionTrack.id,
+    //   name,
+    //   artists,
+    //   img,
+    //   submittedBy: req.user._id,
+    // };
 
-    const track = await createTrack(TrackParams);
-    tracks.push(track._id);
+    // const track = await createTrack(TrackParams);
+    trackIds.push(sessionTrack.id);
   }
 
-  trackGroupParams = { player: req.user._id, tracks };
+  trackGroupParams = { player: req.user._id, trackIds };
 
   const trackGroup = new TrackGroup(trackGroupParams);
   await trackGroup.save();

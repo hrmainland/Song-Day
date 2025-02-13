@@ -76,9 +76,9 @@ export async function addVoteGroupToGame(gameId, voteGroupId) {
   return await apiRequest(`/game/${gameId}/vote-group/${voteGroupId}`, "PUT");
 }
 
-export async function getAllGameTracks(gameId) {
-  return await apiRequest(`/game/${gameId}/all-tracks`);
-}
+// export async function getAllGameTracks(gameId) {
+//   return await apiRequest(`/game/${gameId}/all-tracks`);
+// }
 
 export async function getAllVotableTracks(gameId) {
   return await apiRequest(`/game/${gameId}/votable-tracks`);

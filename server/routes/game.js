@@ -8,7 +8,6 @@ const generateGameCode = require("../utils/gameCode");
 const passport = require("passport");
 const { isLoggedIn } = require("../middleware");
 const { MongoClient, ObjectId } = require("mongodb");
-const { rawListeners } = require("../models/track");
 
 router.put("/:gameId/add-me", isLoggedIn, async (req, res) => {
   const { gameId } = req.params;
@@ -160,27 +159,27 @@ router.get("/:gameId/my-vote-group", isLoggedIn, async (req, res) => {
   return res.status(200).json(null);
 });
 
-router.get("/:gameId/all-tracks", async (req, res) => {
-  const { gameId } = req.params;
-  const game = await Game.findById(gameId).populate({
-    path: "trackGroups",
-    populate: {
-      path: "tracks",
-      model: "Track",
-    },
-  });
-  if (!game) {
-    res.status(404).json({ message: `No game found with ID ${gameId}` });
-    return;
-  }
-  let tracks = [];
+// router.get("/:gameId/all-tracks", async (req, res) => {
+//   const { gameId } = req.params;
+//   const game = await Game.findById(gameId).populate({
+//     path: "trackGroups",
+//     populate: {
+//       path: "tracks",
+//       model: "Track",
+//     },
+//   });
+//   if (!game) {
+//     res.status(404).json({ message: `No game found with ID ${gameId}` });
+//     return;
+//   }
+//   let tracks = [];
 
-  for (let trackGroup of game.trackGroups) {
-    tracks = tracks.concat(trackGroup.tracks);
-  }
+//   for (let trackGroup of game.trackGroups) {
+//     tracks = tracks.concat(trackGroup.tracks);
+//   }
 
-  return res.status(200).json(tracks);
-});
+//   return res.status(200).json(tracks);
+// });
 
 router.get("/:gameId/votable-tracks", async (req, res) => {
   const { gameId } = req.params;

@@ -9,12 +9,9 @@ const trackGroupSchema = new Schema({
     ref: "User",
     required: true,
   },
-  tracks: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Track",
-    },
-  ],
+  trackIds: [{
+    type: String,
+  }],
 });
 
 module.exports = mongoose.model("TrackGroup", trackGroupSchema);
