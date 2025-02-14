@@ -181,42 +181,64 @@ router.get("/:gameId/my-vote-group", isLoggedIn, async (req, res) => {
 //   return res.status(200).json(tracks);
 // });
 
-router.get("/:gameId/votable-tracks", async (req, res) => {
+// router.get("/:gameId/votable-tracks", async (req, res) => {
+//   const { gameId } = req.params;
+//   const game = await Game.findById(gameId).populate({
+//     path: "trackGroups",
+//     populate: {
+//       path: "tracks",
+//       model: "Track",
+//     },
+//   });
+//   if (!game) {
+//     res.status(404).json({ message: `No game found with ID ${gameId}` });
+//     return;
+//   }
+//   let tracks = [];
+
+//   for (let trackGroup of game.trackGroups) {
+//     if (!trackGroup.player._id.equals(req.user._id)) {
+//       tracks = tracks.concat(trackGroup.tracks);
+//     }
+//   }
+
+//   // sort in alphabetical order
+//   tracks.sort((a, b) => {
+//     const nameA = a.name.toUpperCase();
+//     const nameB = b.name.toUpperCase();
+//     if (nameA < nameB) {
+//       return -1;
+//     }
+//     if (nameA > nameB) {
+//       return 1;
+//     }
+//     return 0;
+//   });
+
+
+//   return res.status(200).json(tracks);
+// });
+
+router.get("/:gameId/votable-tracks", isLoggedIn, async (req, res) => {
   const { gameId } = req.params;
   const game = await Game.findById(gameId).populate({
     path: "trackGroups",
-    populate: {
-      path: "tracks",
-      model: "Track",
-    },
+    select: "trackIds player"
   });
   if (!game) {
     res.status(404).json({ message: `No game found with ID ${gameId}` });
     return;
   }
-  let tracks = [];
+
+  let trackIds = [];
 
   for (let trackGroup of game.trackGroups) {
-    if (!trackGroup.player._id.equals(req.user._id)) {
-      tracks = tracks.concat(trackGroup.tracks);
+    if (!trackGroup.player.equals(req.user._id)) {
+      trackIds = trackIds.concat(trackGroup.trackIds);
     }
   }
 
-  // sort in alphabetical order
-  tracks.sort((a, b) => {
-    const nameA = a.name.toUpperCase();
-    const nameB = b.name.toUpperCase();
-    if (nameA < nameB) {
-      return -1;
-    }
-    if (nameA > nameB) {
-      return 1;
-    }
-    return 0;
-  });
-
-
-  return res.status(200).json(tracks);
+  return res.status(200).json(trackIds);
 });
 
 const createPlaylist = async (user, playlistName) => {

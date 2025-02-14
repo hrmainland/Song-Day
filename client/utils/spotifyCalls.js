@@ -49,4 +49,10 @@ export async function searchTracks(accessToken, query) {
     const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=30`;
     return await apiRequest(url, "GET", null, accessToken);
   }
+
+export async function getTrackById(accessToken, trackId) {
+  const url = `https://api.spotify.com/v1/tracks/${trackId}`;
+  return await apiRequest(url, "GET", null, accessToken);
+}
+
   

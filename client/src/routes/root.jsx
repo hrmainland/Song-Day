@@ -29,27 +29,6 @@ export default function Root() {
             </Button>
           </Grid>
 
-          {/* <Grid item xs={3} textAlign="center">
-            <Button
-              variant="outlined"
-              component={Link}
-              to={"/join-session"}
-              sx={{ textTransform: "none", color: "white" }}
-            >
-              Join Session
-            </Button>
-          </Grid>
-
-          <Grid item xs={3} textAlign="center">
-            <Button
-              variant="outlined"
-              component={Link}
-              to={"/new-session"}
-              sx={{ textTransform: "none", color: "white" }}
-            >
-              Create Session
-            </Button>
-          </Grid> */}
         </Grid>
       </div>
     </>
