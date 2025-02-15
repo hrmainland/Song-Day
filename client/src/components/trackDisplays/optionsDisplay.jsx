@@ -23,6 +23,7 @@ export default function OptionsDisplay({ tracks, addFunc }) {
                 addFunc={addFunc}
                 index={index}
               ></OptionsDisplayItem>
+
             );
           })}
         </List>

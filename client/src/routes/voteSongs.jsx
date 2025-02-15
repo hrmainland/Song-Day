@@ -62,6 +62,8 @@ export default function VoteSongs() {
     setAddView(!addView);
   }
 
+
+  // UPDATE
   const fetchAndSetIds = async (game) => {
     const tracksResponse = await getAllVotableTracks(game._id);
     setInitialIds(tracksResponse.map((elem) => elem._id));
