@@ -16,6 +16,8 @@ import {
   addVoteGroupToGame,
 } from "../../utils/apiCalls";
 
+import { usefulTrackComponents } from "../../utils/spotifyApiUtils";
+
 export default function VoteSongs() {
   const navigate = useNavigate();
   const { gameCode } = useParams();
@@ -66,7 +68,8 @@ export default function VoteSongs() {
   // UPDATE
   const fetchAndSetIds = async (game) => {
     const tracksResponse = await getAllVotableTracks(game._id);
-    setInitialIds(tracksResponse.map((elem) => elem._id));
+    setInitialIds(tracksResponse);
+    // setInitialIds(tracksResponse.map((elem) => elem._id));
   };
 
   const setOptionsFromDb = async (game) => {
@@ -98,6 +101,7 @@ export default function VoteSongs() {
 
   const setSessionArray = (sessionKey, data) => {
     localStorage.setItem(sessionKey, JSON.stringify(data));
+    // localStorage.setItem(sessionKey, data);
   };
 
   const getSessionOptions = () => getSessionArray(OPTIONS_KEY);
@@ -167,7 +171,7 @@ export default function VoteSongs() {
 
     var removedCount = 0;
     const sessionShortlist = getSessionShortlist();
-    const shortlistSet = new Set(sessionShortlist.map((track) => track._id));
+    const shortlistSet = new Set(sessionShortlist.map((track) => track.id));
     var optionsIndex;
     for (let i = 0; i < initialIds.length; i++) {
       if (initialIds[i] === track._id) {
@@ -185,6 +189,7 @@ export default function VoteSongs() {
     setOptions(sessionOptions);
   };
 
+  // update this once votegroup has changed
   const submitShortlist = async () => {
     const game = await fetchGame(gameCode);
     const sessionShortlist = getSessionShortlist();
@@ -248,12 +253,13 @@ export default function VoteSongs() {
                 display: addView ? "flex" : "none",
               }}
             >
-              <OptionsDisplay
-                tracks={getSessionOptions()}
+              <div>{options.map((id) => usefulTrackComponents(id))}</div>
+              {/* <OptionsDisplay
+                tracks={getSessionOptions.map((track) => usefulTrackComponents(track))}
                 addFunc={addTrackToShortlist}
                 // todo add tooltip on list item by passing this through
                 missingTracks={voteLimit - getSessionShortlist().length}
-              ></OptionsDisplay>
+              ></OptionsDisplay> */}
             </Box>
             <Box
               display="flex"
@@ -263,12 +269,12 @@ export default function VoteSongs() {
               }}
             >
               <DragDropContext onDragEnd={onDragEnd}>
-                <ShortlistDisplay
+                {/* <ShortlistDisplay
                   tracks={getSessionShortlist()}
                   removeFunc={shortlistToOptions}
                   submitFunc={submitShortlist}
                   missingTracks={voteLimit - getSessionShortlist().length}
-                ></ShortlistDisplay>
+                ></ShortlistDisplay> */}
               </DragDropContext>
             </Box>
           </>

@@ -3,6 +3,7 @@ import List from "@mui/material/List";
 
 import OptionsDisplayItem from "./optionsDisplayItem";
 
+
 export default function OptionsDisplay({ tracks, addFunc }) {
   return (
     <>

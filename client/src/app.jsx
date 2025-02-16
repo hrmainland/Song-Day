@@ -9,7 +9,7 @@ import JoinGame from "./routes/joinGame";
 import Game from "./routes/game";
 
 import AddSongs from "./routes/addSongs";
-// import VoteSongs from "./routes/voteSongs";
+import VoteSongs from "./routes/voteSongs";
 import NewVote from "./routes/newVote";
 import CreatePlaylist from "./routes/createPlaylist";
 import Login from "./routes/login";
@@ -39,7 +39,7 @@ export default function App() {
           <Route path="/join-session" element={<JoinGame />} />
           <Route path="/session/:gameCode" element={<Game />} />
           <Route path="/session/:gameCode/add-songs" element={<AddSongs />} />
-          {/* <Route path="/session/:gameCode/vote" element={<VoteSongs />} /> */}
+          <Route path="/session/:gameCode/vote" element={<VoteSongs />} />
           <Route path="/session/:gameCode/new-vote" element={<NewVote />} />
           <Route
             path="/session/:gameCode/create-playlist"
