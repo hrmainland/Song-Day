@@ -18,6 +18,8 @@ import {
 
 import { usefulTrackComponents } from "../../utils/spotifyApiUtils";
 
+import { getMultipleTracksById } from "../../utils/spotifyCalls";
+
 export default function VoteSongs() {
   const navigate = useNavigate();
   const { gameCode } = useParams();
@@ -32,6 +34,15 @@ export default function VoteSongs() {
   const [addView, setAddView] = useState(true);
   const [votesSubmitted, setVotesSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [accessToken, setAccessToken] = useState(null);
+
+  useEffect(() => {
+    const asyncFunc = async () => {
+      const data = await fetchMe();
+      setAccessToken(data.access_token);
+    };
+    asyncFunc();
+  }, []);
 
   // TODO cleanup so game isn't being retrieved three times
   useEffect(() => {
@@ -49,7 +60,8 @@ export default function VoteSongs() {
 
       fetchAndSetIds(game);
       const sessionShortlist = getSessionShortlist();
-      if (sessionShortlist.length === 0) {
+      if (sessionShortlist.length === 0 && accessToken) {
+        console.log('accessToken :>> ', accessToken);
         setOptionsFromDb(game);
       } else {
         setOptions(getSessionOptions());
@@ -57,25 +69,28 @@ export default function VoteSongs() {
       }
     };
     asyncFunc();
-  }, []);
+  }, [accessToken]);
 
   const updateView = (event) => {
     event.preventDefault();
     setAddView(!addView);
   }
 
-
-  // UPDATE
   const fetchAndSetIds = async (game) => {
-    const tracksResponse = await getAllVotableTracks(game._id);
-    setInitialIds(tracksResponse);
+    const trackIds = await getAllVotableTracks(game._id);
     // setInitialIds(tracksResponse.map((elem) => elem._id));
+    setInitialIds(trackIds);
   };
 
   const setOptionsFromDb = async (game) => {
     const tracksResponse = await getAllVotableTracks(game._id);
-    setSessionOptions(tracksResponse);
-    setOptions(tracksResponse);
+    console.log('tracksResponse :>> ', tracksResponse);
+    const SpotifyTracks = await getMultipleTracksById(accessToken, tracksResponse);
+    const trackObjects = SpotifyTracks.map((trackId) => {
+      return usefulTrackComponents(trackId);
+    })
+    setSessionOptions(trackObjects);
+    setOptions(trackObjects);
   };
 
   const clearLocalStorage = () => {
@@ -101,7 +116,6 @@ export default function VoteSongs() {
 
   const setSessionArray = (sessionKey, data) => {
     localStorage.setItem(sessionKey, JSON.stringify(data));
-    // localStorage.setItem(sessionKey, data);
   };
 
   const getSessionOptions = () => getSessionArray(OPTIONS_KEY);
@@ -174,7 +188,7 @@ export default function VoteSongs() {
     const shortlistSet = new Set(sessionShortlist.map((track) => track.id));
     var optionsIndex;
     for (let i = 0; i < initialIds.length; i++) {
-      if (initialIds[i] === track._id) {
+      if (initialIds[i] === track.id) {
         optionsIndex = i - removedCount;
       }
       if (shortlistSet.has(initialIds[i])) removedCount++;
@@ -189,13 +203,12 @@ export default function VoteSongs() {
     setOptions(sessionOptions);
   };
 
-  // update this once votegroup has changed
   const submitShortlist = async () => {
     const game = await fetchGame(gameCode);
     const sessionShortlist = getSessionShortlist();
     var items = [];
     for (let [index, track] of sessionShortlist.entries()) {
-      const item = { track: track._id, vote: index };
+      const item = { track: track.id, vote: index };
       items.push(item);
     }
 
@@ -253,13 +266,12 @@ export default function VoteSongs() {
                 display: addView ? "flex" : "none",
               }}
             >
-              <div>{options.map((id) => usefulTrackComponents(id))}</div>
-              {/* <OptionsDisplay
-                tracks={getSessionOptions.map((track) => usefulTrackComponents(track))}
+              <OptionsDisplay
+                tracks={getSessionOptions()}
                 addFunc={addTrackToShortlist}
                 // todo add tooltip on list item by passing this through
                 missingTracks={voteLimit - getSessionShortlist().length}
-              ></OptionsDisplay> */}
+              ></OptionsDisplay>
             </Box>
             <Box
               display="flex"
@@ -269,12 +281,12 @@ export default function VoteSongs() {
               }}
             >
               <DragDropContext onDragEnd={onDragEnd}>
-                {/* <ShortlistDisplay
+                <ShortlistDisplay
                   tracks={getSessionShortlist()}
                   removeFunc={shortlistToOptions}
                   submitFunc={submitShortlist}
                   missingTracks={voteLimit - getSessionShortlist().length}
-                ></ShortlistDisplay> */}
+                ></ShortlistDisplay>
               </DragDropContext>
             </Box>
           </>
@@ -283,4 +295,3 @@ export default function VoteSongs() {
     </>
   );
 }
-

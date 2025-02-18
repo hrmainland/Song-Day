@@ -25,7 +25,7 @@ export default function ShortlistDisplay({
             {tracks.map((track, index) => {
               return (
                 <ShortlistDisplayItem
-                  key={track._id}
+                  key={track.id}
                   track={track}
                   index={index}
                   removeFunc={removeFunc}

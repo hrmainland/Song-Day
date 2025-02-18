@@ -9,8 +9,7 @@ import { Draggable } from "react-beautiful-dnd";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
 export default function ShortlistDisplayItem({ track, index, removeFunc }) {
-  const { name, artists, img, _id } = track;
-  const id = _id;
+  const { name, artists, img, id } = track;
 
   return (
     <>

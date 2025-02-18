@@ -57,5 +57,6 @@ export async function getTrackById(accessToken, trackId) {
 
 export async function getMultipleTracksById(accessToken, trackIds) {
   const url = `https://api.spotify.com/v1/tracks?ids=${encodeURIComponent(trackIds.join(","))}`;
-  return await apiRequest(url, "GET", null, accessToken);
+  const tracksObject = await apiRequest(url, "GET", null, accessToken);
+  return tracksObject["tracks"];
 }

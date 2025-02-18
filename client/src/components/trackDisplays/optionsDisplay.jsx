@@ -18,13 +18,12 @@ export default function OptionsDisplay({ tracks, addFunc }) {
         <List>
           {tracks.map((track, index) => {
             return (
-              <OptionsDisplayItem
-                key={track._id}
-                track={track}
-                addFunc={addFunc}
-                index={index}
-              ></OptionsDisplayItem>
-
+                <OptionsDisplayItem
+                  key={track.id}
+                  track={track}
+                  addFunc={addFunc}
+                  index={index}
+                ></OptionsDisplayItem>
             );
           })}
         </List>
