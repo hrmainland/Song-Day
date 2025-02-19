@@ -289,17 +289,9 @@ router.get("/:gameId/create-playlist", isLoggedIn, async (req, res) => {
   const game = await Game.findById(gameId).populate([
     {
       path: "voteGroups",
-      populate: {
-        path: "items.track",
-        model: "Track",
-      },
     },
     {
       path: "trackGroups",
-      populate: {
-        path: "tracks",
-        model: "Track",
-      },
     },
   ]);
   const nVotes = game.config.nVotes;
@@ -308,7 +300,7 @@ router.get("/:gameId/create-playlist", isLoggedIn, async (req, res) => {
   const scoresMap = new Map();
   for (let voteGroup of voteGroups) {
     for (let item of voteGroup.items) {
-      const trackId = item.track.spotifyId;
+      const trackId = item.trackId;
       const vote = item.vote;
       const score = nVotes - vote;
       if (scoresMap.has(trackId)) {
@@ -320,14 +312,17 @@ router.get("/:gameId/create-playlist", isLoggedIn, async (req, res) => {
     }
   }
 
+  console.log('game :>> ', game);
+
   for (let trackGroup of game.trackGroups) {
-    console.log('trackGroup :>> ', trackGroup);
-    for (let track of trackGroup.tracks) {
-      if (!scoresMap.has(track.spotifyId)) {
-        scoresMap.set(track.spotifyId, 0);
+    for (let trackId of trackGroup.trackIds) {
+      if (!scoresMap.has(trackId)) {
+        scoresMap.set(trackId, 0);
       }
     }
   }
+
+  console.log('scoresMap :>> ', scoresMap);
 
   const shuffledScores = new Map(
     [...scoresMap.entries()].sort(() => Math.random() - 0.5)
@@ -343,7 +338,9 @@ router.get("/:gameId/create-playlist", isLoggedIn, async (req, res) => {
   const playlistData = await createPlaylist(req.user, game.title);
   const playlistJSON = await playlistData.json();
   await addTracksToPlaylist(req.user, playlistJSON.id, sortedURIs);
+  console.log('sortedURIs :>> ', sortedURIs);
   res.json(playlistJSON.id);
 });
 
 module.exports = router;
+

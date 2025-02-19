@@ -206,11 +206,14 @@ export default function VoteSongs() {
   const submitShortlist = async () => {
     const game = await fetchGame(gameCode);
     const sessionShortlist = getSessionShortlist();
+    console.log('sessionShortlist :>> ', sessionShortlist);
     var items = [];
     for (let [index, track] of sessionShortlist.entries()) {
-      const item = { track: track.id, vote: index };
+      const item = { trackId: track.id, vote: index };
       items.push(item);
     }
+
+    console.log('items :>> ', items);
 
     const voteGroup = await newVoteGroup(game._id, items);
     await addVoteGroupToGame(game._id, voteGroup._id);
