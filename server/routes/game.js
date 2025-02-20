@@ -312,8 +312,6 @@ router.get("/:gameId/create-playlist", isLoggedIn, async (req, res) => {
     }
   }
 
-  console.log('game :>> ', game);
-
   for (let trackGroup of game.trackGroups) {
     for (let trackId of trackGroup.trackIds) {
       if (!scoresMap.has(trackId)) {
@@ -321,8 +319,6 @@ router.get("/:gameId/create-playlist", isLoggedIn, async (req, res) => {
       }
     }
   }
-
-  console.log('scoresMap :>> ', scoresMap);
 
   const shuffledScores = new Map(
     [...scoresMap.entries()].sort(() => Math.random() - 0.5)

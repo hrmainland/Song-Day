@@ -134,6 +134,8 @@ router.get("/me", isLoggedIn, (req, res) => {
   }
 });
 
+
+
 // Authentication route this adds the current User to req.user once you're in
 router.get(
   "/auth",

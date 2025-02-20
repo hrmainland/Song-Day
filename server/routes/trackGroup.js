@@ -10,15 +10,6 @@ const { isLoggedIn } = require("../middleware");
 const { MongoClient, ObjectId } = require("mongodb");
 
 
-// const trackRouter = require("./track");
-
-// const createTrack = async (params) => {
-//   const track = new Track(params);
-//   await track.save();
-//   return track;
-// };
-
-// TODO consider moving this to it's own route
 // this is unused at the Track overhaul
 router.delete("/track/:trackId", async (req, res) => {
   const { trackId } = req.params;
@@ -34,23 +25,7 @@ router.delete("/track/:trackId", async (req, res) => {
 router.post("/", async (req, res, next) => {
   const { sessionTracks } = req.body;
 
-  var trackIds = [];
-
-  // create each track and add
-  for (let sessionTrack of sessionTracks) {
-    // const { name, artists, img } = sessionTrack;
-    // TrackParams = {
-    //   // to avoid id confusion with is not destructured
-    //   spotifyId: sessionTrack.id,
-    //   name,
-    //   artists,
-    //   img,
-    //   submittedBy: req.user._id,
-    // };
-
-    // const track = await createTrack(TrackParams);
-    trackIds.push(sessionTrack.id);
-  }
+  const trackIds = sessionTracks.map(({ id }) => id);
 
   trackGroupParams = { player: req.user._id, trackIds };
 
