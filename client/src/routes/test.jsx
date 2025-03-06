@@ -1,31 +1,45 @@
 import { useState, useEffect } from "react";
 import baseUrl from "../../utils/urlPrefix";
 
-export default function Test() {
-  const [tracks, setTracks] = useState([]);
-  useEffect(() => {
-    const callBackendAPI = async () => {
-      try {
-        // maybe add this line to client package.json: "proxy": "http://localhost:3500"
-        const response = await fetch(`${baseUrl}/dev/tracks`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        const body = await response.json();
-        setTracks(body);
-      } catch (error) {
-        console.error(error.message);
-      }
-    };
-    callBackendAPI();
-  }, []);
+import Navbar from "../components/navbar";
 
+import Box from "@mui/material/Box";
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
+
+
+export default function Test() {
   return (
-    <div>
-      <h1>Tracks:</h1>
-      {tracks.map((track, i) => (
-        <h2 key={i}>{track}</h2>
-      ))}
-    </div>
-  );
+    <>
+    <Navbar></Navbar>
+
+<Box
+      sx={{
+        width: "100%", // Shrinks the box on small screens
+        padding: { xs: "8px", sm: "16px" }, // Optional: adjust padding
+        backgroundColor: "lightgray",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: "8px",
+      }}
+    >
+      <Typography
+        sx={{
+          fontSize: { xs: "20px", sm: "24px" }, // Smaller text on small screens
+          textAlign: "center",
+        }}
+      >
+        Responsive Text
+      </Typography>
+    </Box>
+
+    </>
+  )
 }
+
+
+

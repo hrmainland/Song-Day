@@ -9,6 +9,10 @@ HTML, body {
     border: 0px;
   }
 
+body {
+  background-color: #f9fefe;
+}
+
 *{
   font-family: "Inria Sans", sans-serif;
 }
@@ -75,3 +79,4 @@ HTML, body {
 .home-btn{
   color: white;
 }
+

@@ -134,7 +134,35 @@ router.get("/me", isLoggedIn, (req, res) => {
   }
 });
 
+router.get('/refresh-token', function(req, res) {
 
+  var refresh_token = req.user.refresh_token;
+  var authOptions = {
+    url: 'https://accounts.spotify.com/api/token',
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded',
+      'Authorization': 'Basic ' + (new Buffer.from(process.env.CLIENT_ID + ':' + process.env.CLIENT_SECRET).toString('base64'))
+    },
+    form: {
+      grant_type: 'refresh_token',
+      refresh_token: refresh_token
+    },
+    json: true
+  };
+
+  console.log('authOptions :>> ', authOptions);
+
+  router.post(authOptions, function(error, response, body) {
+    if (!error && response.statusCode === 200) {
+      var access_token = body.access_token,
+          refresh_token = body.refresh_token || refresh_token;
+      console.log('access_token :>> ', access_token);
+    }
+    else {
+      console.log('error :>> ', error);
+    }
+  });
+});
 
 // Authentication route this adds the current User to req.user once you're in
 router.get(

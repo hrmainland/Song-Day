@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { useState } from "react";
+import { memo, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -12,15 +12,27 @@ import baseUrl from "../../utils/urlPrefix";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/navbar";
 
-import { addGameToMe, newGame } from "../../utils/apiCalls";
+import { addGameToMe, newGame} from "../../utils/apiCalls";
+
+
+// testing
+import {fetchMe, refreshToken} from "../../utils/apiCalls";
+import { getRefreshToken } from "../../utils/spotifyCalls";
 
 export default function NewGame() {
   const navigate = useNavigate();
-  const [numSongs, setNumSongs] = useState([]);
-  const [numVotes, setNumVotes] = useState([]);
-  const [gameName, setGameName] = useState([]);
+  const [numSongs, setNumSongs] = useState(null);
+  const [numVotes, setNumVotes] = useState(null);
+  const [gameName, setGameName] = useState(null);
+
+  // testing
+  const [me, setMe] = useState(null);
+  const [returnValue, setReturnValue] = useState(null);
 
   const submit = async () => {
+    if (!gameName || !numSongs || !numVotes) {
+      return;
+    }
     const settings = { numSongs, numVotes };
     const game = await newGame(gameName, settings);
     await addGameToMe(game._id);
@@ -31,6 +43,27 @@ export default function NewGame() {
     event.preventDefault();
     submit();
   };
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const meData = await fetchMe();
+      setMe(meData);
+    };
+    fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    const refresh = async () => {
+      if (me) {
+        setReturnValue(await getRefreshToken(me));
+      }
+    };
+    refresh();
+  }, [me]);
+
+  useEffect(() => {
+    console.log(returnValue);
+  }, [returnValue]);
 
   return (
     <>

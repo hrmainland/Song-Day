@@ -60,3 +60,27 @@ export async function getMultipleTracksById(accessToken, trackIds) {
   const tracksObject = await apiRequest(url, "GET", null, accessToken);
   return tracksObject["tracks"];
 }
+
+
+export async function getRefreshToken(user) {
+  // refresh token that has been previously stored
+  const refreshToken = user.refresh_token;
+  const clientId = "3db1ac7a10994db384064b7ae0b88369"
+  const url = "https://accounts.spotify.com/api/token";
+
+  const payload = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+      client_id: clientId
+    }),
+  }
+  const body = await fetch(url, payload);
+  const response = await body.json();
+
+  return response;
+}

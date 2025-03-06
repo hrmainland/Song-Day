@@ -50,6 +50,10 @@ export async function fetchMyGames() {
   return await apiRequest("/user/my-games");
 }
 
+export async function refreshToken() {
+  return await apiRequest("/user/refresh-token");
+}
+
 // Game endpoints
 
 export async function fetchGame(gameCode) {
