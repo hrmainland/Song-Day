@@ -53,8 +53,7 @@ const sessionConfig = {
 };
 
 const port = process.env.PORT || 3500;
-// const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/song-day";
-const dbUrl = "mongodb+srv://hrmainland:Parkour99@cluster0.ucmtg2p.mongodb.net/song-day?retryWrites=true&w=majority&appName=Cluster0";
+const dbUrl = process.env.DB_URL
 
 app.use(express.urlencoded({ extended: true }));
 app.use(session(sessionConfig));
@@ -79,7 +78,6 @@ app.use((err, req, res, next) => {
 async function main() {
   await mongoose.connect(dbUrl);
   console.log("Connection Open - Yay");
-  // quickSeedTracks()
 }
 
 main().catch((err) => console.log(err));
