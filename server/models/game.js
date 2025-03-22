@@ -24,6 +24,7 @@ const gameSchema = new Schema({
   title: String,
   config: gameConfigSchema,
   gameCode: String,
+  status: String,
   host: {
     type: Schema.Types.ObjectId,
     ref: "User",
