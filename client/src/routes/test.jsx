@@ -3,14 +3,14 @@ import baseUrl from "../../utils/urlPrefix";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import theme from "../../utils/theme";
 
+import TopContainer from "../components/topContainer";
 import Navbar from "../components/navbar";
 
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
-import { Button } from "@mui/material";
+import { Button, Container, TextField } from "@mui/material";
 
-import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 
 import { ParallaxProvider } from "react-scroll-parallax";
@@ -19,6 +19,10 @@ import { Parallax } from "react-scroll-parallax";
 import { Link } from "react-router-dom";
 
 import { useParallax } from "react-scroll-parallax";
+
+import IconButton from "@mui/material/IconButton";
+import SearchIcon from "@mui/icons-material/Search";
+
 
 const Component = () => {
   const { ref } = useParallax({ speed: 10 });
@@ -52,47 +56,20 @@ const Heading = () => {
 
 export default function Test() {
   return (
-
-    <ParallaxProvider>
-      <Parallax speed={-200}>
-        <div className="home-background">
-          <Parallax speed={50}>
-            <Grid container spacing={6} justifyContent={"center"}>
-              <Grid item xs={12} textAlign={"center"}>
-                <h1 className="heading">Song Day</h1>
-              </Grid>
-              <Grid item xs={12} textAlign="center">
-                <Button
-                  variant="outlined"
-                  component={Link}
-                  to="/home"
-                  sx={{
-                    textTransform: "none",
-                    color: "white",
-                    borderColor: "lightslategray",
-                    "&:hover": {
-                      borderColor: "white",
-                    },
-                    fontSize: "1.1rem",
-                    fontFamily: "Inria Sans",
-                  }}
-                >
-                  Get Started
-                </Button>
-              </Grid>
-            </Grid>
-          </Parallax>
-        </div>
-      </Parallax>
-      <div className="white-div">
-        <br />
-        <div>
-          <h2>How it works:</h2>
-          <p>
-            This will be the home page.
-          </p>
-        </div>
-      </div>
-    </ParallaxProvider>
+    <>
+    <Navbar></Navbar>
+    <TopContainer>
+      <h2>
+        Your Sessions
+      </h2>
+      <TextField
+      size="small"
+      placeholder="Search"
+      sx={{marginBottom: "1rem"}}></TextField>
+      <IconButton type="submit" aria-label="search">
+      <SearchIcon style={{ fill: "blue" }} />
+    </IconButton>
+    </TopContainer>
+  </>
   );
 }
