@@ -62,7 +62,7 @@ import theme from "../../utils/theme";
 export default function Navbar() {
   return (
     <ThemeProvider theme={theme}>
-    {/* <Box sx={{ flexGrow: 1 }}> */}
+    <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
           <IconButton
@@ -74,13 +74,13 @@ export default function Navbar() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
             SongDay
           </Typography>
           <Button color="inherit">Login</Button>
         </Toolbar>
       </AppBar>
-    {/* </Box> */}
+    </Box>
     </ThemeProvider>
   );
 }

@@ -1,24 +1,29 @@
-import { Paper } from "@mui/material";
+import { Paper, Box, ThemeProvider } from "@mui/material";
 
-export default function TopContainer({children}) {
-    return (
-        <>
-        <Paper
+import theme from "../../utils/theme";
+
+export default function TopContainer({ children }) {
+  return (
+    <ThemeProvider theme={theme}>
+      <Paper
         sx={{
-            width: "100%",
-            height: "20%",
-            paddingTop: { xs: "0.1rem", sm: "0.1rem" },
-            paddingBottom: { xs: "0.2rem", sm: "0.2rem" },
-            paddingLeft: { xs: "2rem", sm: "4rem" },
-            paddingRight: { xs: "2rem", sm: "4rem" },
-            
-            top: 0,
-            left: 0,
-            zIndex: -1
+          width: "100%",
+          top: 0,
+          left: 0,
+          p: 1,
         }}
+      >
+        <Box
+          sx={{
+            maxWidth: "1000px",
+            marginLeft: "auto",
+            marginRight: "auto",
+            p: 0,
+          }}
         >
-            {children}
-        </Paper>
-        </>
-    );
+          {children}
+        </Box>
+      </Paper>
+    </ThemeProvider>
+  );
 }
