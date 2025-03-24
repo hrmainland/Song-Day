@@ -1,16 +1,17 @@
 import { Paper, Box, ThemeProvider } from "@mui/material";
 
-import theme from "../../utils/theme";
+import CenterBox from "./centerBox";
 
-export default function TopContainer({ children }) {
+import theme from "../../../utils/theme";
+
+export default function BottomContainer({ children }) {
   return (
     <ThemeProvider theme={theme}>
       <Paper
         sx={{
           width: "100%",
-          top: 0,
-          left: 0,
-          p: 1,
+          position: "fixed",
+          bottom: 0,
         }}
       >
         <Box
@@ -18,10 +19,13 @@ export default function TopContainer({ children }) {
             maxWidth: "1000px",
             marginLeft: "auto",
             marginRight: "auto",
-            p: 0,
+            p: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          {children}
+            {children}
         </Box>
       </Paper>
     </ThemeProvider>
