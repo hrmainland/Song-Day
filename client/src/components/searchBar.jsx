@@ -1,22 +1,29 @@
+import React, { forwardRef } from 'react';
 import { Box, Input, IconButton} from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search';
 
-export default function SearchBar() {
+const SearchBar = forwardRef(( props, ref ) => {
+  const { onClick } = props
+
   return (
     <Box
+          onClick={onClick}
           sx={{
             borderRadius: "20px",
             border: "1px solid rgba(0, 0, 0, 0.2)",
-            padding: "0px 8px",
+            paddingLeft: "20px",
+            paddingRight: "10px",
             display: "flex",
             alignItems: "left",
-            maxWidth: "500px",
+            pt:"2px",
+            pb:"2px",
           }}
         >
           <Input
             placeholder="Search"
             disableUnderline
             fullWidth
+            inputRef={ref}
             sx={{ color: "inherit", fontSize: "1rem" }}
           />
           <IconButton sx={{ p: "6px" }}>
@@ -24,4 +31,7 @@ export default function SearchBar() {
           </IconButton>
         </Box>
   )
-}
+});
+
+export default SearchBar;
+

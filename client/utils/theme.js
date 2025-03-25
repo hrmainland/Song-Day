@@ -8,7 +8,7 @@ const theme = createTheme({
       main: '#407ea0',
     },
     secondary: {
-      main: '##C28868',
+      main: '#F89907',
     },
   },
   breakpoints: {
@@ -16,6 +16,7 @@ const theme = createTheme({
       xxs: 0,
       xs: 450,
       sm: 600,
+      twocard: 652,
       md: 900,
       lg: 1200,
       xl: 1536,

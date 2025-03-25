@@ -10,10 +10,11 @@ export default function TopContainer({ children }) {
       <Paper
         sx={{
           width: "100%",
+          border: "none",
         }}
       >
         <CenterBox
-          maxWidth="1000px"
+          maxWidth="1200px"
           p={2}
         >
           {children}

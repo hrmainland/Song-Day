@@ -12,6 +12,10 @@ export default function BottomContainer({ children }) {
           width: "100%",
           position: "fixed",
           bottom: 0,
+          display:{
+            xs: "flex",
+            sm: "none",
+          },
         }}
       >
         <Box

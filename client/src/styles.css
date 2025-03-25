@@ -12,7 +12,8 @@ HTML, body {
   }
 
 body {
-  background-color: #f9fefe;
+  /* background-color: #f9fefe; */
+  background-color: #ffffff;
 }
 
 *{

@@ -63,7 +63,7 @@ export default function Navbar() {
   return (
     <ThemeProvider theme={theme}>
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="sticky" top="0">
         <Toolbar>
           <IconButton
             size="large"

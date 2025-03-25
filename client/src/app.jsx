@@ -13,14 +13,18 @@ import VoteSongs from "./routes/voteSongs";
 import NewVote from "./routes/newVote";
 import CreatePlaylist from "./routes/createPlaylist";
 import Login from "./routes/login";
-import Test from "./routes/test";
-import Grid from "./routes/grid";
-import Pad from "./routes/pad";
+
 import Root from "./routes/root";
 import LoginRedirect from "./routes/loginRedirect";
 import NotFound from "./routes/notFound";
 
 import PrivateRoutes from "../utils/privateRoutes";
+
+// dev
+import Test from "./routes/test";
+import TestGame from "./routes/testGame";
+import Grid from "./routes/grid";
+import Pad from "./routes/pad";
 
 export default function App() {
   return (
@@ -49,6 +53,7 @@ export default function App() {
 
         {/* TODO remove these tests */}
         <Route path="/test" element={<Test />} />
+        <Route path="/testgame" element={<TestGame />} />
         <Route path="/grid" element={<Grid />} />
         <Route path="/pad" element={<Pad />} />
 
