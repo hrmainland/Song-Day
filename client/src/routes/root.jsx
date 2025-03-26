@@ -1,42 +1,87 @@
-import { Grid, Button } from "@mui/material";
+import { Grid, Button, useMediaQuery, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 import { ParallaxProvider } from "react-scroll-parallax";
 import { Parallax } from "react-scroll-parallax";
 
+import LoginDialog from "../components/loginDialog";
+
 export default function Root() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  
+  const handleLoginOpen = () => {
+    setLoginDialogOpen(true);
+  };
+  
+  const handleLoginClose = () => {
+    setLoginDialogOpen(false);
+  };
+  
   return (
     <ParallaxProvider>
-      <Parallax speed={-200}>
+      {isMobile ? (
+        // Mobile view - no parallax effect
         <div className="home-background">
-          <Parallax speed={50}>
-            <Grid container spacing={6} justifyContent={"center"}>
-              <Grid item xs={12} textAlign={"center"}>
-                <h1 className="heading">Song Day</h1>
-              </Grid>
-              <Grid item xs={12} textAlign="center">
-                <Button
-                  variant="outlined"
-                  component={Link}
-                  to="/home"
-                  sx={{
-                    textTransform: "none",
-                    color: "white",
-                    borderColor: "lightslategray",
-                    "&:hover": {
-                      borderColor: "white",
-                    },
-                    fontSize: "1.1rem",
-                    fontFamily: "Inria Sans",
-                  }}
-                >
-                  Get Started
-                </Button>
-              </Grid>
+          <Grid container spacing={4} justifyContent={"center"}>
+            <Grid item xs={12} textAlign={"center"}>
+              <h1 className="heading">Song Day</h1>
             </Grid>
-          </Parallax>
+            <Grid item xs={12} textAlign="center">
+              <Button
+                variant="outlined"
+                component={Link}
+                to="/home"
+                sx={{
+                  textTransform: "none",
+                  color: "white",
+                  borderColor: "lightslategray",
+                  "&:hover": {
+                    borderColor: "white",
+                  },
+                  fontSize: "1.1rem",
+                  padding: "10px 24px",
+                }}
+              >
+                Get Started
+              </Button>
+            </Grid>
+          </Grid>
         </div>
-      </Parallax>
+      ) : (
+        // Desktop view - with parallax effect
+        <Parallax speed={-60}>
+          <div className="home-background">
+            <Parallax speed={50}>
+              <Grid container spacing={6} justifyContent={"center"}>
+                <Grid item xs={12} textAlign={"center"}>
+                  <h1 className="heading">Song Day</h1>
+                </Grid>
+                <Grid item xs={12} textAlign="center">
+                  <Button
+                    variant="outlined"
+                    component={Link}
+                    to="/home"
+                    sx={{
+                      textTransform: "none",
+                      color: "white",
+                      borderColor: "lightslategray",
+                      "&:hover": {
+                        borderColor: "white",
+                      },
+                      fontSize: "1.1rem",
+                    }}
+                  >
+                    Get Started
+                  </Button>
+                </Grid>
+              </Grid>
+            </Parallax>
+          </div>
+        </Parallax>
+      )}
       <div className="white-div">
         <br />
         <div className="home-content">
@@ -59,8 +104,7 @@ export default function Root() {
           <div className="home-buttons">
             <Button 
               variant="contained" 
-              component={Link} 
-              to="/login"
+              onClick={handleLoginOpen}
               sx={{
                 textTransform: "none",
                 margin: "10px",
@@ -84,6 +128,9 @@ export default function Root() {
           </div>
         </div>
       </div>
+      
+      {/* Login Dialog */}
+      <LoginDialog open={loginDialogOpen} onClose={handleLoginClose} />
     </ParallaxProvider>
   );
 }

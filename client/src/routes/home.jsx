@@ -1,80 +1,81 @@
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Container, Button, Grid, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "../../utils/theme";
+import { Box, Grid } from "@mui/material";
+
 import Navbar from "../components/navbar";
-import Games from "../components/gamesIndex";
+import TopContainer from "../components/base/topContainer";
+import SearchBar from "../components/searchBar";
+import JoinSessionDialog from "../components/joinSessionDialog";
+import CreateSessionDialog from "../components/createSessionDialog";
+import PageHeader from "../components/pageHeader";
+import HeaderButtons from "../components/headerButtons";
 import GamesIndex from "../components/gamesIndex";
-
-const theme = createTheme();
-
-theme.typography.h3 = {
-  fontSize: "1.6rem",
-  "@media (min-width:600px)": {
-    fontSize: "2rem",
-  },
-  [theme.breakpoints.up("md")]: {
-    fontSize: "2rem",
-  },
-};
+import MobileBottomBar from "../components/mobileBottomBar";
 
 export default function Home() {
+  const [joinOpen, setJoinOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+
+  const handleJoinOpen = () => {
+    setJoinOpen(true);
+  };
+
+  const handleJoinClose = () => {
+    setJoinOpen(false);
+  };
+  
+  const handleCreateOpen = () => {
+    setCreateOpen(true);
+  };
+  
+  const handleCreateClose = () => {
+    setCreateOpen(false);
+  };
+
   return (
-    <>
-      <Navbar></Navbar>
-      <div className="secondary-background">
-        <Container
-          fixed
-          className="top-container"
-          // sx={{
-          //   mt: 5,
-          // }}
-        >
-          <Grid container>
-            <Grid item xs={12} md={8}>
-              <ThemeProvider theme={theme}>
-                <Typography
-                  variant="h3"
-                  gutterBottom
-                  sx={{
-                    textAlign: {
-                      xxs: "center",
-                      md: "left",
-                    },
-                  }}
-                  className="heading"
-                >
-                  Your Sessions
-                </Typography>
-              </ThemeProvider>
+    <ThemeProvider theme={theme}>
+      <Box sx={{ bgcolor: 'rgba(249, 250, 252, 1)', minHeight: '100vh' }}>
+        <Navbar />
+        <TopContainer sx={{ py: 1 }}>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xxs={12} sm={4}>
+              <PageHeader title="Your Sessions" />
             </Grid>
+            
+            <Grid item xxs={12} sm={4}>
+              <SearchBar />
+            </Grid>
+
             <Grid
-              container
               item
-              direction="row"
-              justifyContent="space-around"
-              alignItems="center"
-              xs={12}
-              md={4}
+              xxs={12}
+              sm={4}
+              sx={{ 
+                display: { xxs: "none", sm: "flex" },
+                justifyContent: "flex-end"
+              }}
             >
-              <Grid item>
-                <Button variant="outlined" component={Link} to={"/new-session"}>
-                  Create Session
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button
-                  variant="outlined"
-                  component={Link}
-                  to={"/join-session"}
-                >
-                  Join Session
-                </Button>
-              </Grid>
+              <HeaderButtons 
+                onCreateClick={handleCreateOpen} 
+                onJoinClick={handleJoinOpen} 
+              />
             </Grid>
           </Grid>
-          <GamesIndex></GamesIndex>
-        </Container>
-      </div>
-    </>
+        </TopContainer>
+        
+        <Box sx={{ mb: "120px", mt: 2 }}>
+          <GamesIndex />
+        </Box>
+
+        <MobileBottomBar 
+          onCreateClick={handleCreateOpen}
+          onJoinClick={handleJoinOpen}
+        />
+
+        <JoinSessionDialog open={joinOpen} onClose={handleJoinClose} />
+        <CreateSessionDialog open={createOpen} onClose={handleCreateClose} />
+      </Box>
+    </ThemeProvider>
   );
 }

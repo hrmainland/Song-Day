@@ -45,7 +45,7 @@ body {
   position: relative;
   z-index: 1;  /* Lower z-index so it stays behind */
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   background-color: white;
 }
 
@@ -72,8 +72,45 @@ body {
   margin-bottom: 1rem;
 }
 
+@media (max-width: 768px) {
+  .home-content {
+    padding: 1.5rem;
+  }
+  
+  .home-content ol {
+    max-width: 100%;
+    padding-left: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-content {
+    padding: 1rem;
+  }
+  
+  .home-content ol {
+    padding-left: 1rem;
+  }
+  
+  .home-content li {
+    margin-bottom: 0.75rem;
+  }
+}
+
 .home-buttons {
   margin-top: 2rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+@media (max-width: 480px) {
+  .home-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 .secondary-background {
@@ -92,6 +129,20 @@ body {
   color: white;
   font-size: 100px;
   margin: 20px 0;
+}
+
+@media (max-width: 768px) {
+  .home-background h1 {
+    font-size: 60px;
+    margin: 10px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-background h1 {
+    font-size: 48px;
+    margin: 8px 0;
+  }
 }
 
 .home-background form {

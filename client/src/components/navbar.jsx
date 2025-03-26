@@ -47,7 +47,7 @@
 //   );
 // }
 
-import * as React from 'react';
+import React, { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -65,7 +65,19 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../utils/theme";
 import { Link } from 'react-router-dom';
 
+import LoginDialog from './loginDialog';
+
 export default function Navbar() {
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  
+  const handleLoginOpen = () => {
+    setLoginDialogOpen(true);
+  };
+  
+  const handleLoginClose = () => {
+    setLoginDialogOpen(false);
+  };
+  
   return (
     <ThemeProvider theme={theme}>
       <AppBar 
@@ -166,6 +178,7 @@ export default function Navbar() {
                 variant="contained" 
                 color="primary"
                 startIcon={<AccountCircleIcon />}
+                onClick={handleLoginOpen}
                 sx={{ 
                   borderRadius: '30px',
                   px: { xxs: 2, sm: 3 },
@@ -178,6 +191,9 @@ export default function Navbar() {
           </Toolbar>
         </Container>
       </AppBar>
+      
+      {/* Login Dialog */}
+      <LoginDialog open={loginDialogOpen} onClose={handleLoginClose} />
     </ThemeProvider>
   );
 }
