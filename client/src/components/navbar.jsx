@@ -59,11 +59,12 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../utils/theme";
 
+
 export default function Navbar() {
   return (
     <ThemeProvider theme={theme}>
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="sticky" top="0">
+      <AppBar position="sticky" top="0" sx={{ backgroundColor: theme.palette.primary.light }}>
         <Toolbar>
           <IconButton
             size="large"

@@ -24,6 +24,8 @@ const SearchBar = forwardRef(( props, ref ) => {
             disableUnderline
             fullWidth
             inputRef={ref}
+            inputMode="text"
+            autoFocus
             sx={{ color: "inherit", fontSize: "1rem" }}
           />
           <IconButton sx={{ p: "6px" }}>

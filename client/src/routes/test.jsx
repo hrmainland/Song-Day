@@ -143,15 +143,6 @@ export default function Test() {
               <Grid item>
                 <SessionCard></SessionCard>
               </Grid>
-              <Grid item>
-                <SessionCard></SessionCard>
-              </Grid>
-              <Grid item>
-                <SessionCard></SessionCard>
-              </Grid>
-              <Grid item>
-                <SessionCard></SessionCard>
-              </Grid>
             </Grid>
           </CenterBox>
         </CenterBox>
