@@ -56,104 +56,264 @@ export default function Test() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Navbar></Navbar>
-      <TopContainer>
-        <Typography variant="h5" gutterBottom>
-          {" "}
-          Your Sessions
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xxs={12} sm={6}>
-            <SearchBar />
-          </Grid>
+      <Box sx={{ bgcolor: 'rgba(249, 250, 252, 1)', minHeight: '100vh' }}>
+        <Navbar></Navbar>
+        <TopContainer>
+        <Box sx={{ pt: 2, pb: 3 }}>
+          <Box sx={{ 
+            display: 'inline-block', 
+            position: 'relative',
+            mb: 3,
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              width: '100%',
+              height: '12px',
+              bottom: '2px',
+              left: 0,
+              backgroundColor: 'rgba(93, 74, 156, 0.2)',
+              zIndex: -1,
+              borderRadius: '4px'
+            }
+          }}>
+            <Typography variant="h4" fontWeight="500" sx={{ letterSpacing: '-0.5px' }}>
+              Your Sessions
+            </Typography>
+          </Box>
+          <Grid container spacing={3} alignItems="center">
+            <Grid item xxs={12} sm={6}>
+              <SearchBar />
+            </Grid>
 
-          <Grid
-            item
-            xs={12}
-            sm={6}
-            sx={{ display: { xxs: "none", sm: "flex" } }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                gap: 2, // spacing between buttons
-                width: "100%",
-              }}
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              sx={{ display: { xxs: "none", sm: "flex" } }}
             >
-              <Button
-                variant="outlined"
-                color="primary"
-                sx={{ textTransform: "none", fontWeight: "normal" }}
-              >
-                New Session
-              </Button>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={handleClickOpen}
+              <Box
                 sx={{
-                  textTransform: "none",
-                  fontWeight: "normal",
-                  color: "white",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                  gap: 2,
+                  width: "100%",
                 }}
               >
-                Join Session
-              </Button>
-            </Box>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  size="large"
+                  sx={{ 
+                    borderRadius: '12px',
+                    px: 3,
+                    fontWeight: 500
+                  }}
+                >
+                  New Session
+                </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  size="large"
+                  onClick={handleClickOpen}
+                  sx={{
+                    borderRadius: '12px',
+                    px: 3,
+                    color: "white",
+                    fontWeight: 500,
+                    boxShadow: '0 4px 12px rgba(93,74,156,0.25)'
+                  }}
+                >
+                  Join Session
+                </Button>
+              </Box>
+            </Grid>
           </Grid>
-        </Grid>
+        </Box>
       </TopContainer>
-      <Box sx={{ mb: "80px" }}>
+      <Box sx={{ mb: "120px", mt: 4 }}>
         <CenterBox maxWidth="1200px" p={2}>
-          <Typography gutterBottom variant="h6">
-            Recent
-          </Typography>
-          <CenterBox maxWidth="1150px" p={1}>
-            <Grid
-              container
-              direction="row"
-              justifyContent={{ xxs: "center", twocard: "left" }}
-              alignItems="center"
-              spacing={4}
-            >
-              <Grid item>
-                <SessionCard></SessionCard>
+          <Box sx={{ mb: 4 }}>
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              mb: 3
+            }}>
+              <Box 
+                sx={{ 
+                  width: '8px', 
+                  height: '28px', 
+                  bgcolor: 'secondary.main', 
+                  borderRadius: '4px',
+                  mr: 2,
+                  boxShadow: '0 2px 8px rgba(93,74,156,0.3)'
+                }} 
+              />
+              <Typography 
+                variant="h5" 
+                fontWeight="500" 
+                sx={{ letterSpacing: '-0.3px' }}
+              >
+                Recent
+              </Typography>
+            </Box>
+            
+            <Box sx={{ 
+              bgcolor: 'background.paper', 
+              borderRadius: '16px', 
+              p: 3, 
+              boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+              border: '1px solid rgba(93,74,156,0.1)',
+              position: 'relative',
+              overflow: 'hidden',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                height: '4px',
+                width: '100%',
+                background: 'linear-gradient(90deg, rgba(93,74,156,0.7) 0%, rgba(93,74,156,0.3) 100%)',
+              }
+            }}>
+              <Grid
+                container
+                direction="row"
+                justifyContent={{ xxs: "center", twocard: "flex-start" }}
+                alignItems="stretch"
+                spacing={4}
+              >
+                <Grid item>
+                  <SessionCard></SessionCard>
+                </Grid>
+                <Grid item>
+                  <SessionCard></SessionCard>
+                </Grid>
               </Grid>
-              <Grid item>
-                <SessionCard></SessionCard>
+            </Box>
+          </Box>
+          
+          <Box 
+            sx={{
+              mb: 4,
+              mx: 'auto',
+              height: '1px',
+              width: '100%',
+              maxWidth: '500px',
+              background: 'linear-gradient(90deg, rgba(93,74,156,0) 0%, rgba(93,74,156,0.5) 50%, rgba(93,74,156,0) 100%)',
+            }}
+          />
+          
+          <Box>
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              mb: 3
+            }}>
+              <Box 
+                sx={{ 
+                  width: '8px', 
+                  height: '28px', 
+                  bgcolor: 'primary.main', 
+                  borderRadius: '4px',
+                  mr: 2,
+                  boxShadow: '0 2px 8px rgba(64,126,160,0.3)'
+                }} 
+              />
+              <Typography 
+                variant="h5" 
+                fontWeight="500" 
+                sx={{ letterSpacing: '-0.3px' }}
+              >
+                All Sessions
+              </Typography>
+            </Box>
+            
+            <Box sx={{ 
+              bgcolor: 'background.paper', 
+              borderRadius: '16px', 
+              p: 3, 
+              boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+              border: '1px solid rgba(64,126,160,0.1)',
+              position: 'relative',
+              overflow: 'hidden',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                height: '4px',
+                width: '100%',
+                background: 'linear-gradient(90deg, rgba(64,126,160,0.7) 0%, rgba(64,126,160,0.3) 100%)',
+              }
+            }}>
+              <Grid
+                container
+                direction="row"
+                justifyContent={{ xxs: "center", twocard: "flex-start" }}
+                alignItems="stretch"
+                spacing={4}
+              >
+                <Grid item>
+                  <SessionCard></SessionCard>
+                </Grid>
               </Grid>
-            </Grid>
-          </CenterBox>
-          <br />
-          <Divider />
-          <br />
-          <Typography gutterBottom gutterTop variant="h6">
-            All
-          </Typography>
-          <CenterBox maxWidth="1150px" p={1}>
-            <Grid
-              container
-              direction="row"
-              justifyContent={{ xxs: "center", twocard: "left" }}
-              alignItems="center"
-              spacing={4}
-            >
-              <Grid item>
-                <SessionCard></SessionCard>
-              </Grid>
-            </Grid>
-          </CenterBox>
+            </Box>
+          </Box>
         </CenterBox>
       </Box>
-      <BottomContainer>
-        <Stack direction="row" spacing={2}>
-          <Button variant="contained">New Session</Button>
-          <Button variant="contained">Join Session</Button>
+      <Box sx={{ 
+        position: 'fixed', 
+        bottom: 0, 
+        left: 0, 
+        right: 0, 
+        p: 2, 
+        bgcolor: 'background.paper', 
+        boxShadow: '0 -2px 10px rgba(0,0,0,0.1)', 
+        display: { xs: 'flex', sm: 'none' },
+        justifyContent: 'center',
+        zIndex: 10,
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,1) 100%)',
+        borderTop: '1px solid rgba(64,126,160,0.1)'
+      }}>
+        <Stack 
+          direction="row" 
+          spacing={2} 
+          sx={{ 
+            width: '100%', 
+            maxWidth: '400px',
+            px: 2
+          }}
+        >
+          <Button 
+            variant="outlined" 
+            color="primary" 
+            fullWidth
+            sx={{ 
+              borderRadius: '12px',
+              py: 1.5
+            }}
+          >
+            New Session
+          </Button>
+          <Button 
+            variant="contained" 
+            color="secondary" 
+            fullWidth
+            onClick={handleClickOpen}
+            sx={{ 
+              borderRadius: '12px',
+              py: 1.5,
+              color: 'white'
+            }}
+          >
+            Join Session
+          </Button>
         </Stack>
-      </BottomContainer>
+      </Box>
       <TestDialog open={open} onClose={handleClose}></TestDialog>
+      </Box>
     </ThemeProvider>
   );
 }

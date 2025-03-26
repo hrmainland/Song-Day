@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, IconButton, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
-export default function SearchBarButton({ onClick, disabled = false }) {
+export default function SearchBarButton({ onClick, disabled = false, sx }) {
   return (
     <Box
       onClick={!disabled ? onClick : undefined}
@@ -16,7 +16,14 @@ export default function SearchBarButton({ onClick, disabled = false }) {
         opacity: disabled ? 0.5 : 1,
         pointerEvents: disabled ? 'none' : 'auto',
         cursor: disabled ? 'default' : 'pointer',
-        height: 40,
+        height: 48,
+        width: '100%',
+        transition: 'all 0.2s ease',
+        '&:hover': {
+          backgroundColor: 'rgba(0, 0, 0, 0.04)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+        },
+        ...sx
       }}
     >
       <Typography
