@@ -37,7 +37,7 @@ export default function Home() {
                   gutterBottom
                   sx={{
                     textAlign: {
-                      xs: "center",
+                      xxs: "center",
                       md: "left",
                     },
                   }}

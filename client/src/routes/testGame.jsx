@@ -91,7 +91,7 @@ export default function TestGame() {
       <Navbar></Navbar>
       <TopContainer>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }}>
-          <Typography variant="h4" fontWeight="500" sx={{ letterSpacing: '-0.5px' }}>
+          <Typography variant="h5" fontWeight="500" sx={{ letterSpacing: '-0.5px' }}>
             Greece Hottest 100
           </Typography>
           <Button variant="contained" color="primary" size="large" sx={{ borderRadius: '12px' }}>

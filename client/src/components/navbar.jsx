@@ -78,7 +78,7 @@ export default function Navbar() {
         }}
       >
         <Container maxWidth="xl">
-          <Toolbar disableGutters sx={{ minHeight: { xs: '64px' } }}>
+          <Toolbar disableGutters sx={{ minHeight: { xxs: '64px' } }}>
             {/* Mobile menu button */}
             <IconButton
               size="medium"
@@ -87,7 +87,7 @@ export default function Navbar() {
               aria-label="menu"
               sx={{ 
                 mr: 2, 
-                display: { xs: 'flex', md: 'none' },
+                display: { xxs: 'flex', md: 'none' },
                 color: 'text.primary'
               }}
             >
@@ -111,7 +111,7 @@ export default function Navbar() {
                   height: 40,
                   width: 40,
                   mr: 1.5,
-                  display: { xs: 'none', sm: 'flex' }
+                  display: { xxs: 'none', sm: 'flex' }
                 }}
               >
                 <HeadphonesIcon />
@@ -123,7 +123,7 @@ export default function Navbar() {
                   fontWeight: 700,
                   color: 'text.primary',
                   letterSpacing: '-0.5px',
-                  fontSize: { xs: '1.3rem', sm: '1.5rem' }
+                  fontSize: { xxs: '1.3rem', sm: '1.5rem' }
                 }}
               >
                 SongDay
@@ -131,7 +131,7 @@ export default function Navbar() {
             </Box>
             
             {/* Desktop Navigation */}
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+            <Box sx={{ flexGrow: 1, display: { xxs: 'none', md: 'flex' } }}>
               <Button 
                 sx={{ 
                   my: 2, 
@@ -168,7 +168,7 @@ export default function Navbar() {
                 startIcon={<AccountCircleIcon />}
                 sx={{ 
                   borderRadius: '30px',
-                  px: { xs: 2, sm: 3 },
+                  px: { xxs: 2, sm: 3 },
                   boxShadow: '0 2px 8px rgba(64,126,160,0.2)'
                 }}
               >

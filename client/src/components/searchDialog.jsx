@@ -33,20 +33,19 @@ export default function SearchDialog({ open, onClose }) {
       }}
       PaperProps={{
         sx: {
-          width: { xs: "90%", sm: "1000px" },
+          width: { xxs: "90%", sm: "1000px" },
           borderRadius: "20px", // Rounded corners applied to the dialog's paper
-          padding: { xs: 2, sm: 4 }, // Optional: makes it look nicer
+          padding: { xxs: 2, sm: 4 }, // Optional: makes it look nicer
           position: "absolute",
-          top: { xs: "100px", sm: "127px" },
+          top: { xxs: "100px", sm: "127px" },
           maxHeight: "calc(100vh - 150px)",
           overflow: "auto",
         },
       }}
     >
-      <Box sx={{ width: '100%', p: { xs: 1, sm: 2 } }}>
+      <Box sx={{ width: '100%', p: { xxs: 1, sm: 2 } }}>
         <SearchBar ref={inputRef}></SearchBar>
       </Box>
-      {/* <Input inputRef={inputRef}></Input> */}
       <Box display="flex" flexDirection="column" alignItems="center" sx={{ mt: 3, mb: 2 }}>
         <Box sx={{ width: '100%', height: '1px', bgcolor: 'divider', mb: 3 }} />
         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>

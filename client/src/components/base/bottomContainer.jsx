@@ -13,7 +13,7 @@ export default function BottomContainer({ children }) {
           position: "fixed",
           bottom: 0,
           display:{
-            xs: "flex",
+            xxs: "flex",
             sm: "none",
           },
         }}
