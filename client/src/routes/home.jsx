@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../utils/theme";
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
+import CenterBox from "../components/base/centerBox";
 
 import Navbar from "../components/navbar";
 import TopContainer from "../components/base/topContainer";
@@ -12,10 +13,30 @@ import PageHeader from "../components/pageHeader";
 import HeaderButtons from "../components/headerButtons";
 import GamesIndex from "../components/gamesIndex";
 import MobileBottomBar from "../components/mobileBottomBar";
+import NoSessionsBox from "../components/noSessionsBox";
+import { fetchMyGames } from "../../utils/apiCalls";
 
 export default function Home() {
   const [joinOpen, setJoinOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  const [hasGames, setHasGames] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkUserGames = async () => {
+      try {
+        const games = await fetchMyGames();
+        setHasGames(games && games.length > 0);
+      } catch (error) {
+        console.error("Error fetching games:", error);
+        setHasGames(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    checkUserGames();
+  }, []);
 
   const handleJoinOpen = () => {
     setJoinOpen(true);
@@ -43,38 +64,56 @@ export default function Home() {
               <PageHeader title="Your Sessions" />
             </Grid>
             
-            <Grid item xxs={12} sm={4}>
-              <SearchBar />
-            </Grid>
+            {hasGames && (
+              <>
+                <Grid item xxs={12} sm={4}>
+                  <SearchBar />
+                </Grid>
 
-            <Grid
-              item
-              xxs={12}
-              sm={4}
-              sx={{ 
-                display: { xxs: "none", sm: "flex" },
-                justifyContent: "flex-end"
-              }}
-            >
-              <HeaderButtons 
-                onCreateClick={handleCreateOpen} 
-                onJoinClick={handleJoinOpen} 
-              />
-            </Grid>
+                <Grid
+                  item
+                  xxs={12}
+                  sm={4}
+                  sx={{ 
+                    display: { xxs: "none", sm: "flex" },
+                    justifyContent: "flex-end"
+                  }}
+                >
+                  <HeaderButtons 
+                    onCreateClick={handleCreateOpen} 
+                    onJoinClick={handleJoinOpen} 
+                  />
+                </Grid>
+              </>
+            )}
           </Grid>
         </TopContainer>
         
-        <Box sx={{ mb: "120px", mt: 2 }}>
-          <GamesIndex />
-        </Box>
+        {isLoading ? (
+          <CenterBox maxWidth="1200px" p={2}>
+            <Typography variant="body1">Loading...</Typography>
+          </CenterBox>
+        ) : hasGames ? (
+          <>
+            
+            <Box sx={{ mb: "120px", mt: 2 }}>
+              <GamesIndex />
+            </Box>
 
-        <MobileBottomBar 
-          onCreateClick={handleCreateOpen}
-          onJoinClick={handleJoinOpen}
-        />
+            <MobileBottomBar 
+              onCreateClick={handleCreateOpen}
+              onJoinClick={handleJoinOpen}
+            />
+          </>
+        ) : (
+          <NoSessionsBox 
+            onCreateClick={handleCreateOpen}
+            onJoinClick={handleJoinOpen}
+          />
+        )}
 
         <JoinSessionDialog open={joinOpen} onClose={handleJoinClose} />
-        <CreateSessionDialog open={createOpen} onClose={handleCreateClose} />
+        <CreateSessionDialog open={createOpen} onClose={handleCreateClose} /> 
       </Box>
     </ThemeProvider>
   );
