@@ -655,7 +655,7 @@ export default function AddSongs() {
                   <img src="/sailboat.svg" alt="Sailboat" style={{ width: '100%', height: 'auto' }} />
                 </Box>
                 <Typography variant="h4" sx={{ mb: 2 }}>
-                  Add your songs here
+                  Your songs go here
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 3, maxWidth: 500 }}>
                   Use the search bar above to find them.
