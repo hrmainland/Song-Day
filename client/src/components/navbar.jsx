@@ -117,29 +117,27 @@ export default function Navbar() {
               to="/"
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
-              <Avatar 
-                sx={{ 
+              <Box
+                sx={{
                   bgcolor: theme.palette.primary.main,
-                  height: 40,
-                  width: 40,
-                  mr: 1.5,
-                  display: { xxs: 'none', sm: 'flex' }
+                  borderRadius: '12px',
+                  py: 1,
+                  px: 2,
                 }}
               >
-                <HeadphonesIcon />
-              </Avatar>
-              <Typography 
-                variant="h5" 
-                component="div"
-                sx={{ 
-                  fontWeight: 700,
-                  color: 'text.primary',
-                  letterSpacing: '-0.5px',
-                  fontSize: { xxs: '1.3rem', sm: '1.5rem' }
-                }}
-              >
-                SongDay
-              </Typography>
+                <Typography 
+                  variant="h5" 
+                  component="div"
+                  sx={{ 
+                    fontWeight: 700,
+                    color: 'white',
+                    letterSpacing: '-0.5px',
+                    fontSize: { xxs: '1.3rem', sm: '1.5rem' }
+                  }}
+                >
+                  SongDay
+                </Typography>
+              </Box>
             </Box>
             
             {/* Desktop Navigation */}
@@ -172,8 +170,10 @@ export default function Navbar() {
               </Button>
             </Box>
             
-            {/* Profile Button */}
-            <Box sx={{ flexGrow: 0 }}>
+            <Box sx={{ flexGrow: 1 }} />
+            
+            {/* Profile Button - Always on far right */}
+            <Box>
               <Button 
                 variant="contained" 
                 color="primary"

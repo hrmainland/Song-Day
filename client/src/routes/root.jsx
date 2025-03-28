@@ -1,4 +1,4 @@
-import { Grid, Button, useMediaQuery, useTheme } from "@mui/material";
+import { Grid, Button, useMediaQuery, useTheme, Box } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
@@ -22,6 +22,9 @@ export default function Root() {
   
   return (
     <ParallaxProvider>
+      {/* <Box>
+        <img src="/island-trees.svg" alt="trees" />
+      </Box> */}
       {isMobile ? (
         // Mobile view - no parallax effect
         <div className="home-background">
