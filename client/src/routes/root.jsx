@@ -1,16 +1,47 @@
-import { Grid, Button, useMediaQuery, useTheme, Box } from "@mui/material";
+import { 
+  Grid, 
+  Button, 
+  useMediaQuery, 
+  useTheme, 
+  Box, 
+  IconButton, 
+  Menu, 
+  MenuItem,
+  Avatar,
+  Tooltip
+} from "@mui/material";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import PersonIcon from '@mui/icons-material/Person';
 
 import { ParallaxProvider } from "react-scroll-parallax";
 import { Parallax } from "react-scroll-parallax";
 
 import LoginDialog from "../components/loginDialog";
+import { isLoggedIn } from "../../utils/apiCalls";
 
 export default function Root() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const [userLoggedIn, setUserLoggedIn] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  
+  // Check login status on component mount and when login dialog closes
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const loginStatus = await isLoggedIn();
+        setUserLoggedIn(Boolean(loginStatus));
+      } catch (error) {
+        console.error("Error checking login status:", error);
+        setUserLoggedIn(false);
+      }
+    };
+    
+    checkLoginStatus();
+  }, [loginDialogOpen]);
   
   const handleLoginOpen = () => {
     setLoginDialogOpen(true);
@@ -18,6 +49,14 @@ export default function Root() {
   
   const handleLoginClose = () => {
     setLoginDialogOpen(false);
+  };
+  
+  const handleUserMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  
+  const handleUserMenuClose = () => {
+    setAnchorEl(null);
   };
   
   return (
@@ -34,18 +73,28 @@ export default function Root() {
             </Grid>
             <Grid item xs={12} textAlign="center">
               <Button
-                variant="outlined"
+                variant="contained"
+                color="secondary"
                 component={Link}
                 to="/home"
                 sx={{
                   textTransform: "none",
                   color: "white",
-                  borderColor: "lightslategray",
-                  "&:hover": {
-                    borderColor: "white",
-                  },
                   fontSize: "1.1rem",
-                  padding: "10px 24px",
+                  fontWeight: 600,
+                  padding: "10px 28px",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 12px rgba(93, 74, 156, 0.3)",
+                  background: "linear-gradient(135deg, #7966b8 0%, #5D4A9C 100%)",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    boxShadow: "0 6px 16px rgba(93, 74, 156, 0.5)",
+                    transform: "translateY(-1px)",
+                  },
+                  "&:active": {
+                    boxShadow: "0 2px 8px rgba(93, 74, 156, 0.3)",
+                    transform: "translateY(0px)",
+                  },
                 }}
               >
                 Get Started
@@ -64,17 +113,29 @@ export default function Root() {
                 </Grid>
                 <Grid item xs={12} textAlign="center">
                   <Button
-                    variant="outlined"
+                    variant="contained"
+                    color="secondary"
                     component={Link}
                     to="/home"
                     sx={{
                       textTransform: "none",
                       color: "white",
-                      borderColor: "lightslategray",
+                      fontSize: "1.15rem",
+                      fontWeight: 600,
+                      padding: "12px 32px",
+                      borderRadius: "12px",
+                      boxShadow: "0 5px 15px rgba(93, 74, 156, 0.35)",
+                      background: "linear-gradient(135deg, #7966b8 0%, #5D4A9C 100%)",
+                      transition: "all 0.3s ease",
                       "&:hover": {
-                        borderColor: "white",
+                        boxShadow: "0 7px 20px rgba(93, 74, 156, 0.5)",
+                        transform: "translateY(-2px)",
+                        background: "linear-gradient(135deg, #8371c0 0%, #6351a8 100%)",
                       },
-                      fontSize: "1.1rem",
+                      "&:active": {
+                        boxShadow: "0 3px 10px rgba(93, 74, 156, 0.3)",
+                        transform: "translateY(0px)",
+                      },
                     }}
                   >
                     Get Started
@@ -106,12 +167,25 @@ export default function Root() {
           
           <div className="home-buttons">
             <Button 
-              variant="contained" 
+              variant="contained"
+              color="primary" 
               onClick={handleLoginOpen}
               sx={{
                 textTransform: "none",
                 margin: "10px",
-                fontFamily: "Inria Sans",
+                fontFamily: "DM Sans, sans-serif",
+                fontWeight: 500,
+                fontSize: "1rem",
+                padding: "10px 24px",
+                borderRadius: "12px",
+                boxShadow: "0 4px 12px rgba(64, 123, 255, 0.3)",
+                background: "linear-gradient(135deg, #5a93ff 0%, #407BFF 100%)",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  boxShadow: "0 6px 16px rgba(64, 123, 255, 0.4)",
+                  transform: "translateY(-2px)",
+                  background: "linear-gradient(135deg, #6a9fff 0%, #4f88ff 100%)",
+                },
               }}
             >
               Login with Spotify
@@ -123,7 +197,19 @@ export default function Root() {
               sx={{
                 textTransform: "none",
                 margin: "10px",
-                fontFamily: "Inria Sans",
+                fontFamily: "DM Sans, sans-serif",
+                fontWeight: 500,
+                fontSize: "1rem",
+                padding: "10px 24px",
+                borderRadius: "12px",
+                borderColor: "rgba(64, 123, 255, 0.5)",
+                color: "#407BFF",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  borderColor: "#407BFF",
+                  backgroundColor: "rgba(64, 123, 255, 0.04)",
+                  transform: "translateY(-2px)",
+                },
               }}
             >
               Join a Session

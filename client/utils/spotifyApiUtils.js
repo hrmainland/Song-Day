@@ -8,6 +8,8 @@ export function usefulTrackComponents(track) {
     name: track.name,
     artists,
     img,
+    album: track.album.name,
+    duration_ms: track.duration_ms
   };
 
 }

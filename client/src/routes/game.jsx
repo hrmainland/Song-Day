@@ -11,7 +11,9 @@ import {
   Stepper,
   Step,
   StepLabel,
-  IconButton
+  IconButton,
+  Tabs,
+  Tab
 } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../utils/theme";
@@ -31,10 +33,9 @@ import SearchDialog from "../components/trackDisplays/searchDialog";
 import EmptyTracksView from "../components/trackDisplays/emptyTracksView";
 import SearchBar from "../components/trackDisplays/searchBar";
 import SubmittedView from "../components/trackDisplays/submittedView";
+import PageHeader from "../components/pageHeader";
 
 // Import components for VoteSongs
-import ShortlistDisplay from "../components/trackDisplays/shortlistDisplay";
-import OptionsDisplay from "../components/trackDisplays/optionsDisplay";
 import { DragDropContext } from "react-beautiful-dnd";
 
 // Import API functions
@@ -625,62 +626,100 @@ export default function Game() {
         ) : (
           <Box sx={{ mt: 1.5, mb: 3 }}>
             <CenterBox
-              maxWidth="1000px"
+              maxWidth="1200px"
               p={{ xs: 2, sm: 2.5 }}
               sx={{
                 borderRadius: "16px",
                 boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
               }}
             >
-              <Grid container>
-                <Grid item xs={12} display="flex" justifyContent="center" marginY={2}>
-                  {addView ? (
-                    <Button 
-                      onClick={() => setAddView(false)} 
-                      variant="contained"
-                      sx={{ borderRadius: "12px" }}
-                    >
-                      Go To Shortlist ({shortlist.length})
-                    </Button>
-                  ) : (
-                    <Button 
-                      onClick={() => setAddView(true)} 
-                      variant="outlined"
-                      sx={{ borderRadius: "12px" }}
-                    >
-                      Back To Options
-                    </Button>
-                  )}
-                </Grid>
-              </Grid>
-
-              <Box
-                display="flex"
-                justifyContent="center"
-                sx={{
-                  display: addView ? "flex" : "none",
-                }}
-              >
-                <OptionsDisplay
-                  tracks={getSessionOptions()}
-                  addFunc={addTrackToShortlist}
-                  missingTracks={voteLimit - getSessionShortlist().length}
-                />
+              {/* Mobile View Selector Tabs */}
+              <Box sx={{ display: { xs: 'block', lg: 'none' }, width: '100%', mb: 2 }}>
+                <Tabs 
+                  value={addView ? 0 : 1} 
+                  onChange={(e, newValue) => setAddView(newValue === 0)}
+                  variant="fullWidth"
+                  indicatorColor="primary"
+                  textColor="primary"
+                  sx={{ 
+                    borderBottom: 1, 
+                    borderColor: 'divider',
+                    '& .MuiTab-root': {
+                      fontWeight: 600,
+                      py: 1.5
+                    } 
+                  }}
+                >
+                  <Tab label="Options" sx={{ fontSize: 18 }} />
+                  <Tab label={`Shortlist (${shortlist.length})`} sx={{ fontSize: 18 }} />
+                </Tabs>
               </Box>
-              <Box
-                display="flex"
-                justifyContent="center"
-                sx={{
-                  display: addView ? "none" : "flex",
-                }}
-              >
-                <DragDropContext onDragEnd={onDragEnd}>
-                  <ShortlistDisplay
-                    tracks={getSessionShortlist()}
-                    removeFunc={shortlistToOptions}
-                    submitFunc={submitVotes}
-                    missingTracks={voteLimit - getSessionShortlist().length}
+
+              {/* Mobile View Content */}
+              <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  sx={{
+                    display: addView ? "flex" : "none",
+                    width: "100%"
+                  }}
+                >
+                  <AddedTracksList
+                    tracks={getSessionOptions()}
+                    onRemoveTrack={() => {}}
+                    title="Your Options"
+                    isOptions={true}
+                    addFunc={addTrackToShortlist}
                   />
+                </Box>
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  sx={{
+                    display: addView ? "none" : "flex",
+                    width: "100%"
+                  }}
+                >
+                  <DragDropContext onDragEnd={onDragEnd}>
+                    <AddedTracksList
+                      tracks={getSessionShortlist()}
+                      onRemoveTrack={shortlistToOptions}
+                      title="Your Shortlist"
+                      isShortlist={true}
+                      submitFunc={submitVotes}
+                      missingTracks={voteLimit - getSessionShortlist().length}
+                      isDraggable={true}
+                    />
+                  </DragDropContext>
+                </Box>
+              </Box>
+
+              {/* Desktop Side-by-Side View */}
+              <Box sx={{ display: { xs: 'none', lg: 'block' }, width: "100%" }}>
+                <DragDropContext onDragEnd={onDragEnd}>
+                  <Grid container spacing={3}>
+                    <Grid item lg={6}>
+                      <AddedTracksList
+                        tracks={getSessionOptions()}
+                        onRemoveTrack={() => {}}
+                        title="Your Options"
+                        isOptions={true}
+                        addFunc={addTrackToShortlist}
+                      />
+                    </Grid>
+                    <Grid item lg={6}>
+                      <AddedTracksList
+                        tracks={getSessionShortlist()}
+                        onRemoveTrack={shortlistToOptions}
+                        title="Your Shortlist"
+                        isShortlist={true}
+                        submitFunc={submitVotes}
+                        missingTracks={voteLimit - getSessionShortlist().length}
+                        isDraggable={true}
+                      />
+                    </Grid>
+                  </Grid>
                 </DragDropContext>
               </Box>
             </CenterBox>
@@ -755,7 +794,7 @@ export default function Game() {
       <Navbar />
       
       <TopContainer>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center'}}>
           <Button 
             component={Link} 
             to={`/home`}
@@ -763,28 +802,15 @@ export default function Game() {
               mr: 2,
               borderRadius: '50%',
               minWidth: '40px',
-              width: '40px',
-              height: '40px',
+              width: '35px',
+              height: '35px',
               p: 0
             }}
           >
             <ArrowBackIcon />
           </Button>
           <Box>
-            <Typography 
-              variant="h5" 
-              fontWeight={600} 
-              sx={{ letterSpacing: '-0.3px' }}
-            >
-              {game.title}
-            </Typography>
-            <Typography
-              variant="subtitle2"
-              color="text.secondary"
-              fontWeight="400"
-            >
-              Session Code: {gameCode}
-            </Typography>
+            <PageHeader title={game.title} />
           </Box>
         </Box>
       </TopContainer>
