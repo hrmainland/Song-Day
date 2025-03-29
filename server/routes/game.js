@@ -121,6 +121,7 @@ router.delete("/vote-group/:voteGroupId", async (req, res) => {
 // TODO put this in useEffect and store in cookies
 router.get("/:gameCode", async (req, res) => {
   const { gameCode } = req.params;
+  console.log('gameCode :>> ', gameCode);
   const game = await Game.findOne({ gameCode });
   if (game != undefined) {
     res.status(200).json(game);

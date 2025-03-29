@@ -30,7 +30,7 @@ export default function Root() {
         <div className="home-background">
           <Grid container spacing={4} justifyContent={"center"}>
             <Grid item xs={12} textAlign={"center"}>
-              <h1 className="heading">Song Day</h1>
+              <h1 className="heading" style={{ textShadow: "0 0 10px white", color: "black" }}>Song Day</h1>
             </Grid>
             <Grid item xs={12} textAlign="center">
               <Button
@@ -60,7 +60,7 @@ export default function Root() {
             <Parallax speed={50}>
               <Grid container spacing={6} justifyContent={"center"}>
                 <Grid item xs={12} textAlign={"center"}>
-                  <h1 className="heading">Song Day</h1>
+                  <h1 className="heading" style={{ textShadow: "0 0 10px black" }}>Song Day</h1>
                 </Grid>
                 <Grid item xs={12} textAlign="center">
                   <Button
