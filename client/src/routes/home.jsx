@@ -6,7 +6,6 @@ import CenterBox from "../components/base/centerBox";
 
 import Navbar from "../components/navbar";
 import TopContainer from "../components/base/topContainer";
-import SearchBar from "../components/searchBar";
 import JoinSessionDialog from "../components/joinSessionDialog";
 import CreateSessionDialog from "../components/createSessionDialog";
 import PageHeader from "../components/pageHeader";
@@ -60,22 +59,19 @@ export default function Home() {
         <Navbar />
         <TopContainer sx={{ py: 1 }}>
           <Grid container spacing={2} alignItems="center">
-            <Grid item xxs={12} sm={4}>
+            <Grid item xs={12} sm={6}>
               <PageHeader title="Your Sessions" />
             </Grid>
             
             {hasGames && (
               <>
-                <Grid item xxs={12} sm={4}>
-                  <SearchBar />
-                </Grid>
 
                 <Grid
                   item
-                  xxs={12}
-                  sm={4}
+                  xs={12}
+                  sm={6}
                   sx={{ 
-                    display: { xxs: "none", sm: "flex" },
+                    display: { xs: "none", sm: "flex" },
                     justifyContent: "flex-end"
                   }}
                 >

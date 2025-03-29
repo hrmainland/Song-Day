@@ -61,17 +61,17 @@ export default function SearchDialog({
         onEntered={focusSearchInput}
         PaperProps={{
           sx: {
-            width: { xxs: "90%", sm: "1000px" },
+            width: { xs: "90%", sm: "1000px" },
             borderRadius: "20px",
-            padding: { xxs: 2, sm: 4 },
+            padding: { xs: 2, sm: 4 },
             position: "absolute",
-            top: { xxs: "100px", sm: "127px" },
+            top: { xs: "100px", sm: "127px" },
             maxHeight: "calc(100vh - 150px)",
             overflow: "auto",
           },
         }}
       >
-        <Box sx={{ width: "90%", p: { xxs: 1, sm: 2 }, mx: "auto" }}>
+        <Box sx={{ width: "90%", p: { xs: 1, sm: 2 }, mx: "auto" }}>
           <TextField
             inputRef={searchInputRef}
             fullWidth

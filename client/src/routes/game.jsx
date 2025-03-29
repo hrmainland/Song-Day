@@ -354,6 +354,11 @@ export default function Game() {
 
   const setOptionsFromDb = async (gameData) => {
     const tracksResponse = await getAllVotableTracks(gameData._id);
+    if (tracksResponse.length === 0) {
+      setSessionOptions([]);
+      setOptions([]);
+      return;
+    }
     const SpotifyTracks = await getMultipleTracksById(accessToken, tracksResponse);
     const trackObjects = SpotifyTracks.map((trackId) => {
       return usefulTrackComponents(trackId);
@@ -546,29 +551,30 @@ export default function Game() {
         return myTracksSubmitted ? (
           <SubmittedView />
         ) : (
-          <Box sx={{ mt: 2, mb: 4 }}>
+          <Box sx={{ mt: 1.5, mb: 3 }}>
             <CenterBox
               maxWidth="1000px"
-              p={3}
+              p={{ xs: 2, sm: 2.5 }}
               sx={{
                 borderRadius: "16px",
                 boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
               }}
             >
               <Box
-                sx={{ display: "flex", flexDirection: "column", gap: 1.5, mb: 2 }}
+                sx={{ 
+                  display: "flex", 
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  mb: 2,
+                  gap: 2
+                }}
               >
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
+                <Box>
                   <Typography
                     variant="h5"
                     fontWeight="500"
-                    sx={{ letterSpacing: "-0.3px" }}
+                    sx={{ letterSpacing: "-0.3px", mb: 0.5 }}
                   >
                     Your List ({addedTracks.length}/{trackLimit})
                   </Typography>
@@ -576,8 +582,12 @@ export default function Game() {
                     {trackLimit - addedTracks.length} tracks needed
                   </Typography>
                 </Box>
-
-                <SearchBar onClick={handleSearchOpen} />
+                
+                <Box sx={{ 
+                  maxWidth: { xs: '100%', sm: '60%', md: '50%' } 
+                }}>
+                  <SearchBar onClick={handleSearchOpen} />
+                </Box>
               </Box>
 
               {addedTracks.length > 0 ? (
@@ -597,10 +607,10 @@ export default function Game() {
         return myVotesSubmitted ? (
           <CenterBox
             maxWidth="1000px"
-            p={3}
+            p={{ xs: 2, sm: 2.5 }}
             sx={{
-              mt: 2,
-              mb: 4,
+              mt: 1.5,
+              mb: 3,
               borderRadius: "16px",
               boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
             }}
@@ -613,10 +623,10 @@ export default function Game() {
             </Typography>
           </CenterBox>
         ) : (
-          <Box sx={{ mt: 2, mb: 4 }}>
+          <Box sx={{ mt: 1.5, mb: 3 }}>
             <CenterBox
               maxWidth="1000px"
-              p={3}
+              p={{ xs: 2, sm: 2.5 }}
               sx={{
                 borderRadius: "16px",
                 boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
@@ -680,10 +690,10 @@ export default function Game() {
       case 2:
         // Create Playlist step
         return (
-          <Box sx={{ mt: 2, mb: 4 }}>
+          <Box sx={{ mt: 1.5, mb: 3 }}>
             <CenterBox
               maxWidth="1000px"
-              p={3}
+              p={{ xs: 2, sm: 2.5 }}
               sx={{
                 borderRadius: "16px",
                 boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
@@ -745,7 +755,7 @@ export default function Game() {
       <Navbar />
       
       <TopContainer>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
           <Button 
             component={Link} 
             to={`/home`}
@@ -846,18 +856,18 @@ export default function Game() {
       {getStepContent(activeStep)}
 
       {/* Stepper and Navigation Box */}
-      <CenterBox maxWidth="800px" sx={{ mb: 4 }}>
+      <CenterBox maxWidth="800px" sx={{ mb: 3 }}>
         <Paper 
           elevation={0} 
           sx={{ 
-            p: 3, 
+            p: { xs: 2, sm: 2.5 }, 
             borderRadius: '16px',
             boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
             border: '1px solid rgba(64,126,160,0.1)',
           }}
         >
           {/* Stepper Component */}
-          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+          <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
             {STEPS.map((label, index) => (
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>

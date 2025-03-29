@@ -15,7 +15,7 @@ export default function SessionsContainer({ children, borderColor = 'rgba(93,74,
       <Grid
         container
         direction="row"
-        justifyContent={{ xxs: "center", twocard: "flex-start" }}
+        justifyContent={{ xs: "center", sm: "flex-start" }}
         alignItems="stretch"
         spacing={4}
       >

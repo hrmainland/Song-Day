@@ -8,7 +8,7 @@ export default function EmptyTracksView() {
       flexDirection="column" 
       alignItems="center"
       sx={{ 
-        py: 5, 
+        pt: 5, 
         px: 3,
         textAlign: 'center', 
         maxWidth: '700px',

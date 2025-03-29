@@ -33,6 +33,7 @@ export default function JoinSessionDialog({ open, onClose }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [alreadyJoined, setAlreadyJoined] = useState(false);
   
   const handleCodeChange = (event) => {
     setCode(event.target.value.toUpperCase());
@@ -69,7 +70,7 @@ export default function JoinSessionDialog({ open, onClose }) {
       const isPlayerInGame = game.players && game.players.some(player => player.user === userId);
       
       if (isPlayerInGame) {
-        setSuccess(true);
+        setAlreadyJoined(true);
         // Navigate after a short delay to show success message
         setTimeout(() => {
           navigate(`/session/${game.gameCode}`);
@@ -103,6 +104,7 @@ export default function JoinSessionDialog({ open, onClose }) {
     setCode('');
     setError('');
     setSuccess(false);
+    setAlreadyJoined(false);
     setLoading(false);
     onClose();
   };
@@ -171,6 +173,20 @@ export default function JoinSessionDialog({ open, onClose }) {
             icon={<CheckCircleOutlineIcon fontSize="inherit" />}
           >
             Successfully joined the session! Redirecting...
+          </Alert>
+        )}
+
+        {alreadyJoined && (
+          <Alert 
+            severity="warning" 
+            sx={{ 
+              mb: 3, 
+              alignItems: 'center',
+              borderRadius: '12px'  
+            }}
+            icon={<CheckCircleOutlineIcon fontSize="inherit" />}
+          >
+            You're already part of that session! Redirecting...
           </Alert>
         )}
         

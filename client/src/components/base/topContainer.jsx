@@ -15,7 +15,7 @@ export default function TopContainer({ children }) {
       >
         <CenterBox
           maxWidth="1200px"
-          p={2}
+          p={1.5}
         >
           {children}
         </CenterBox>

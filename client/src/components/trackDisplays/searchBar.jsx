@@ -7,14 +7,14 @@ export default function SearchBar({ onClick }) {
     <Box
       onClick={onClick}
       sx={{
-        borderRadius: "20px",
+        borderRadius: "16px",
         border: "1px solid rgba(0, 0, 0, 0.2)",
-        paddingLeft: "20px",
-        paddingRight: "10px",
+        paddingLeft: "16px",
+        paddingRight: "8px",
         display: "flex",
         alignItems: "center",
         cursor: "pointer",
-        height: 42,
+        height: 40,
         width: "100%",
         transition: "all 0.2s ease",
         "&:hover": {
@@ -23,20 +23,25 @@ export default function SearchBar({ onClick }) {
         },
       }}
     >
+      <SearchIcon sx={{ 
+        color: "text.secondary", 
+        fontSize: "20px", 
+        opacity: 0.7,
+        mr: 1.5 
+      }} />
       <Typography
         sx={{
           color: "inherit",
-          fontSize: "1rem",
+          fontSize: "0.95rem",
           flexGrow: 1,
-          lineHeight: "40px",
-          opacity: 0.4,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          opacity: 0.6,
         }}
       >
         Search for songs to add
       </Typography>
-      <IconButton sx={{ p: "6px" }}>
-        <SearchIcon />
-      </IconButton>
     </Box>
   );
 }

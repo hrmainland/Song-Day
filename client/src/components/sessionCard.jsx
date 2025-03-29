@@ -40,7 +40,7 @@ export default function SessionCard({ game, onClick }) {
     <ThemeProvider theme={theme}>
       <Card
         sx={{
-          width: { xxs: 280, xs: 250 },
+          width: { xs: 280, sm: 250 },
           transition: "transform 0.2s ease, box-shadow 0.2s ease",
           "&:hover": {
             transform: "scale(1.02)",
@@ -54,7 +54,7 @@ export default function SessionCard({ game, onClick }) {
         onClick={onClick}
       >
         <CardMedia
-          sx={{ height: { xxs: 210, xs: 220 } }}
+          sx={{ height: { xs: 210, sm: 220 } }}
           image={images[imageIndex]}
         />
         <CardContent>

@@ -106,7 +106,7 @@ export default function CreateSessionDialog({ open, onClose }) {
           
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             <Grid container spacing={3}>
-              <Grid item xxs={12}>
+              <Grid item xs={12}>
                 <TextField
                   fullWidth
                   label="Session Name"
@@ -123,7 +123,7 @@ export default function CreateSessionDialog({ open, onClose }) {
                 />
               </Grid>
               
-              <Grid item xxs={12} sm={6}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Songs Per Player"
@@ -144,7 +144,7 @@ export default function CreateSessionDialog({ open, onClose }) {
                 />
               </Grid>
               
-              <Grid item xxs={12} sm={6}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Votes Per Player"

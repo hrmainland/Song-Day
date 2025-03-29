@@ -11,7 +11,7 @@ export default function MobileBottomBar({ onCreateClick, onJoinClick }) {
       p: 2, 
       bgcolor: 'background.paper', 
       boxShadow: '0 -2px 10px rgba(0,0,0,0.1)', 
-      display: { xxs: 'flex', sm: 'none' },
+      display: { xs: 'flex', sm: 'none' },
       justifyContent: 'center',
       zIndex: 10,
       background: 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,1) 100%)',

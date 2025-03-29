@@ -90,7 +90,7 @@ export default function Navbar() {
         }}
       >
         <Container maxWidth="xl">
-          <Toolbar disableGutters sx={{ minHeight: { xxs: '64px' } }}>
+          <Toolbar disableGutters sx={{ minHeight: { xs: '64px' } }}>
             {/* Mobile menu button */}
             <IconButton
               size="medium"
@@ -99,7 +99,7 @@ export default function Navbar() {
               aria-label="menu"
               sx={{ 
                 mr: 2, 
-                display: { xxs: 'flex', md: 'none' },
+                display: { xs: 'flex', md: 'none' },
                 color: 'text.primary'
               }}
             >
@@ -132,7 +132,7 @@ export default function Navbar() {
                     fontWeight: 700,
                     color: 'white',
                     letterSpacing: '-0.5px',
-                    fontSize: { xxs: '1.3rem', sm: '1.5rem' }
+                    fontSize: { xs: '1.3rem', sm: '1.5rem' }
                   }}
                 >
                   SongDay
@@ -141,7 +141,7 @@ export default function Navbar() {
             </Box>
             
             {/* Desktop Navigation */}
-            <Box sx={{ flexGrow: 1, display: { xxs: 'none', md: 'flex' } }}>
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               <Button 
                 sx={{ 
                   my: 2, 
@@ -181,7 +181,7 @@ export default function Navbar() {
                 onClick={handleLoginOpen}
                 sx={{ 
                   borderRadius: '30px',
-                  px: { xxs: 2, sm: 3 },
+                  px: { xs: 2, sm: 3 },
                   boxShadow: '0 2px 8px rgba(64,126,160,0.2)'
                 }}
               >
