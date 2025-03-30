@@ -16,4 +16,4 @@ For authentication [Passport.js](https://www.passportjs.org/) is used.
 The [Spotify API](https://developer.spotify.com/documentation/web-api) (OAuth2) is used to search for songs and create the resulting playlist.
 
 ## What Now?
-Currently the project is being developed and will likely be moved into beta in May 2025.
+Currently the project is being developed and will be released in April 2025.

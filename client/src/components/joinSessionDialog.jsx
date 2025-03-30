@@ -201,7 +201,7 @@ export default function JoinSessionDialog({ open, onClose }) {
             fullWidth 
             label="Session Code" 
             variant="outlined"
-            placeholder="Enter code"
+            placeholder="XXXX-XXXX-XXXX"
             value={code}
             onChange={handleCodeChange}
             error={!!error}
