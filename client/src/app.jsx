@@ -13,6 +13,9 @@ import NotFound from "./routes/notFound";
 
 import PrivateRoutes from "../utils/privateRoutes";
 
+// for dev only
+import Pad from "./routes/pad";
+
 export default function App() {
   return (
     <Router>
@@ -29,15 +32,10 @@ export default function App() {
           />
           <Route path="/join-session" element={<JoinGame />} />
           <Route path="/session/:gameCode" element={<Game />} />
-          {/* These routes are now handled by the integrated Game component */}
-          {/* <Route path="/session/:gameCode/add-songs" element={<AddSongs />} />
-          <Route path="/session/:gameCode/vote" element={<VoteSongs />} />
-          <Route path="/session/:gameCode/new-vote" element={<NewVote />} />
-          <Route
-            path="/session/:gameCode/create-playlist"
-            element={<CreatePlaylist />}
-          /> */}
         </Route>
+
+        {/* for dev only */}
+        <Route path="/pad" element={<Pad />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>

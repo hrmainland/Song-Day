@@ -13,16 +13,20 @@ import {
   Tabs,
   Tab,
 } from "@mui/material";
+
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 
+import { useRef, useState } from "react";
+import useResizeObserver from "@react-hook/resize-observer";
+
 // Common style constants
 const STYLES = {
   // Display and layout styles
-  RESPONSIVE_HIDE_MOBILE: { display: { xs: "none", sm: "block" } },
+  RESPONSIVE_HIDE_MOBILE: { display: "block" },
   TABLE_HEADER_BG: { bgcolor: "rgba(0,0,0,0.02)" },
   BORDER_BOTTOM: { borderBottom: "1px solid rgba(0,0,0,0.08)" },
   BORDER_BOTTOM_LIGHT: { borderBottom: "1px solid rgba(0,0,0,0.06)" },
@@ -32,13 +36,13 @@ const STYLES = {
       "& .MuiIconButton-root": { opacity: 1 },
     },
   },
-  
+
   // Text styling
   ALBUM_TEXT: {
-    whiteSpace: "nowrap", 
-    overflow: "hidden", 
+    whiteSpace: "nowrap",
+    overflow: "hidden",
     textOverflow: "ellipsis",
-    color: "text.secondary"
+    color: "text.secondary",
   },
   TRACK_NAME: {
     fontSize: 16,
@@ -52,7 +56,7 @@ const STYLES = {
     fontWeight: 600,
     letterSpacing: "0.5px",
   },
-  
+
   // Component styling
   AVATAR_SQUARE: {
     width: 45,
@@ -61,34 +65,16 @@ const STYLES = {
     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
   },
   ICON_BUTTON: {
-    opacity: 0,
+    opacity: 0.5,
     transition: "all 0.2s ease",
   },
   PAPER: {
-    width: "100%", 
-    borderRadius: "12px", 
-    overflow: "hidden", 
-    mb: 2
+    width: "100%",
+    borderRadius: "12px",
+    overflow: "hidden",
+    mb: 2,
   },
-  LIST_ITEM_PADDING: { py: 1.5 }
-};
-
-// Grid size constants
-const GRID_SIZES = {
-  NUMBER_COLUMN: 1,
-  IMAGE_COLUMN_XS: 2,
-  IMAGE_COLUMN_SM: 2,
-  TITLE_COLUMN_NORMAL: 4,
-  TITLE_COLUMN_COMPACT: 7,
-  ALBUM_COLUMN: 3,
-  DURATION_COLUMN: 2,
-  
-  // For avatar layout
-  AVATAR_CONTAINER: {
-    width: 45,
-    display: "flex",
-    justifyContent: "center",
-  }
+  LIST_ITEM_PADDING: { py: 1.5 },
 };
 
 // Format track duration
@@ -99,19 +85,58 @@ const formatDuration = (ms) => {
   return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
 };
 
+function useSize(ref) {
+  const [width, setWidth] = useState(0);
+
+  useResizeObserver(ref, (entry) => {
+    setWidth(entry.contentRect.width);
+  });
+
+  return width;
+}
+
+function getGridSize(width, columnIndex) {
+  switch (columnIndex) {
+    case 0:
+      return 1;
+    case 3:
+      return 3;
+    case 4:
+      return 2;
+    case 5:
+      return 1;
+  }
+  if (width < 600) {
+    switch (columnIndex) {
+      case 1:
+        return 3;
+      case 2:
+        return 5;
+    }
+  }
+  switch (columnIndex) {
+    case 1:
+      return 2;
+    case 2:
+      return 3;
+  }
+}
+
 // Unified TrackItem component that can be both draggable and non-draggable
-function TrackItem({ 
-  track, 
-  index, 
-  onAction, 
-  isOptions, 
-  isDraggable, 
-  tracksLength, 
-  compactView 
+function TrackItem({
+  track,
+  index,
+  onAction,
+  isOptions,
+  isDraggable,
+  tracksLength,
 }) {
+  const ref = useRef(null);
+  const width = useSize(ref);
   // Create the item content
   const item = (
     <ListItem
+      ref={ref}
       sx={{
         ...STYLES.LIST_ITEM_PADDING,
         transition: "all 0.2s ease",
@@ -120,49 +145,27 @@ function TrackItem({
         cursor: isDraggable ? "grab" : isOptions ? "pointer" : "default",
       }}
       onClick={isOptions ? onAction : undefined}
-      secondaryAction={
-        <IconButton
-          edge="end"
-          aria-label={isOptions ? "add" : isDraggable ? "remove" : "delete"}
-          onClick={isOptions ? undefined : onAction}
-          sx={{
-            ...STYLES.ICON_BUTTON,
-            color: "text.secondary",
-            "&:hover": { color: isOptions ? "primary.main" : "error.main" },
-          }}
-        >
-          {isOptions ? <AddIcon /> : isDraggable ? <RemoveIcon /> : <DeleteIcon />}
-        </IconButton>
-      }
     >
-      <Grid
-        container
-        spacing={2}
-        alignItems="center"
-        sx={{ height: "100%" }}
-      >
+      <Grid container spacing={1} alignItems="center" sx={{ height: "100%" }}>
         <Grid
           item
-          xs={GRID_SIZES.NUMBER_COLUMN}
+          xs={getGridSize(width, 0)}
           sx={STYLES.RESPONSIVE_HIDE_MOBILE}
         >
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            align="center"
-          >
-            {index + 1}
+          <Typography variant="body2" color="text.secondary" align="center">
+            {/* {index + 1} */}
+            {width}
           </Typography>
         </Grid>
-        <Grid item xs={GRID_SIZES.IMAGE_COLUMN_XS} sm={GRID_SIZES.IMAGE_COLUMN_SM}>
-          <Avatar
-            variant="square"
-            src={track.img}
-            sx={STYLES.AVATAR_SQUARE}
-          />
+        <Grid
+          item
+          xs={getGridSize(width, 1)}
+          sx={{ display: "flex", justifyContent: "center" }}
+        >
+          <Avatar variant="square" src={track.img} sx={STYLES.AVATAR_SQUARE} />
         </Grid>
 
-        <Grid item xs={compactView ? GRID_SIZES.TITLE_COLUMN_COMPACT : GRID_SIZES.TITLE_COLUMN_NORMAL}>
+        <Grid item xs={getGridSize(width, 2)}>
           <ListItemText
             primary={track.name}
             secondary={track.artists}
@@ -177,11 +180,11 @@ function TrackItem({
           />
         </Grid>
 
-        {!compactView && (
+
           <Grid
             item
-            xs={GRID_SIZES.ALBUM_COLUMN}
-            sx={STYLES.RESPONSIVE_HIDE_MOBILE}
+            xs={getGridSize(width, 3)}
+            sx={{ display: width < 600 ? "none" : "block" }}
           >
             <ListItemText
               secondary={track.album || ""}
@@ -191,12 +194,33 @@ function TrackItem({
               }}
             />
           </Grid>
-        )}
 
-        <Grid item xs={GRID_SIZES.DURATION_COLUMN}>
+
+        <Grid item xs={getGridSize(width, 4)}>
           <Typography variant="body2" color="text.secondary">
             {formatDuration(track.duration_ms)}
           </Typography>
+        </Grid>
+        <Grid item xs={getGridSize(width, 5)} container justifyContent="center">
+          <IconButton
+            edge="end"
+            aria-label={isOptions ? "add" : isDraggable ? "remove" : "delete"}
+            onClick={isOptions ? undefined : onAction}
+            sx={{
+              ...STYLES.ICON_BUTTON,
+              color: "text.secondary",
+              "&:hover": { color: isOptions ? "primary.main" : "error.main" },
+              mr: 1.5,
+            }}
+          >
+            {isOptions ? (
+              <AddIcon />
+            ) : isDraggable ? (
+              <RemoveIcon />
+            ) : (
+              <DeleteIcon />
+            )}
+          </IconButton>
         </Grid>
       </Grid>
     </ListItem>
@@ -223,9 +247,9 @@ function TrackItem({
   return item;
 }
 
-export default function AddedTracksList({ 
-  tracks, 
-  onRemoveTrack, 
+export default function AddedTracksList({
+  tracks,
+  onRemoveTrack,
   title = "Tracks",
   isOptions = false,
   isShortlist = false,
@@ -233,30 +257,35 @@ export default function AddedTracksList({
   submitFunc,
   missingTracks,
   isDraggable = false,
-  compactView = false
 }) {
   // Render the component
   return (
     <Paper sx={STYLES.PAPER}>
       {/* Header */}
       <Box sx={{ p: 2, ...STYLES.TABLE_HEADER_BG }}>
-        <Typography variant="h6" fontWeight={500}>{title}</Typography>
-        {isShortlist && <Typography variant="body2">Drag and drop to rearrange</Typography>}
-        {isOptions && <Typography variant="body2">Select to shortlist</Typography>}
+        <Typography variant="h6" fontWeight={500}>
+          {title}
+        </Typography>
+        {isShortlist && (
+          <Typography variant="body2">Drag and drop to rearrange</Typography>
+        )}
+        {isOptions && (
+          <Typography variant="body2">Select songs to shortlist</Typography>
+        )}
       </Box>
 
       {/* Content - Conditional Droppable */}
       {isDraggable ? (
         <Droppable droppableId="main-column">
           {(provided) => (
-            <List 
+            <List
               sx={{ width: "100%", bgcolor: "background.paper" }}
-              ref={provided.innerRef} 
+              ref={provided.innerRef}
               {...provided.droppableProps}
             >
               {/* Table Header */}
-              <ListItemHeader compactView={compactView} />
-              
+              <ListItemHeader/>
+
               {/* Track Items */}
               {tracks.map((track, index) => (
                 <TrackItem
@@ -264,14 +293,13 @@ export default function AddedTracksList({
                   track={track}
                   index={index}
                   onAction={
-                    isOptions ? 
-                    () => addFunc(track, index) : 
-                    () => onRemoveTrack(track, index)
+                    isOptions
+                      ? () => addFunc(track, index)
+                      : () => onRemoveTrack(track, index)
                   }
                   isOptions={isOptions}
                   isDraggable={isDraggable}
                   tracksLength={tracks.length}
-                  compactView={compactView}
                 />
               ))}
               {provided.placeholder}
@@ -301,8 +329,8 @@ export default function AddedTracksList({
       ) : (
         <List sx={{ width: "100%", bgcolor: "background.paper" }}>
           {/* Table Header */}
-          <ListItemHeader compactView={compactView} />
-          
+          <ListItemHeader />
+
           {/* Track Items */}
           {tracks.map((track, index) => (
             <TrackItem
@@ -310,14 +338,14 @@ export default function AddedTracksList({
               track={track}
               index={index}
               onAction={
-                isOptions ? 
-                () => addFunc(track, index) : 
-                () => onRemoveTrack(track, index)
+                isOptions
+                  ? () => addFunc(track, index)
+                  : () => onRemoveTrack(track, index)
               }
               isOptions={isOptions}
               isDraggable={false}
               tracksLength={tracks.length}
-              compactView={compactView}
+              
             />
           ))}
         </List>
@@ -327,42 +355,33 @@ export default function AddedTracksList({
 }
 
 // Helper component for the list header
-function ListItemHeader({ compactView }) {
+function ListItemHeader() {
+  const ref = useRef(null);
+  const width = useSize(ref);
   return (
     <ListItem
+      ref={ref}
       sx={{
         ...STYLES.TABLE_HEADER_BG,
         ...STYLES.BORDER_BOTTOM,
       }}
-      secondaryAction={
-        <IconButton edge="end" sx={{ mr: 2 }}>
-          <Box sx={{ width: 24, height: 24 }} />
-        </IconButton>
-      }
     >
-      <Grid
-        container
-        spacing={2}
-        alignItems="center"
-        sx={{ height: "100%" }}
-      >
-        <Grid
-          item
-          xs={GRID_SIZES.NUMBER_COLUMN}
-          sx={STYLES.RESPONSIVE_HIDE_MOBILE}
-        >
-          <Typography
-            variant="subtitle2"
-            color="text.secondary"
-            align="center"
-          >
+      <Grid container spacing={2} alignItems="center" sx={{ height: "100%" }}>
+        <Grid item xs={getGridSize(width, 0)}>
+          <Typography variant="subtitle2" color="text.secondary" align="center">
             #
           </Typography>
         </Grid>
-        <Grid item xs={GRID_SIZES.IMAGE_COLUMN_XS} sm={GRID_SIZES.IMAGE_COLUMN_SM}>
-          <Box sx={GRID_SIZES.AVATAR_CONTAINER} />
+        <Grid item xs={getGridSize(width, 1)}>
+          <Box
+            sx={{
+              width: 45,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          />
         </Grid>
-        <Grid item xs={compactView ? GRID_SIZES.TITLE_COLUMN_COMPACT : GRID_SIZES.TITLE_COLUMN_NORMAL}>
+        <Grid item xs={getGridSize(width, 2)}>
           <ListItemText
             secondary="TITLE"
             secondaryTypographyProps={{
@@ -371,11 +390,11 @@ function ListItemHeader({ compactView }) {
             }}
           />
         </Grid>
-        {!compactView && (
+
           <Grid
             item
-            xs={GRID_SIZES.ALBUM_COLUMN}
-            sx={STYLES.RESPONSIVE_HIDE_MOBILE}
+            xs={getGridSize(width, 3)}
+            sx={{ display: width < 600 ? "none" : "block" }}
           >
             <ListItemText
               secondary="ALBUM"
@@ -385,14 +404,16 @@ function ListItemHeader({ compactView }) {
               }}
             />
           </Grid>
-        )}
-        <Grid item xs={GRID_SIZES.DURATION_COLUMN}>
+
+        <Grid item xs={getGridSize(width, 4)}>
           <Box display="flex" justifyContent="flex-start">
-            <AccessTimeIcon
-              fontSize="small"
-              sx={{ color: "text.secondary" }}
-            />
+            <AccessTimeIcon fontSize="small" sx={{ color: "text.secondary" }} />
           </Box>
+        </Grid>
+        <Grid item xs={getGridSize(width, 5)}>
+          <IconButton edge="end" sx={{ mr: 1.5 }}>
+            <Box sx={{ width: 24, height: 24 }} />
+          </IconButton>
         </Grid>
       </Grid>
     </ListItem>
