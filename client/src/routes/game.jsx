@@ -8,9 +8,6 @@ import {
   Grid, 
   Alert, 
   Paper, 
-  Stepper,
-  Step,
-  StepLabel,
   IconButton,
   Tabs,
   Tab
@@ -20,23 +17,24 @@ import theme from "../../utils/theme";
 import CheckIcon from "@mui/icons-material/Check";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import MenuIcon from '@mui/icons-material/Menu';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import baseUrl from "../../utils/urlPrefix";
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/navbar";
 import CenterBox from "../components/base/centerBox";
 import TopContainer from "../components/base/topContainer";
 import GameCodeDialog from "../components/gameCodeDialog";
+import GameStepper from "../components/gameStepper";
 
-// Import components for AddSongs
-import AddedTracksList from "../components/trackDisplays/addedTracksList";
-import SearchDialog from "../components/trackDisplays/searchDialog";
-import EmptyTracksView from "../components/trackDisplays/emptyTracksView";
-import SearchBar from "../components/trackDisplays/searchBar";
-import SubmittedView from "../components/trackDisplays/submittedView";
+// Import game step components
+import AddSongs from "../components/gameSteps/addSongs";
+import MoveToVoting from "../components/gameSteps/moveToVoting";
+import VoteSongs from "../components/gameSteps/voteSongs";
+import CreatePlaylist from "../components/gameSteps/createPlaylist";
 import PageHeader from "../components/pageHeader";
-
-// Import components for VoteSongs
-import { DragDropContext } from "react-beautiful-dnd";
 
 // Import API functions
 import { 
@@ -56,7 +54,6 @@ import {
 import { searchTracks, getMultipleTracksById } from "../../utils/spotifyCalls";
 import { artistString, usefulTrackComponents } from "../../utils/spotifyApiUtils";
 
-const STEPS = ['Add Songs', 'Vote on Songs', 'Create Playlist'];
 
 export default function Game() {
   const navigate = useNavigate();
@@ -75,7 +72,12 @@ export default function Game() {
   
   // GameCodeDialog state
   const [showGameCodeDialog, setShowGameCodeDialog] = useState(location.state?.showGameCodeDialog || false);
-
+  
+  // Menu state
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const menuOpen = Boolean(menuAnchorEl);
+  const [copySuccess, setCopySuccess] = useState(false);
+  
   // AddSongs state
   const TRACK_KEY = `${gameCode}: tracks`;
   const [myTracksSubmitted, setMyTracksSubmitted] = useState(false);
@@ -97,6 +99,10 @@ export default function Game() {
   const [addView, setAddView] = useState(true);
   const [myVotesSubmitted, setMyVotesSubmitted] = useState(false);
 
+  // MoveToVoting state
+  const [trackGroups, setTrackGroups] = useState([]);
+  const [movingToVotingPhase, setMovingToVotingPhase] = useState(false);
+  
   // CreatePlaylist state
   const [playlistId, setPlaylistId] = useState(null);
 
@@ -143,9 +149,12 @@ export default function Game() {
         if (isTracksSubmitted && !isVotesSubmitted) {
           setActiveStep(1);
         } else if (isTracksSubmitted && isVotesSubmitted) {
-          // If user has submitted both tracks and votes, go to playlist step for host,
-          // or back to step 0 for non-host users (they'll see the submitted view)
-          setActiveStep(gameData.host === userId ? 2 : 0);
+          // If user has submitted both tracks and votes, go to playlist step for host only
+          if (gameData.host === userId) {
+            setActiveStep(2); // Go to playlist creation step for host
+          } else {
+            setActiveStep(1); // Keep non-hosts at voting step with submitted view
+          }
         }
 
         // VoteSongs initialization
@@ -173,7 +182,9 @@ export default function Game() {
   }, [gameCode, accessToken, userId]);
 
   const handleNext = () => {
-    setActiveStep((prevStep) => Math.min(prevStep + 1, 2));
+    // If user is not the host, they can only advance to step 1
+    const maxStep = game.host === userId ? 2 : 1;
+    setActiveStep((prevStep) => Math.min(prevStep + 1, maxStep));
   };
 
   const handleBack = () => {
@@ -492,6 +503,49 @@ export default function Game() {
     handleNext();
   };
 
+  // ========= MoveToVoting Functions =========
+  
+  // Fetch track groups for the game
+  useEffect(() => {
+    const fetchTrackGroups = async () => {
+      if (game && game._id && game.host === userId && activeStep === 1) {
+        try {
+          // We'll simulate fetching track groups here - in a real app, you'd make an API call
+          // This is just a placeholder to show the concept
+          const groups = game.trackGroups || [];
+          setTrackGroups(groups);
+        } catch (error) {
+          console.error("Error fetching track groups:", error);
+        }
+      }
+    };
+    
+    fetchTrackGroups();
+  }, [game, userId, activeStep]);
+  
+  const handleMoveToVotingPhase = async () => {
+    if (!game || !game._id || game.host !== userId) return;
+    
+    try {
+      setMovingToVotingPhase(true);
+      
+      // Simulate an API call to update the game phase
+      // In a real app, you'd make an actual API call here
+      // await updateGamePhase(game._id, 'voting');
+      
+      // For this demo, we'll just wait a moment and then move to the next step
+      setTimeout(() => {
+        setMovingToVotingPhase(false);
+        setAlertMsg("Session moved to voting phase successfully!");
+        setAlertOpen(true);
+        handleNext();
+      }, 1500);
+    } catch (error) {
+      console.error("Error moving to voting phase:", error);
+      setMovingToVotingPhase(false);
+    }
+  };
+  
   // ========= CreatePlaylist Functions =========
   
   const handleCreatePlaylist = async () => {
@@ -499,6 +553,37 @@ export default function Game() {
     setPlaylistId(incomingPlaylistId);
     setAlertMsg("Spotify playlist created successfully! Ready to listen.");
     setAlertOpen(true);
+  };
+  
+  // Menu handlers
+  const handleMenuOpen = (event) => {
+    setMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+    // Reset copy success state after a short delay
+    setTimeout(() => {
+      setCopySuccess(false);
+    }, 1500);
+  };
+  
+  const handleCopyGameCode = () => {
+    navigator.clipboard.writeText(gameCode)
+      .then(() => {
+        setCopySuccess(true);
+        // Show alert message
+        setAlertMsg("Game code copied to clipboard!");
+        setAlertOpen(true);
+        
+        // Close menu after a short delay
+        setTimeout(() => {
+          handleMenuClose();
+        }, 1000);
+      })
+      .catch(err => {
+        console.error('Failed to copy game code: ', err);
+      });
   };
 
   // Loading state
@@ -546,241 +631,95 @@ export default function Game() {
 
   // Render the appropriate step content
   const getStepContent = (step) => {
+    // Non-host users have a different step sequence than host users
+    const isHost = game.host === userId;
+
     switch (step) {
       case 0:
-        // Add Songs step
-        return myTracksSubmitted ? (
-          <SubmittedView />
-        ) : (
-          <Box sx={{ mt: 1.5, mb: 3 }}>
-            <CenterBox
-              maxWidth="1000px"
-              p={{ xs: 2, sm: 2.5 }}
-              sx={{
-                borderRadius: "16px",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-              }}
-            >
-              <Box
-                sx={{ 
-                  display: "flex", 
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  flexWrap: "wrap",
-                  mb: 2,
-                  gap: 2
-                }}
-              >
-                <Box>
-                  <Typography
-                    variant="h5"
-                    fontWeight="500"
-                    sx={{ letterSpacing: "-0.3px", mb: 0.5 }}
-                  >
-                    Your List ({addedTracks.length}/{trackLimit})
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {trackLimit - addedTracks.length} tracks needed
-                  </Typography>
-                </Box>
-                
-                <Box sx={{ 
-                  maxWidth: { xs: '100%', sm: '60%', md: '50%' } 
-                }}>
-                  <SearchBar onClick={handleSearchOpen} />
-                </Box>
-              </Box>
-
-              {addedTracks.length > 0 ? (
-                <AddedTracksList 
-                  tracks={addedTracks} 
-                  onRemoveTrack={removeTrackFromSession} 
-                />
-              ) : (
-                <EmptyTracksView />
-              )}
-            </CenterBox>
-          </Box>
+        // Add Songs step (same for both host and non-host)
+        return (
+          <AddSongs 
+            myTracksSubmitted={myTracksSubmitted}
+            addedTracks={addedTracks}
+            trackLimit={trackLimit}
+            handleSearchOpen={handleSearchOpen}
+            searchOpen={searchOpen}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            searching={searching}
+            searchResult={searchResult}
+            removeTrackFromSession={removeTrackFromSession}
+            handleSearchClose={handleSearchClose}
+            formatTrack={formatTrack}
+            addTrack={addTrack}
+            handleSearch={handleSearch}
+          />
         );
 
       case 1:
-        // Vote Songs step
-        return myVotesSubmitted ? (
-          <CenterBox
-            maxWidth="1000px"
-            p={{ xs: 2, sm: 2.5 }}
-            sx={{
-              mt: 1.5,
-              mb: 3,
-              borderRadius: "16px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-            }}
-          >
-            <Typography variant="h5" textAlign="center" sx={{ mb: 2 }}>
-              You've already submitted your votes
-            </Typography>
-            <Typography variant="body1" textAlign="center" color="text.secondary">
-              Your votes have been recorded. Check back later to see the final playlist.
-            </Typography>
-          </CenterBox>
-        ) : (
-          <Box sx={{ mt: 1.5, mb: 3 }}>
-            <CenterBox
-              maxWidth="1200px"
-              p={{ xs: 2, sm: 2.5 }}
-              sx={{
-                borderRadius: "16px",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-              }}
-            >
-              {/* Mobile View Selector Tabs */}
-              <Box sx={{ display: { xs: 'block', md: 'none' }, width: '100%', mb: 2 }}>
-                <Tabs 
-                  value={addView ? 0 : 1} 
-                  onChange={(e, newValue) => setAddView(newValue === 0)}
-                  variant="fullWidth"
-                  indicatorColor="primary"
-                  textColor="primary"
-                  sx={{ 
-                    borderBottom: 1, 
-                    borderColor: 'divider',
-                    '& .MuiTab-root': {
-                      fontWeight: 600,
-                      py: 1.5
-                    } 
-                  }}
-                >
-                  <Tab label="Options" sx={{ fontSize: 18 }} />
-                  <Tab label={`Shortlist (${shortlist.length})`} sx={{ fontSize: 18 }} />
-                </Tabs>
-              </Box>
-
-              {/* Mobile View Content */}
-              <Box sx={{ display: { xs: 'block', md: 'none' } }}>
-                <Box
-                  display="flex"
-                  justifyContent="center"
-                  sx={{
-                    display: addView ? "flex" : "none",
-                    width: "100%"
-                  }}
-                >
-                  <AddedTracksList
-                    tracks={getSessionOptions()}
-                    onRemoveTrack={() => {}}
-                    title="Your Options"
-                    isOptions={true}
-                    addFunc={addTrackToShortlist}
-                  />
-                </Box>
-                <Box
-                  display="flex"
-                  justifyContent="center"
-                  sx={{
-                    display: addView ? "none" : "flex",
-                    width: "100%"
-                  }}
-                >
-                  <DragDropContext onDragEnd={onDragEnd}>
-                    <AddedTracksList
-                      tracks={getSessionShortlist()}
-                      onRemoveTrack={shortlistToOptions}
-                      title="Your Shortlist"
-                      isShortlist={true}
-                      submitFunc={submitVotes}
-                      missingTracks={voteLimit - getSessionShortlist().length}
-                      isDraggable={true}
-                    />
-                  </DragDropContext>
-                </Box>
-              </Box>
-
-              {/* Desktop Side-by-Side View */}
-              <Box sx={{ display: { xs: 'none', md: 'block' }, width: "100%" }}>
-                <DragDropContext onDragEnd={onDragEnd}>
-                  <Grid container spacing={3}>
-                    <Grid item md={6}>
-                      <AddedTracksList
-                        tracks={getSessionOptions()}
-                        onRemoveTrack={() => {}}
-                        title="Your Options"
-                        isOptions={true}
-                        addFunc={addTrackToShortlist}
-                      />
-                    </Grid>
-                    <Grid item md={6}>
-                      <AddedTracksList
-                        tracks={getSessionShortlist()}
-                        onRemoveTrack={shortlistToOptions}
-                        title="Your Shortlist"
-                        isShortlist={true}
-                        submitFunc={submitVotes}
-                        missingTracks={voteLimit - getSessionShortlist().length}
-                        isDraggable={true}
-                      />
-                    </Grid>
-                  </Grid>
-                </DragDropContext>
-              </Box>
-            </CenterBox>
-          </Box>
-        );
+        // For hosts: Move to Voting step
+        // For non-hosts: Vote Songs step
+        if (isHost) {
+          return (
+            <MoveToVoting
+              game={game}
+              userId={userId}
+              trackGroups={trackGroups}
+              handleMoveToVotingPhase={handleMoveToVotingPhase}
+              movingToVotingPhase={movingToVotingPhase}
+            />
+          );
+        } else {
+          return (
+            <VoteSongs
+              myVotesSubmitted={myVotesSubmitted}
+              addView={addView}
+              setAddView={setAddView}
+              getSessionOptions={getSessionOptions}
+              addTrackToShortlist={addTrackToShortlist}
+              getSessionShortlist={getSessionShortlist}
+              shortlistToOptions={shortlistToOptions}
+              submitVotes={submitVotes}
+              voteLimit={voteLimit}
+              onDragEnd={onDragEnd}
+            />
+          );
+        }
 
       case 2:
-        // Create Playlist step
-        return (
-          <Box sx={{ mt: 1.5, mb: 3 }}>
-            <CenterBox
-              maxWidth="1000px"
-              p={{ xs: 2, sm: 2.5 }}
-              sx={{
-                borderRadius: "16px",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-              }}
-            >
-              <Typography variant="h5" fontWeight="500" sx={{ mb: 3, textAlign: "center" }}>
-                Create Playlist
-              </Typography>
-              
-              <Typography variant="body1" sx={{ mb: 3, textAlign: "center" }}>
-                There are {game.voteGroups?.length || 0} sets of votes submitted
-              </Typography>
-              
-              {!playlistId ? (
-                <Box display="flex" justifyContent="center">
-                  <Button 
-                    onClick={handleCreatePlaylist}
-                    variant="contained"
-                    color="secondary"
-                    size="large"
-                    sx={{ borderRadius: "12px", px: 4, py: 1.2 }}
-                    disabled={!game.host || game.host !== userId}
-                  >
-                    Create Playlist
-                  </Button>
-                </Box>
-              ) : (
-                <Box sx={{ mt: 3 }}>
-                  <iframe
-                    style={{ borderRadius: "12px" }}
-                    src={`https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator`}
-                    width="100%"
-                    height="352"
-                    allowFullScreen
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                    loading="lazy"
-                  ></iframe>
-                </Box>
-              )}
-              
-              {game.host !== userId && (
-                <Typography variant="body2" sx={{ mt: 3, textAlign: "center", color: "text.secondary" }}>
-                  Only the session host can create the playlist
-                </Typography>
-              )}
-            </CenterBox>
-          </Box>
-        );
+        // For hosts: Vote Songs step
+        // For non-hosts: This would not be accessible
+        if (isHost) {
+          return (
+            <VoteSongs
+              myVotesSubmitted={myVotesSubmitted}
+              addView={addView}
+              setAddView={setAddView}
+              getSessionOptions={getSessionOptions}
+              addTrackToShortlist={addTrackToShortlist}
+              getSessionShortlist={getSessionShortlist}
+              shortlistToOptions={shortlistToOptions}
+              submitVotes={submitVotes}
+              voteLimit={voteLimit}
+              onDragEnd={onDragEnd}
+            />
+          );
+        }
+        return <Typography>Not authorized</Typography>;
+
+      case 3:
+        // Create Playlist step (host only)
+        if (isHost) {
+          return (
+            <CreatePlaylist
+              game={game}
+              userId={userId}
+              playlistId={playlistId}
+              handleCreatePlaylist={handleCreatePlaylist}
+            />
+          );
+        }
+        return <Typography>Not authorized</Typography>;
 
       default:
         return (
@@ -794,23 +733,78 @@ export default function Game() {
       <Navbar />
       
       <TopContainer>
-        <Box sx={{ display: 'flex', alignItems: 'center'}}>
-          <Button 
-            component={Link} 
-            to={`/home`}
-            sx={{ 
-              mr: 2,
-              borderRadius: '50%',
-              minWidth: '40px',
-              width: '35px',
-              height: '35px',
-              p: 0
-            }}
-          >
-            <ArrowBackIcon />
-          </Button>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Button 
+              component={Link} 
+              to={`/home`}
+              sx={{ 
+                mr: 2,
+                borderRadius: '50%',
+                minWidth: '40px',
+                width: '35px',
+                height: '35px',
+                p: 0
+              }}
+            >
+              <ArrowBackIcon />
+            </Button>
+            <Box>
+              <PageHeader title={game.title} />
+            </Box>
+          </Box>
+          
+          {/* Hamburger Menu */}
           <Box>
-            <PageHeader title={game.title} />
+            <IconButton
+              onClick={handleMenuOpen}
+              aria-controls={menuOpen ? "game-menu" : undefined}
+              aria-haspopup="true"
+              aria-expanded={menuOpen ? "true" : undefined}
+              sx={{ 
+                color: 'primary.main',
+                ml: 2
+              }}
+            >
+              <MenuIcon />
+            </IconButton>
+            
+            {/* Menu Dropdown */}
+            <Menu
+              id="game-menu"
+              anchorEl={menuAnchorEl}
+              open={menuOpen}
+              onClose={handleMenuClose}
+              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+              sx={{
+                '& .MuiPaper-root': {
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                  mt: 1,
+                }
+              }}
+            >
+              <MenuItem sx={{ minWidth: '200px', py: 2 }}>
+                <Box sx={{ width: '100%' }}>
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                    Game Code
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Typography variant="h6" fontWeight="500">
+                      {gameCode}
+                    </Typography>
+                    <IconButton 
+                      onClick={handleCopyGameCode}
+                      color={copySuccess ? "success" : "primary"}
+                      size="small"
+                    >
+                      {copySuccess ? <CheckIcon fontSize="small" /> : <ContentCopyIcon fontSize="small" />}
+                    </IconButton>
+                  </Box>
+                </Box>
+              </MenuItem>
+            </Menu>
           </Box>
         </Box>
       </TopContainer>
@@ -849,7 +843,7 @@ export default function Game() {
             />
             <Typography 
               variant="body1" 
-              color="success.dark" 
+              color="success" 
               fontWeight={500}
               sx={{ mr: 2 }}
             >
@@ -883,117 +877,22 @@ export default function Game() {
 
       {/* Stepper and Navigation Box */}
       <CenterBox maxWidth="800px" sx={{ mb: 3 }}>
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            p: { xs: 2, sm: 2.5 }, 
-            borderRadius: '16px',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
-            border: '1px solid rgba(64,126,160,0.1)',
-          }}
-        >
-          {/* Stepper Component */}
-          <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
-            {STEPS.map((label, index) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-          
-          {/* Navigation description */}
-          <Typography 
-            variant="body1" 
-            color="text.secondary" 
-            textAlign="center" 
-            sx={{ mb: 3 }}
-          >
-            {activeStep === 0 && !myTracksSubmitted && (
-              `Add ${trackLimit} songs to your list, then submit them to continue.`
-            )}
-            {activeStep === 0 && myTracksSubmitted && (
-              "You've already submitted your songs. Continue to the next step to vote."
-            )}
-            {activeStep === 1 && !myVotesSubmitted && (
-              `Select ${voteLimit} songs from the options and rank them in order of preference.`
-            )}
-            {activeStep === 1 && myVotesSubmitted && (
-              "You've already submitted your votes. Continue to see the playlist."
-            )}
-            {activeStep === 2 && game.host === userId && (
-              "Create a Spotify playlist with the top-voted songs."
-            )}
-            {activeStep === 2 && game.host !== userId && (
-              "The session host will create the final playlist."
-            )}
-          </Typography>
-          
-          {/* Navigation Buttons */}
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Button
-              disabled={activeStep === 0}
-              onClick={handleBack}
-              variant="outlined"
-              sx={{ 
-                mr: 1, 
-                borderRadius: '12px',
-                px: 3,
-                py: 1.2
-              }}
-            >
-              Back
-            </Button>
-            
-            {activeStep === 0 && !myTracksSubmitted && (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={submitTracks}
-                disabled={addedTracks.length < trackLimit}
-                sx={{ 
-                  borderRadius: '12px',
-                  px: 3,
-                  py: 1.2
-                }}
-              >
-                Submit Tracks
-              </Button>
-            )}
-            
-            {activeStep === 1 && !myVotesSubmitted && !addView && (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={submitVotes}
-                disabled={getSessionShortlist().length < voteLimit}
-                sx={{ 
-                  borderRadius: '12px',
-                  px: 3,
-                  py: 1.2
-                }}
-              >
-                Submit Votes
-              </Button>
-            )}
-            
-            {((activeStep === 0 && myTracksSubmitted) || 
-              (activeStep === 1 && myVotesSubmitted) ||
-              (activeStep === 1 && addView)) && (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleNext}
-                sx={{ 
-                  borderRadius: '12px',
-                  px: 3,
-                  py: 1.2
-                }}
-              >
-                Next
-              </Button>
-            )}
-          </Box>
-        </Paper>
+        <GameStepper
+          activeStep={activeStep}
+          handleBack={handleBack}
+          handleNext={handleNext}
+          submitTracks={submitTracks}
+          submitVotes={submitVotes}
+          addedTracks={addedTracks}
+          trackLimit={trackLimit}
+          myTracksSubmitted={myTracksSubmitted}
+          getSessionShortlist={getSessionShortlist}
+          voteLimit={voteLimit}
+          myVotesSubmitted={myVotesSubmitted}
+          addView={addView}
+          game={game}
+          userId={userId}
+        />
       </CenterBox>
       
       {/* Game Code Success Dialog */}
@@ -1005,19 +904,6 @@ export default function Game() {
           gameName={game.title}
         />
       )}
-      
-      {/* Search Dialog for AddSongs */}
-      <SearchDialog
-        open={searchOpen}
-        onClose={handleSearchClose}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        searching={searching}
-        searchResult={searchResult}
-        onAddTrack={addTrack}
-        formatTrack={formatTrack}
-        onSearch={handleSearch}
-      />
     </ThemeProvider>
   );
 }

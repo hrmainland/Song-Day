@@ -77,7 +77,7 @@ export default function SearchDialog({
             fullWidth
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search for songs... (type at least 3 characters)"
+            placeholder="Search for songs"
             variant="outlined"
             autoFocus
             onKeyDown={(e) => {

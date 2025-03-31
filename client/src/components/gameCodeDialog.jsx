@@ -94,8 +94,9 @@ export default function GameCodeDialog({ open, onClose, gameCode, gameName }) {
               variant="h3" 
               sx={{ 
                 letterSpacing: '4px', 
-                fontWeight: 700,
-                fontSize: '2rem',
+                fontWeight: 500,
+                // fontSize: {lg: '1rem', md: '0.7rem', sm: '0.5rem'},
+                fontSize: '1.5rem',
                 color: 'primary.dark',
                 ml: 2
               }}

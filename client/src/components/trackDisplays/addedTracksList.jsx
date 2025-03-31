@@ -153,8 +153,7 @@ function TrackItem({
           sx={STYLES.RESPONSIVE_HIDE_MOBILE}
         >
           <Typography variant="body2" color="text.secondary" align="center">
-            {/* {index + 1} */}
-            {width}
+            {index + 1}
           </Typography>
         </Grid>
         <Grid

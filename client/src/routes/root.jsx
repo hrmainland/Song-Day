@@ -59,89 +59,69 @@ export default function Root() {
     setAnchorEl(null);
   };
   
+  // Common button styles with responsive adjustments
+  const getStartedButtonStyles = {
+    textTransform: "none",
+    color: "#253238",
+    fontSize: "1.1rem",
+    fontWeight: 700,
+    padding: "10px 28px",
+    borderRadius: "8px",
+    backgroundColor: "white",
+    boxShadow: "0 4px 14px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(93, 74, 156, 0.08)",
+    border: "1px solid rgba(93, 74, 156, 0.15)",
+    transition: "all 0.25s ease",
+    letterSpacing: "0.2px",
+    "&:hover": {
+      backgroundColor: "#F8F9FF",
+      boxShadow: "0 6px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(93, 74, 156, 0.12)",
+      transform: "translateY(-2px)",
+    },
+    "&:active": {
+      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(93, 74, 156, 0.15)",
+    },
+  };
+
+  // Hero content component
+  const HeroContent = () => (
+    <Grid container spacing={isMobile ? 4 : 6} justifyContent={"center"}>
+      <Grid item xs={12} textAlign={"center"}>
+        <h1 
+          className="heading" 
+          style={{ 
+            textShadow: isMobile ? "0 0 10px rgba(0, 0, 0, 0.5)" : "0 0 10px black", 
+            color: "white" 
+          }}
+        >
+          Song Day
+        </h1>
+      </Grid>
+      <Grid item xs={12} textAlign="center">
+        <Button
+          variant="contained"
+          component={Link}
+          to="/home"
+          sx={getStartedButtonStyles}
+        >
+          Get Started
+        </Button>
+      </Grid>
+    </Grid>
+  );
+
   return (
     <ParallaxProvider>
-      {/* <Box>
-        <img src="/island-trees.svg" alt="trees" />
-      </Box> */}
       {isMobile ? (
         // Mobile view - no parallax effect
         <div className="home-background">
-          <Grid container spacing={4} justifyContent={"center"}>
-            <Grid item xs={12} textAlign={"center"}>
-              <h1 className="heading" style={{ textShadow: "0 0 10px white", color: "black" }}>Song Day</h1>
-            </Grid>
-            <Grid item xs={12} textAlign="center">
-              <Button
-                variant="contained"
-                color="secondary"
-                component={Link}
-                to="/home"
-                sx={{
-                  textTransform: "none",
-                  color: "white",
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  padding: "10px 28px",
-                  borderRadius: "12px",
-                  boxShadow: "0 4px 12px rgba(93, 74, 156, 0.3)",
-                  background: "linear-gradient(135deg, #7966b8 0%, #5D4A9C 100%)",
-                  transition: "all 0.3s ease",
-                  "&:hover": {
-                    boxShadow: "0 6px 16px rgba(93, 74, 156, 0.5)",
-                    transform: "translateY(-1px)",
-                  },
-                  "&:active": {
-                    boxShadow: "0 2px 8px rgba(93, 74, 156, 0.3)",
-                    transform: "translateY(0px)",
-                  },
-                }}
-              >
-                Get Started
-              </Button>
-            </Grid>
-          </Grid>
+          <HeroContent />
         </div>
       ) : (
         // Desktop view - with parallax effect
         <Parallax speed={-60}>
           <div className="home-background">
             <Parallax speed={50}>
-              <Grid container spacing={6} justifyContent={"center"}>
-                <Grid item xs={12} textAlign={"center"}>
-                  <h1 className="heading" style={{ textShadow: "0 0 10px black" }}>Song Day</h1>
-                </Grid>
-                <Grid item xs={12} textAlign="center">
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    component={Link}
-                    to="/home"
-                    sx={{
-                      textTransform: "none",
-                      color: "white",
-                      fontSize: "1.15rem",
-                      fontWeight: 600,
-                      padding: "12px 32px",
-                      borderRadius: "12px",
-                      boxShadow: "0 5px 15px rgba(93, 74, 156, 0.35)",
-                      background: "linear-gradient(135deg, #7966b8 0%, #5D4A9C 100%)",
-                      transition: "all 0.3s ease",
-                      "&:hover": {
-                        boxShadow: "0 7px 20px rgba(93, 74, 156, 0.5)",
-                        transform: "translateY(-2px)",
-                        background: "linear-gradient(135deg, #8371c0 0%, #6351a8 100%)",
-                      },
-                      "&:active": {
-                        boxShadow: "0 3px 10px rgba(93, 74, 156, 0.3)",
-                        transform: "translateY(0px)",
-                      },
-                    }}
-                  >
-                    Get Started
-                  </Button>
-                </Grid>
-              </Grid>
+              <HeroContent />
             </Parallax>
           </div>
         </Parallax>
