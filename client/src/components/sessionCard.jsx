@@ -10,15 +10,15 @@ import theme from "../../utils/theme";
 
 export default function SessionCard({ game, onClick }) {
   // Fixed images for demo purposes
-  // const images = [
-  //   "https://cdn.vectorstock.com/i/1000x1000/67/41/gramophone-hand-drawn-isolated-on-white-vector-42866741.webp",
-  //   "https://cdn.vectorstock.com/i/2000v/11/32/single-one-line-drawing-retro-cassette-sticker-vector-42951132.avif",
-  //   "https://cdn.vectorstock.com/i/2000v/11/11/single-one-line-drawing-radio-tape-or-boombox-vector-42951111.avif",
-  // ];
-
   const images = [
-    "/public/gammaphone.png",
+    "https://cdn.vectorstock.com/i/1000x1000/67/41/gramophone-hand-drawn-isolated-on-white-vector-42866741.webp",
+    "https://cdn.vectorstock.com/i/2000v/11/32/single-one-line-drawing-retro-cassette-sticker-vector-42951132.avif",
+    "https://cdn.vectorstock.com/i/2000v/11/11/single-one-line-drawing-radio-tape-or-boombox-vector-42951111.avif",
   ];
+
+  // const images = [
+  //   "/public/gammaphone.png",
+  // ];
 
   // const images = [
   //   "https://mosaic.scdn.co/60/ab67616d00001e022ec0df7877422d06b43739f2ab67616d00001e028051cb5d497c5e49f1548b99ab67616d00001e02fa801a4035231185d97ab1a8ab67616d00001e02ff1a7df76be413eaffda8545",
