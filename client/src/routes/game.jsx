@@ -28,6 +28,7 @@ import CenterBox from "../components/base/centerBox";
 import TopContainer from "../components/base/topContainer";
 import GameCodeDialog from "../components/gameCodeDialog";
 import GameStepper from "../components/gameStepper";
+import DisplayNameDialog from "../components/displayNameDialog";
 
 // Import game step components
 import AddSongs from "../components/gameSteps/addSongs";
@@ -72,6 +73,10 @@ export default function Game() {
   
   // GameCodeDialog state
   const [showGameCodeDialog, setShowGameCodeDialog] = useState(location.state?.showGameCodeDialog || false);
+  
+  // DisplayNameDialog state
+  const [showDisplayNameDialog, setShowDisplayNameDialog] = useState(false);
+  const [needsDisplayName, setNeedsDisplayName] = useState(false);
   
   // Menu state
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
@@ -130,6 +135,26 @@ export default function Game() {
         setTrackLimit(gameData.config.nSongs);
         setVoteLimit(gameData.config.nVotes);
         
+        // Check if user is host
+        const isHost = gameData.host === userId;
+        
+        // Check if user needs to set a display name (only for non-hosts)
+        if (!isHost && userId) {
+          // Find the current user in the players array
+          const currentPlayer = gameData.players.find(player => {
+            if (typeof player.user === 'object') {
+              return player.user._id === userId;
+            }
+            return player.user === userId;
+          });
+          
+          // If the current player exists and doesn't have a display name, show the dialog
+          if (currentPlayer && !currentPlayer.displayName) {
+            setNeedsDisplayName(true);
+            setShowDisplayNameDialog(true);
+          }
+        }
+        
         // Check user's state for each step
         // Step 1: Adding songs
         const trackGroup = await getMyTrackGroup(gameData._id);
@@ -150,7 +175,7 @@ export default function Game() {
           setActiveStep(1);
         } else if (isTracksSubmitted && isVotesSubmitted) {
           // If user has submitted both tracks and votes, go to playlist step for host only
-          if (gameData.host === userId) {
+          if (isHost) {
             setActiveStep(2); // Go to playlist creation step for host
           } else {
             setActiveStep(1); // Keep non-hosts at voting step with submitted view
@@ -183,8 +208,22 @@ export default function Game() {
 
   const handleNext = () => {
     // If user is not the host, they can only advance to step 1
-    const maxStep = game.host === userId ? 2 : 1;
+    const maxStep = game.host === userId ? 3 : 1;
     setActiveStep((prevStep) => Math.min(prevStep + 1, maxStep));
+    
+    // Force a refresh of game data when advancing to the next step
+    if (accessToken && userId) {
+      const refreshGameData = async () => {
+        try {
+          const gameData = await fetchGame(gameCode);
+          setGame(gameData);
+        } catch (error) {
+          console.error("Error refreshing game data:", error);
+        }
+      };
+      
+      refreshGameData();
+    }
   };
 
   const handleBack = () => {
@@ -662,9 +701,9 @@ export default function Game() {
         if (isHost) {
           return (
             <MoveToVoting
-              game={game}
+              gameId={game._id}
+              gameCode={gameCode}
               userId={userId}
-              trackGroups={trackGroups}
               handleMoveToVotingPhase={handleMoveToVotingPhase}
               movingToVotingPhase={movingToVotingPhase}
             />
@@ -876,7 +915,7 @@ export default function Game() {
       {getStepContent(activeStep)}
 
       {/* Stepper and Navigation Box */}
-      <CenterBox maxWidth="800px" sx={{ mb: 3 }}>
+      <CenterBox maxWidth="800px">
         <GameStepper
           activeStep={activeStep}
           handleBack={handleBack}
@@ -899,9 +938,49 @@ export default function Game() {
       {game && (
         <GameCodeDialog 
           open={showGameCodeDialog}
-          onClose={() => setShowGameCodeDialog(false)}
-          gameCode={gameCode}
-          gameName={game.title}
+          onClose={() => {
+            setShowGameCodeDialog(false);
+            // Update location.state to prevent dialog from showing on refresh
+            if (location.state) {
+              const newState = { ...location.state, showGameCodeDialog: false };
+              window.history.replaceState(newState, document.title);
+            }
+          }}
+          game={game}
+        />
+      )}
+
+      {/* Display Name Dialog */}
+      {game && needsDisplayName && (
+        <DisplayNameDialog
+          open={showDisplayNameDialog}
+          onClose={(displayName) => {
+            setShowDisplayNameDialog(false);
+            
+            // If a displayName was returned, the user submitted the form successfully
+            if (displayName) {
+              setNeedsDisplayName(false);
+              
+              // Show success message
+              setAlertMsg("Display name set successfully!");
+              setAlertOpen(true);
+              
+              // Refresh the game data to update the display name in the UI
+              const updatedGame = { ...game };
+              const playerIndex = updatedGame.players.findIndex(player => {
+                if (typeof player.user === 'object') {
+                  return player.user._id === userId;
+                }
+                return player.user === userId;
+              });
+              
+              if (playerIndex !== -1) {
+                updatedGame.players[playerIndex].displayName = displayName;
+                setGame(updatedGame);
+              }
+            }
+          }}
+          game={game}
         />
       )}
     </ThemeProvider>

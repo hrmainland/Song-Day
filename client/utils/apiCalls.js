@@ -84,6 +84,12 @@ export async function addVoteGroupToGame(gameId, voteGroupId) {
 //   return await apiRequest(`/game/${gameId}/all-tracks`);
 // }
 
+export async function updateDisplayName(gameId, displayName) {
+  return await apiRequest(`/game/${gameId}/display-name`, "PUT", {
+    displayName,
+  })
+}
+
 export async function getAllVotableTracks(gameId) {
   return await apiRequest(`/game/${gameId}/votable-tracks`);
 }

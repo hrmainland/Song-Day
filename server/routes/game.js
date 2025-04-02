@@ -16,7 +16,7 @@ router.put("/:gameId/add-me", isLoggedIn, async (req, res) => {
     res.status(404).json({ message: `No game found with ID ${gameId}` });
     return;
   }
-  game.players.push({ user: req.user._id, displayName: "Player x" });
+  game.players.push({ user: req.user._id, displayName: null });
   await game.save();
 
   res.status(200).json(game);
@@ -55,19 +55,6 @@ router.put(
   }
 );
 
-router.put("/:gameId/vote-group/:voteGroupId", isLoggedIn, async (req, res) => {
-  const { gameId, voteGroupId } = req.params;
-  const game = await Game.findById(gameId);
-  if (!game) {
-    res.status(404).json({ message: `No game found with ID ${gameId}` });
-    return;
-  }
-  game.voteGroups.push(voteGroupId);
-  await game.save();
-
-  res.status(200).json(game);
-});
-
 router.post("/new", isLoggedIn, async (req, res, next) => {
   const { gameName, settings } = req.body;
   const gameCode = generateGameCode();
@@ -84,13 +71,30 @@ router.post("/new", isLoggedIn, async (req, res, next) => {
     config,
     gameCode,
     host: userId,
-    players: [{ user: userId, displayName: "Host" }],
+    players: [{ user: userId, displayName: null }],
   };
 
   const thisGame = new Game(params);
   await thisGame.save();
 
   res.status(200).json(thisGame);
+});
+
+router.put("/:gameId/display-name", isLoggedIn, async (req, res) => {
+  const { gameId } = req.params;
+  const { displayName } = req.body;
+  const game = await Game.findById(gameId);
+
+  if (!game) {
+    res.status(404).json({ message: `No game found with ID ${gameId}` });
+    return;
+  }
+
+  game.players.find((player) => player.user.equals(req.user._id)).displayName =
+    displayName;
+  await game.save();
+
+  res.status(200).json({ message: "Display name updated" });
 });
 
 router.post("/:gameId/vote-group", isLoggedIn, async (req, res) => {
@@ -104,6 +108,19 @@ router.post("/:gameId/vote-group", isLoggedIn, async (req, res) => {
   } catch (error) {
     return res.status(500).json(error);
   }
+});
+
+router.put("/:gameId/vote-group/:voteGroupId", isLoggedIn, async (req, res) => {
+  const { gameId, voteGroupId } = req.params;
+  const game = await Game.findById(gameId);
+  if (!game) {
+    res.status(404).json({ message: `No game found with ID ${gameId}` });
+    return;
+  }
+  game.voteGroups.push(voteGroupId);
+  await game.save();
+
+  res.status(200).json(game);
 });
 
 router.delete("/vote-group/:voteGroupId", async (req, res) => {
@@ -122,7 +139,7 @@ router.delete("/vote-group/:voteGroupId", async (req, res) => {
 router.get("/:gameCode", async (req, res) => {
   const { gameCode } = req.params;
   console.log('gameCode :>> ', gameCode);
-  const game = await Game.findOne({ gameCode });
+  const game = await Game.findOne({ gameCode }).populate("trackGroups", "player");
   if (game != undefined) {
     res.status(200).json(game);
   } else {

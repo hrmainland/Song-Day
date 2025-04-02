@@ -17,14 +17,14 @@ export default function SessionCard({ game, onClick }) {
   // ];
 
   const images = [
-    "/public/bg_svgs/Sun rise-rafiki.svg",
-    "/public/bg_svgs/Sunset-cuate.svg",
-    "/public/bg_svgs/Island-bro.svg",
-    "/public/bg_svgs/Sun rise-bro.svg",
-    "/public/bg_svgs/Island-rafiki.svg",
-    "/public/bg_svgs/Sun rise-cuate.svg",
-    "/public/bg_svgs/Sunset-bro.svg",
-    "/public/bg_svgs/Sunset-pana.svg",
+    "/bg_svgs/Sun rise-rafiki.svg",
+    "/bg_svgs/Sunset-cuate.svg",
+    "/bg_svgs/Island-bro.svg",
+    "/bg_svgs/Sun rise-bro.svg",
+    "/bg_svgs/Island-rafiki.svg",
+    "/bg_svgs/Sun rise-cuate.svg",
+    "/bg_svgs/Sunset-bro.svg",
+    "/bg_svgs/Sunset-pana.svg",
   ];
 
   // const images = [

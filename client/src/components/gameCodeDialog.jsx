@@ -12,31 +12,49 @@ import {
   Tooltip,
   Snackbar,
   Alert,
-  ThemeProvider
+  ThemeProvider,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
+
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import FaceIcon from '@mui/icons-material/Face';
 import { Link } from "react-router-dom";
 import theme from "../../utils/theme";
+import { updateDisplayName } from "../../utils/apiCalls";
 
-export default function GameCodeDialog({ open, onClose, gameCode, gameName }) {
+export default function GameCodeDialog({ open, onClose, game }) {
   const [copied, setCopied] = useState(false);
+  const [displayName, setDisplayName] = useState(null);
   
   const handleCopy = () => {
-    navigator.clipboard.writeText(gameCode);
+    navigator.clipboard.writeText(game.gameCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 3000);
+  };
+
+  const handleSubmit = async () => {
+    if (displayName && displayName.length >= 2) {
+      try {
+        await updateDisplayName(game._id, displayName);
+        onClose();
+      } catch (error) {
+        console.error("Error updating display name:", error);
+        // Keep dialog open if there's an error
+      }
+    }
   };
   
   return (
     <ThemeProvider theme={theme}>
       <Dialog
         open={open}
-        onClose={onClose}
+        onClose={() => {}} // Prevent dialog from closing on backdrop click or escape key
         maxWidth="sm"
         fullWidth
+        disableEscapeKeyDown
         PaperProps={{
           sx: {
             borderRadius: "16px",
@@ -49,7 +67,7 @@ export default function GameCodeDialog({ open, onClose, gameCode, gameName }) {
           p: 3,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between'
+          justifyContent: 'center'
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <CelebrationIcon sx={{ color: 'primary.main', mr: 1.5, fontSize: 28 }} />
@@ -57,14 +75,6 @@ export default function GameCodeDialog({ open, onClose, gameCode, gameName }) {
               Session Created!
             </Typography>
           </Box>
-          <IconButton 
-            edge="end" 
-            onClick={onClose}
-            aria-label="close"
-            sx={{ color: 'text.secondary' }}
-          >
-            <CloseIcon />
-          </IconButton>
         </DialogTitle>
         
         <Divider />
@@ -72,14 +82,63 @@ export default function GameCodeDialog({ open, onClose, gameCode, gameName }) {
         <DialogContent sx={{ p: 3 }}>
           <Box sx={{ mb: 3 }}>
             <Typography variant="body1" color="text.secondary" paragraph sx={{ mb: 2 }}>
-              Your session "{gameName}" has been created successfully. Share this code with other players to join:
+              Your session "{game.title}" has been created successfully. Complete the steps below to get started:
             </Typography>
           </Box>
+
+          <Box sx={{ mb: 1 }}>
+            <Typography 
+              variant="subtitle2" 
+              color="primary.dark" 
+              fontWeight={600} 
+              sx={{ 
+                mb: 1,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.8
+              }}
+            >
+              <FaceIcon fontSize="small" />
+              ENTER YOUR DISPLAY NAME
+            </Typography>
+          </Box>
+
+          <TextField 
+            fullWidth 
+            variant="outlined"
+            placeholder="Your name"
+            onChange={(e) => setDisplayName(e.target.value)}
+            InputProps={{
+              sx: { 
+                borderRadius: '12px',
+                fontSize: '1.1rem',
+              }
+            }}
+            sx={{ mb: 4 }}
+            autoFocus
+          />
           
+          <Box sx={{ mb: 1 }}>
+            <Typography 
+              variant="subtitle2" 
+              color="primary.dark" 
+              fontWeight={600} 
+              sx={{ 
+                mb: 1,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.8
+              }}
+            >
+              <ContentCopyIcon fontSize="small" />
+              SHARE THIS CODE WITH FRIENDS
+            </Typography>
+          </Box>
+
           <Paper 
             elevation={0} 
             sx={{ 
-              p: 2.5, 
+              p: { xs: 2, sm: 3 }, 
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -87,55 +146,72 @@ export default function GameCodeDialog({ open, onClose, gameCode, gameName }) {
               border: '1px dashed',
               borderColor: 'primary.main',
               bgcolor: 'rgba(64,126,160,0.05)',
-              mb: 3
+              mb: 4,
+              flexDirection: { xs: 'column', sm: 'row' },
+              gap: { xs: 2, sm: 0 }
             }}
           >
             <Typography 
               variant="h3" 
               sx={{ 
-                letterSpacing: '4px', 
-                fontWeight: 500,
-                // fontSize: {lg: '1rem', md: '0.7rem', sm: '0.5rem'},
-                fontSize: '1.5rem',
+                letterSpacing: '2px', 
+                fontWeight: 600,
+                fontSize: { xs: '1.5rem', sm: '2rem' },
                 color: 'primary.dark',
-                ml: 2
+                wordBreak: 'break-all',
+                textAlign: 'center',
+                flexGrow: 1,
+                mr: 1
               }}
             >
-              {gameCode}
+              {game.gameCode}
             </Typography>
             
-            <Tooltip title="Copy code" placement="top">
-              <IconButton 
-                onClick={handleCopy} 
-                color="primary" 
-                sx={{ mr: 1 }}
-              >
-                {copied ? <CheckCircleIcon /> : <ContentCopyIcon />}
-              </IconButton>
-            </Tooltip>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={handleCopy}
+              startIcon={copied ? <CheckCircleIcon /> : <ContentCopyIcon />}
+              sx={{
+                borderRadius: '8px',
+                width: { xs: '100%', sm: 'auto' },
+                py: { xs: 1, sm: 1 },
+                bgcolor: 'rgba(64,126,160,0.1)',
+                '&:hover': {
+                  bgcolor: 'rgba(64,126,160,0.2)',
+                }
+              }}
+            >
+              {copied ? "Copied!" : "Copy Code"}
+            </Button>
           </Paper>
           
           <Box sx={{ 
             display: 'flex', 
             justifyContent: 'center',
-            mt: 3
+            mt: 2
           }}>
             <Button 
               variant="contained" 
               color="primary"
               size="large"
               fullWidth
-              onClick={onClose}
+              onClick={handleSubmit}
+              disabled={!displayName || displayName.length < 2}
               sx={{ 
                 borderRadius: '12px',
-                py: 1.5,
+                py: 1.8,
                 color: 'white',
                 boxShadow: '0 4px 12px rgba(64,126,160,0.25)',
-                fontSize: '1rem',
-                textTransform: 'none'
+                fontSize: '1.1rem',
+                fontWeight: 600,
+                textTransform: 'none',
+                '&:hover': {
+                  boxShadow: '0 6px 16px rgba(64,126,160,0.35)',
+                },
               }}
             >
-              Get Started
+              Let's Go
             </Button>
           </Box>
         </DialogContent>

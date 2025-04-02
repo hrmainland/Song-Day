@@ -215,7 +215,6 @@ export default function JoinSessionDialog({ open, onClose }) {
               sx: { 
                 borderRadius: '12px',
                 fontSize: '1.1rem',
-                letterSpacing: '1px'
               }
             }}
             inputProps={{
@@ -242,7 +241,7 @@ export default function JoinSessionDialog({ open, onClose }) {
               color="secondary"
               size="large"
               fullWidth
-              disabled={loading || success || code.length < 3}
+              disabled={loading || success || code.length < 12}
               sx={{ 
                 borderRadius: '12px',
                 py: 1.5,

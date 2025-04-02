@@ -155,7 +155,7 @@ export default function Navbar() {
                 mr: 2,
               }}
               component={Link}
-              to="/"
+              to="/home"
               style={{ textDecoration: "none", color: "inherit" }}
             >
               <Box
@@ -176,7 +176,7 @@ export default function Navbar() {
                     fontSize: { xs: "1.3rem", sm: "1.5rem" },
                   }}
                 >
-                  SongDay
+                  Song Day
                 </Typography>
               </Box>
             </Box>
