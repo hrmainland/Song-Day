@@ -20,7 +20,7 @@ export default function HeaderButtons({ onCreateClick, onJoinClick }) {
       </Button>
       <Button
         variant="contained"
-        color="secondary"
+        color="warning"
         onClick={onJoinClick}
         sx={{
           borderRadius: '12px',

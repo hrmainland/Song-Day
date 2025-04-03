@@ -152,21 +152,33 @@ export default function Navbar() {
               sx={{
                 display: "flex",
                 alignItems: "center",
-                mr: 2,
+                p:1,
+                backgroundColor: theme.palette.primary.main,
+                borderRadius: "12px",
               }}
               component={Link}
               to="/home"
               style={{ textDecoration: "none", color: "inherit" }}
             >
-              <Box
+              {/* <Box
                 sx={{
                   bgcolor: theme.palette.primary.main,
                   borderRadius: "12px",
                   py: 1,
                   px: 2,
                 }}
-              >
-                <Typography
+              > */}
+              <Box
+                component="img"
+                src="/public/Logo.svg"
+                alt="Logo"
+                sx={{
+                  width: 40,
+                  height: 40,
+                }}
+              />
+
+                {/* <Typography
                   variant="h5"
                   component="div"
                   sx={{
@@ -177,9 +189,9 @@ export default function Navbar() {
                   }}
                 >
                   Song Day
-                </Typography>
+                </Typography> */}
               </Box>
-            </Box>
+            {/* </Box> */}
 
             {/* Desktop Navigation */}
             <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>

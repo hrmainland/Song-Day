@@ -56,7 +56,7 @@ export default function AddSongs({
               Your List ({addedTracks.length}/{trackLimit})
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {trackLimit - addedTracks.length} tracks needed
+              {trackLimit - addedTracks.length} more track{trackLimit - addedTracks.length === 1 ? '' : 's'} needed
             </Typography>
           </Box>
           

@@ -10,8 +10,6 @@ import {
   DialogTitle,
   Paper,
   Tooltip,
-  Snackbar,
-  Alert,
   ThemeProvider,
   TextField,
   InputAdornment,
@@ -216,17 +214,6 @@ export default function GameCodeDialog({ open, onClose, game }) {
           </Box>
         </DialogContent>
       </Dialog>
-      
-      <Snackbar
-        open={copied}
-        autoHideDuration={3000}
-        onClose={() => setCopied(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={() => setCopied(false)} severity="success" sx={{ width: '100%' }}>
-          Game code copied to clipboard!
-        </Alert>
-      </Snackbar>
     </ThemeProvider>
   );
 }

@@ -13,8 +13,8 @@ import { Link } from "react-router-dom";
 // Define steps - Move to Voting and Create Playlist only shown to host
 const getSteps = (isHost) => {
   const baseSteps = ['Add Songs'];
-  const hostOnlySteps = ['Move to Voting'];
-  const commonNextSteps = ['Vote on Songs'];
+  const hostOnlySteps = ['Open Voting'];
+  const commonNextSteps = ['Vote'];
   const finalSteps = ['Create Playlist'];
   
   if (isHost) {
@@ -153,7 +153,7 @@ export default function GameStepper({
               py: 1.2
             }}
           >
-            Move to Voting
+            Open Voting
           </Button>
         )}
         

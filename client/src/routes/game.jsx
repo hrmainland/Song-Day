@@ -10,7 +10,8 @@ import {
   Paper, 
   IconButton,
   Tabs,
-  Tab
+  Tab,
+  Tooltip
 } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../utils/theme";
@@ -67,8 +68,6 @@ export default function Game() {
   const [error, setError] = useState(null);
   const [userId, setUserId] = useState();
   const [accessToken, setAccessToken] = useState(null);
-  const [alertOpen, setAlertOpen] = useState(!!location.state?.alertMsg);
-  const [alertMsg, setAlertMsg] = useState(location.state?.alertMsg || "Success!");
   const [activeStep, setActiveStep] = useState(0);
   
   // GameCodeDialog state
@@ -611,9 +610,6 @@ export default function Game() {
     navigator.clipboard.writeText(gameCode)
       .then(() => {
         setCopySuccess(true);
-        // Show alert message
-        setAlertMsg("Game code copied to clipboard!");
-        setAlertOpen(true);
         
         // Close menu after a short delay
         setTimeout(() => {
@@ -751,7 +747,7 @@ export default function Game() {
         if (isHost) {
           return (
             <CreatePlaylist
-              game={game}
+              gameCode={game.gameCode}
               userId={userId}
               playlistId={playlistId}
               handleCreatePlaylist={handleCreatePlaylist}
@@ -824,22 +820,47 @@ export default function Game() {
                 }
               }}
             >
-              <MenuItem sx={{ minWidth: '200px', py: 2 }}>
+              <MenuItem sx={{ minWidth: '220px', py: 1.5 }}>
                 <Box sx={{ width: '100%' }}>
                   <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
                     Game Code
                   </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Typography variant="h6" fontWeight="500">
+                  <Box 
+                    sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      borderRadius: '8px',
+                      p: 1,
+                      pl: 1.5,
+                      bgcolor: 'rgba(0, 0, 0, 0.02)',
+                      '&:hover': {
+                        bgcolor: 'rgba(0, 0, 0, 0.04)',
+                      }
+                    }}
+                  >
+                    <Typography variant="h6" fontWeight="600" letterSpacing="0.5px">
                       {gameCode}
                     </Typography>
-                    <IconButton 
-                      onClick={handleCopyGameCode}
-                      color={copySuccess ? "success" : "primary"}
-                      size="small"
-                    >
-                      {copySuccess ? <CheckIcon fontSize="small" /> : <ContentCopyIcon fontSize="small" />}
-                    </IconButton>
+                    <Tooltip title={copySuccess ? "Copied!" : "Copy game code"}>
+                      <IconButton 
+                        onClick={handleCopyGameCode}
+                        color={copySuccess ? "success" : "primary"}
+                        size="small"
+                        sx={{ 
+                          ml: 1,
+                          transition: 'all 0.2s ease',
+                          '&:hover': {
+                            bgcolor: copySuccess ? 'success.light' : 'primary.light',
+                            color: '#fff'
+                          }
+                        }}
+                      >
+                        {copySuccess ? <CheckIcon fontSize="small" /> : <ContentCopyIcon fontSize="small" />}
+                      </IconButton>
+                    </Tooltip>
                   </Box>
                 </Box>
               </MenuItem>
@@ -848,69 +869,6 @@ export default function Game() {
         </Box>
       </TopContainer>
 
-      {alertOpen && (
-        <Box sx={{ 
-          position: 'fixed', 
-          top: '72px', 
-          left: 0, 
-          right: 0, 
-          zIndex: 100,
-          display: 'flex',
-          justifyContent: 'center'
-        }}>
-          <Paper 
-            elevation={4} 
-            sx={{ 
-              display: 'flex',
-              alignItems: 'center',
-              px: 2.5, 
-              py: 1.5, 
-              borderRadius: '12px',
-              bgcolor: 'success.light',
-              maxWidth: '80%',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-              border: '1px solid',
-              borderColor: 'success.main',
-            }}
-          >
-            <CheckIcon 
-              fontSize="small" 
-              sx={{ 
-                color: 'success.main',
-                mr: 1.5
-              }} 
-            />
-            <Typography 
-              variant="body1" 
-              color="success" 
-              fontWeight={500}
-              sx={{ mr: 2 }}
-            >
-              {alertMsg}
-            </Typography>
-            <IconButton 
-              size="small" 
-              edge="end" 
-              sx={{ 
-                color: 'success.dark',
-                p: 0,
-                ml: 1,
-              }}
-              onClick={() => setAlertOpen(false)}
-            >
-              <Box 
-                component="span" 
-                sx={{ 
-                  fontSize: '1.2rem',
-                  lineHeight: 1,
-                  fontWeight: 'bold',
-                }}>
-                ×
-              </Box>
-            </IconButton>
-          </Paper>
-        </Box>
-      )}
 
       {getStepContent(activeStep)}
 
