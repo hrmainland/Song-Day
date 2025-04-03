@@ -47,6 +47,7 @@ export default function CreatePlaylist({
     // Get voters - players who have voted on tracks
     if (game) {
       setVoterIds(game.voteGroups.map((voteGroup) => voteGroup.player));
+      // console.log('voterIds :>> ', voterIds);
       for (let player of game.players) {
         nameMap.set(player.user, player.displayName);
       }

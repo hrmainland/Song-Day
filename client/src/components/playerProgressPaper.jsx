@@ -19,6 +19,8 @@ export default function PlayerProgressPaper({
 }) {
   const participantCount = submitterIds.length;
   const expectedParticipants = nameMap.size;
+  // console.log('nameMap :>> ', nameMap);
+
   return (
     <Paper
       elevation={1}

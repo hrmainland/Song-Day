@@ -133,7 +133,7 @@ export default function MoveToVoting({
               onButtonClick={() => setDialogOpen(true)}
               title="Ready to start voting?"
               text="When you're ready, move to the voting phase to let players vote on each other's songs."
-              buttonText="Create Playlist"
+              buttonText="Move to Voting"
               color="warning"
               bgColor="#fff8f0"
             />
