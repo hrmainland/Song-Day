@@ -138,7 +138,6 @@ router.delete("/vote-group/:voteGroupId", async (req, res) => {
 // TODO put this in useEffect and store in cookies
 router.get("/:gameCode", async (req, res) => {
   const { gameCode } = req.params;
-  console.log('gameCode :>> ', gameCode);
   const game = await Game.findOne({ gameCode }).populate("trackGroups", "player");
   if (game != undefined) {
     res.status(200).json(game);
@@ -292,7 +291,6 @@ router.get("/:gameId/create-playlist", isLoggedIn, async (req, res) => {
   const playlistData = await createPlaylist(req.user, game.title);
   const playlistJSON = await playlistData.json();
   await addTracksToPlaylist(req.user, playlistJSON.id, sortedURIs);
-  console.log('sortedURIs :>> ', sortedURIs);
   res.json(playlistJSON.id);
 });
 

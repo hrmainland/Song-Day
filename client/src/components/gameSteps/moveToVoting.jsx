@@ -7,11 +7,11 @@ import {
   CircularProgress,
   Grid,
 } from "@mui/material";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CenterBox from "../base/centerBox";
 import { fetchGame } from "../../../utils/apiCalls";
 import MoveToVotingDialog from "./moveToVotingDialog";
 import PlayerProgressPaper from "../playerProgressPaper";
+import MovePhasePaper from "../movePhasePaper";
 
 export default function MoveToVoting({
   gameId,
@@ -129,67 +129,14 @@ export default function MoveToVoting({
           />
 
           {isHost && (
-            <Paper
-              elevation={1}
-              sx={{
-                p: { xs: 2.5, sm: 3.5 },
-                borderRadius: "16px",
-                background: "linear-gradient(145deg, #ffffff, #fff8f0)",
-                position: "relative",
-                overflow: "hidden",
-              }}
-            >
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={7}>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      mb: 2.5,
-                      color: "warning.dark",
-                      fontWeight: 600,
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                  Ready to start voting?
-                  </Typography>
-
-                  <Typography variant="body1" paragraph>
-                    When you're ready, move to the voting phase to let players vote on each other's songs.
-                  </Typography>
-
-                </Grid>
-
-                <Grid item xs={12} sm={5} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                  <Button
-                    onClick={() => setDialogOpen(true)}
-                    variant="contained"
-                    color="warning"
-                    sx={{
-                      borderRadius: "10px",
-                      minWidth: { xs: "100%", sm: "220px" },
-                      fontSize: "1rem",
-                      py: { xs: 1.5, sm: 1.2 },
-                      px: { xs: 3, sm: 2.5 },
-                      fontWeight: 600,
-                      boxShadow: "0 4px 10px rgba(255, 152, 0, 0.3)",
-                      transition: "transform 0.2s, box-shadow 0.2s",
-                      "&:hover": {
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 6px 12px rgba(255, 152, 0, 0.4)",
-                      },
-                      "&:disabled": {
-                        bgcolor: "rgba(0, 0, 0, 0.12)",
-                      }
-                    }}
-                    startIcon={<ArrowForwardIcon />}
-                  >
-                    Move to Voting
-                  </Button>
-                </Grid>
-              </Grid>
-              
-            </Paper>
+            <MovePhasePaper
+              onButtonClick={() => setDialogOpen(true)}
+              title="Ready to start voting?"
+              text="When you're ready, move to the voting phase to let players vote on each other's songs."
+              buttonText="Create Playlist"
+              color="warning"
+              bgColor="#fff8f0"
+            />
           )}
           
           {/* Dialog for confirming move to voting phase */}

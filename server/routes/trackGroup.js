@@ -40,7 +40,6 @@ router.delete("/:id", async (req, res) => {
   const trackGroup = await TrackGroup.findById(id);
   for (let trackId of trackGroup.tracks) {
     const res = await trackRouter.deleteTrack(trackId);
-    console.log("res :>> ", res);
     if (res.status !== 200) {
       res.status(500).json({
         error: `Error deleting track with id ${trackId}. Could not delete track group as result.`,

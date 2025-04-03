@@ -156,7 +156,6 @@ router.get('/refresh-token', function(req, res) {
     if (!error && response.statusCode === 200) {
       var access_token = body.access_token,
           refresh_token = body.refresh_token || refresh_token;
-      console.log('access_token :>> ', access_token);
     }
     else {
       console.log('error :>> ', error);

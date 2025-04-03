@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Button, CircularProgress, } from '@mui/material';
+import { Box, Typography, Button, CircularProgress } from "@mui/material";
 import { fetchGame } from "../../../utils/apiCalls";
-import CenterBox from '../base/centerBox';
+import CenterBox from "../base/centerBox";
 import PlayerProgressPaper from "../playerProgressPaper";
+import MovePhasePaper from "../movePhasePaper";
+import CreatePlaylistDialog from "./createPlaylistDialog";
 
 export default function CreatePlaylist({
   gameCode,
   userId,
   playlistId,
-  handleCreatePlaylist
+  handleCreatePlaylist,
 }) {
-
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [voterIds, setVoterIds] = useState([]);
   const [nameMap, setNameMap] = useState(new Map());
-
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   // Fetch game data
   useEffect(() => {
@@ -42,18 +43,16 @@ export default function CreatePlaylist({
     return () => clearInterval(refreshInterval);
   }, [gameCode]);
 
-
   useEffect(() => {
     // Get voters - players who have voted on tracks
     if (game) {
       setVoterIds(game.voteGroups.map((voteGroup) => voteGroup.player));
-      for (let player of game.players){
+      for (let player of game.players) {
         nameMap.set(player.user, player.displayName);
       }
       setNameMap(nameMap);
     }
   }, [game]);
-
 
   // Show loading state
   if (loading && !game) {
@@ -97,32 +96,47 @@ export default function CreatePlaylist({
           boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
         }}
       >
-
-<Typography variant="h5" fontWeight="500" sx={{ mb: 3, textAlign: "left" }}>
+        <Typography
+          variant="h5"
+          fontWeight="500"
+          sx={{ mb: 3, textAlign: "left" }}
+        >
           Create Playlist
         </Typography>
 
-<PlayerProgressPaper
-              title = "Who's voted"
-              nameMap = {nameMap}
-              submitterIds={voterIds}
-              userId = {userId}
-              hostId = {game.host}
+        <PlayerProgressPaper
+          title="Who's voted"
+          nameMap={nameMap}
+          submitterIds={voterIds}
+          userId={userId}
+          hostId={game.host}
+        />
+
+        {isHost && (
+          <MovePhasePaper
+            onButtonClick={() => setDialogOpen(true)}
+            title="Ready to create the playlist?"
+            text="Click to create your playlist with all the best songs"
+            buttonText="Create Playlist"
+            color="success"
+            bgColor="#f0fff0"
           />
+        )}
+
+        {/* Dialog for confirming playlist creation */}
+        <CreatePlaylistDialog
+          open={dialogOpen}
+          onClose={() => setDialogOpen(false)}
+          onProceed={() => {
+            setDialogOpen(false);
+            handleCreatePlaylist();
+          }}
+          participantCount={participantCount}
+          expectedParticipants={expectedParticipants}
+        />
 
         {!playlistId ? (
-          <Box display="flex" justifyContent="center">
-            <Button 
-              onClick={handleCreatePlaylist}
-              variant="contained"
-              color="secondary"
-              size="large"
-              sx={{ borderRadius: "12px", px: 4, py: 1.2 }}
-              disabled={!game.host || game.host !== userId}
-            >
-              Create Playlist
-            </Button>
-          </Box>
+          null // Removed the button as we're using the MovePhasePaper instead
         ) : (
           <Box sx={{ mt: 3 }}>
             <iframe
@@ -136,9 +150,12 @@ export default function CreatePlaylist({
             ></iframe>
           </Box>
         )}
-        
+
         {game.host !== userId && (
-          <Typography variant="body2" sx={{ mt: 3, textAlign: "center", color: "text.secondary" }}>
+          <Typography
+            variant="body2"
+            sx={{ mt: 3, textAlign: "center", color: "text.secondary" }}
+          >
             Only the session host can create the playlist
           </Typography>
         )}

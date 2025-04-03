@@ -55,8 +55,6 @@ export default function JoinSessionDialog({ open, onClose }) {
     try {
       // Fetch the game with the provided code  
       const game = await fetchGame(code);
-
-      console.log('game :>> ', game);
       
       if (!game) {
         setError("Session not found. Please check the code and try again.");
