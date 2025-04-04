@@ -11,6 +11,7 @@ export default function PrivateRoutes() {
     localStorage.setItem("returnTo", location.pathname);
     const callBackend = async () => {
       const loggedIn = await isLoggedIn();
+      // const loggedIn = true
       setAuthenticated(loggedIn);
       setLoading(false);
     };
@@ -18,7 +19,7 @@ export default function PrivateRoutes() {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Authenticating...</div>;
   }
 
   return authenticated ? <Outlet /> : <Navigate to="/login" />;

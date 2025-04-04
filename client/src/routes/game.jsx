@@ -182,6 +182,7 @@ export default function Game() {
         }
 
         // VoteSongs initialization
+        // TODO update accessToken logic here
         if (accessToken) {
           fetchAndSetIds(gameData);
           const sessionShortlist = getSessionShortlist();

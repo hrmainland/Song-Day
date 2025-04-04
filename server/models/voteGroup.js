@@ -10,6 +10,7 @@ const voteGroupSchema = new Schema({
   },
   items: [
     {
+      _id: false,
       trackId: {
         type: String,
       },

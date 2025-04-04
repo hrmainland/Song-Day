@@ -76,19 +76,19 @@ export default function Navbar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const status = await isLoggedIn();
-        setLoggedIn(status);
-      } catch (error) {
-        console.error("Error checking login status:", error);
-        setLoggedIn(false);
-      }
-    };
+  // useEffect(() => {
+  //   const checkLoginStatus = async () => {
+  //     try {
+  //       const status = await isLoggedIn();
+  //       setLoggedIn(status);
+  //     } catch (error) {
+  //       console.error("Error checking login status:", error);
+  //       setLoggedIn(false);
+  //     }
+  //   };
     
-    checkLoginStatus();
-  }, []);
+  //   checkLoginStatus();
+  // }, []);
 
   const handleLoginOpen = () => {
     setLoginDialogOpen(true);
@@ -98,17 +98,17 @@ export default function Navbar() {
     setLoginDialogOpen(false);
     
     // Check login status again when dialog closes
-    const checkLoginStatus = async () => {
-      try {
-        const status = await isLoggedIn();
-        setLoggedIn(status);
-      } catch (error) {
-        console.error("Error checking login status:", error);
-        setLoggedIn(false);
-      }
-    };
+    // const checkLoginStatus = async () => {
+    //   try {
+    //     const status = await isLoggedIn();
+    //     setLoggedIn(status);
+    //   } catch (error) {
+    //     console.error("Error checking login status:", error);
+    //     setLoggedIn(false);
+    //   }
+    // };
     
-    checkLoginStatus();
+    // checkLoginStatus();
   };
 
   const handleMenuClick = (event) => {
@@ -170,7 +170,7 @@ export default function Navbar() {
               > */}
               <Box
                 component="img"
-                src="/public/Logo.svg"
+                src="/Logo.svg"
                 alt="Logo"
                 sx={{
                   width: 40,
