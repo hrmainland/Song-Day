@@ -188,4 +188,12 @@ router.get(
   }
 );
 
+router.post('/logout', function(req, res, next){
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    // return res.status(200).json({ message: 'Successfully logged out' });
+    res.redirect('/');
+  });
+});
+
 module.exports = router;

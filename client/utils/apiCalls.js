@@ -54,6 +54,10 @@ export async function refreshToken() {
   return await apiRequest("/user/refresh-token");
 }
 
+export async function logout() {
+  return await apiRequest("/user/logout", "POST");
+}
+
 // Game endpoints
 
 export async function fetchGame(gameCode) {

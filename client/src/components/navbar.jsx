@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -19,27 +19,17 @@ import theme from "../../utils/theme";
 import { Link } from "react-router-dom";
 
 import LoginDialog from "./loginDialog";
-import { isLoggedIn } from "../../utils/apiCalls";
+import { isLoggedIn, logout } from "../../utils/apiCalls";
+
+import { UserContext } from "../context/userProvider";
+
 
 export default function Navbar() {
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-
-  // useEffect(() => {
-  //   const checkLoginStatus = async () => {
-  //     try {
-  //       const status = await isLoggedIn();
-  //       setLoggedIn(status);
-  //     } catch (error) {
-  //       console.error("Error checking login status:", error);
-  //       setLoggedIn(false);
-  //     }
-  //   };
-    
-  //   checkLoginStatus();
-  // }, []);
+  
+  const { user, setUser } = useContext(UserContext);
 
   const handleLoginOpen = () => {
     setLoginDialogOpen(true);
@@ -47,19 +37,6 @@ export default function Navbar() {
 
   const handleLoginClose = () => {
     setLoginDialogOpen(false);
-    
-    // Check login status again when dialog closes
-    // const checkLoginStatus = async () => {
-    //   try {
-    //     const status = await isLoggedIn();
-    //     setLoggedIn(status);
-    //   } catch (error) {
-    //     console.error("Error checking login status:", error);
-    //     setLoggedIn(false);
-    //   }
-    // };
-    
-    // checkLoginStatus();
   };
 
   const handleMenuClick = (event) => {
@@ -111,14 +88,7 @@ export default function Navbar() {
               to="/home"
               style={{ textDecoration: "none", color: "inherit" }}
             >
-              {/* <Box
-                sx={{
-                  bgcolor: theme.palette.primary.main,
-                  borderRadius: "12px",
-                  py: 1,
-                  px: 2,
-                }}
-              > */}
+
               <Box
                 component="img"
                 src="/Logo.svg"
@@ -162,12 +132,26 @@ export default function Navbar() {
                 My Sessions
               </Button>
             </Box>
+            <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+              <Button
+                sx={{
+                  my: 2,
+                  color: "text.secondary",
+                  mx: 1,
+                  "&:hover": {
+                    color: "primary.main",
+                    backgroundColor: "transparent",
+                  },
+                }}
+              >
+                {/* logged in: {user.toString()} */}
+              </Button>
+            </Box>
 
             <Box sx={{ flexGrow: 1 }} />
-
             {/* Profile Button - Always on far right */}
             <Box>
-              {loggedIn ? (
+              {user ? (
                 <>
                   <IconButton
                     onClick={handleMenuClick}
@@ -215,6 +199,19 @@ export default function Navbar() {
                   Login
                 </Button>
               )}
+               <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<AccountCircleIcon />}
+                  onClick={logout}
+                  sx={{
+                    borderRadius: "30px",
+                    px: { xs: 2, sm: 3 },
+                    boxShadow: "0 2px 8px rgba(64,126,160,0.2)",
+                  }}
+                >
+                  Logout
+                </Button>
             </Box>
           </Toolbar>
         </Container>

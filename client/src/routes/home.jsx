@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../utils/theme";
 import { Box, Grid, Typography } from "@mui/material";
@@ -14,6 +14,9 @@ import GamesIndex from "../components/gamesIndex";
 import MobileBottomBar from "../components/mobileBottomBar";
 import NoSessionsBox from "../components/noSessionsBox";
 import { fetchMyGames } from "../../utils/apiCalls";
+
+
+import { UserProvider, UserContext } from "../context/userProvider";
 
 export default function Home() {
   const [joinOpen, setJoinOpen] = useState(false);

@@ -11,7 +11,7 @@ import {
   Tooltip
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import PersonIcon from '@mui/icons-material/Person';
 
 import { ParallaxProvider } from "react-scroll-parallax";
@@ -20,28 +20,16 @@ import { Parallax } from "react-scroll-parallax";
 import LoginDialog from "../components/loginDialog";
 import { isLoggedIn } from "../../utils/apiCalls";
 
+import {UserContext} from "../context/userProvider";
+
 export default function Root() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  
-  // Check login status on component mount and when login dialog closes
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const loginStatus = await isLoggedIn();
-        setUserLoggedIn(Boolean(loginStatus));
-      } catch (error) {
-        console.error("Error checking login status:", error);
-        setUserLoggedIn(false);
-      }
-    };
-    
-    checkLoginStatus();
-  }, [loginDialogOpen]);
+
+  const { user } = useContext(UserContext);
   
   const handleLoginOpen = () => {
     setLoginDialogOpen(true);
