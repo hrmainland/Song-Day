@@ -49,7 +49,7 @@ const sessionConfig = {
   store: MongoStore.create({ 
     mongoUrl: dbUrl,
     collectionName: "sessions",
-    ttl: 7 * 24 * 60 * 60,
+    ttl: 24 * 60 * 60,
   }),
   name: "session",
   secret: "thisshouldbeabettersecret!",
@@ -57,7 +57,8 @@ const sessionConfig = {
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    // secure: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: 'lax',
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
     maxAge: 1000 * 60 * 60 * 24 * 7,
   },
