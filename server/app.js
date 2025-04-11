@@ -11,6 +11,7 @@ const path = require("path");
 const mongoose = require("mongoose");
 const querystring = require("querystring");
 const session = require("express-session");
+const MongoStore = require('connect-mongo');
 
 const browserSessionRouter = require("./routes/test_browserSession.js");
 const userRouter = require("./routes/user.js");
@@ -24,10 +25,16 @@ const User = require("./models/user.js");
 // ************************** passport
 const passport = require("passport");
 
+const port = process.env.PORT || 3500;
+const dbUrl = process.env.DB_URL
+
+// this is what gets stored in the session
+// called once after login
 passport.serializeUser(function (user, done) {
-  done(null, user);
+  done(null, user._id);
 });
 
+// this populates req.user
 passport.deserializeUser(async function (id, done) {
   try {
     const user = await User.findById(id);
@@ -39,7 +46,11 @@ passport.deserializeUser(async function (id, done) {
 
 // TODO update secret
 const sessionConfig = {
-  //   store,
+  store: MongoStore.create({ 
+    mongoUrl: dbUrl,
+    collectionName: "sessions",
+    ttl: 7 * 24 * 60 * 60,
+  }),
   name: "session",
   secret: "thisshouldbeabettersecret!",
   resave: false,
@@ -52,15 +63,13 @@ const sessionConfig = {
   },
 };
 
-const port = process.env.PORT || 3500;
-const dbUrl = process.env.DB_URL
-
 app.use(express.urlencoded({ extended: true }));
 app.use(session(sessionConfig));
 app.use(cors());
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
+// this uses the express-session middleware
 app.use(passport.session());
 
 app.use("/browser-session", browserSessionRouter);
@@ -76,7 +85,7 @@ app.use((err, req, res, next) => {
 });
 
 async function main() {
-  await mongoose.connect(dbUrl);
+  mongoose.connect(dbUrl);
   console.log("Connection Open - Yay");
 }
 

@@ -163,7 +163,7 @@ router.get('/refresh-token', function(req, res) {
   });
 });
 
-// Authentication route this adds the current User to req.user once you're in
+// Authentication route, this passes you to Spotify
 router.get(
   "/auth",
   passport.authenticate("spotify", {
@@ -178,6 +178,8 @@ router.get(
   })
 );
 
+// callback route - Spotify passes you back here to complete the auth flow
+// this exchanges the code for an access token, then serializes the user
 router.get(
   "/callback", // Assuming authCallbackPath is "/callback"
   passport.authenticate("spotify", { failureRedirect: "/login" }),
