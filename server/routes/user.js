@@ -182,7 +182,7 @@ router.get(
 // this exchanges the code for an access token, then serializes the user
 router.get(
   "/callback", // Assuming authCallbackPath is "/callback"
-  passport.authenticate("spotify", { failureRedirect: "/login" }),
+  passport.authenticate("spotify", { failureRedirect: "/test" }),
   (req, res) => {
     res.redirect(redirectUrl);
   }
