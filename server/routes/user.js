@@ -182,8 +182,10 @@ router.get(
 // this exchanges the code for an access token, then serializes the user
 router.get(
   "/callback", // Assuming authCallbackPath is "/callback"
-  passport.authenticate("spotify", { failureRedirect: "/test" }),
+  passport.authenticate("spotify", { failureRedirect: "/home" }),
   (req, res) => {
+    // TODO add user here as context
+    // or better just return the user ID or a failure and let the frontend handle redirect
     res.redirect(redirectUrl);
   }
 );
@@ -192,7 +194,7 @@ router.post('/logout', function(req, res, next){
   req.logout(function(err) {
     if (err) { return next(err); }
     // return res.status(200).json({ message: 'Successfully logged out' });
-    res.redirect('/');
+    res.redirect('/home');
   });
 });
 

@@ -32,6 +32,11 @@ async function apiRequest(endpoint, method = "GET", body = null) {
   }
 }
 
+// login endpoints
+
+// TODO add login function here that accepts redirect route and sends login request
+// if successful redirect otherwise return to home-login
+
 // User endoints
 
 export async function fetchMe() {

@@ -86,6 +86,7 @@ export default function LoginDialog({ open, onClose }) {
               </Typography>
             </Box>
             
+            {/* TODO put this into api calls */}
             <form action={`${baseUrl}/user/auth`}>
               <Button
                 type="submit"
