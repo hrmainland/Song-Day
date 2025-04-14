@@ -21,6 +21,7 @@ import { UserProvider, UserContext } from "../context/userProvider";
 export default function Home() {
   const [joinOpen, setJoinOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  const [games, setGames] = useState([]);
   const [hasGames, setHasGames] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -29,6 +30,7 @@ export default function Home() {
       try {
         const games = await fetchMyGames();
         setHasGames(games && games.length > 0);
+        setGames(games);
       } catch (error) {
         console.error("Error fetching games:", error);
         setHasGames(false);
@@ -96,7 +98,9 @@ export default function Home() {
           <>
             
             <Box sx={{ mb: "120px", mt: 2 }}>
-              <GamesIndex />
+              <GamesIndex 
+              myGames={games}
+              />
             </Box>
 
             <MobileBottomBar 

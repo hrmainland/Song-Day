@@ -29,7 +29,7 @@ export default function Navbar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   
-  const { user, setUser } = useContext(UserContext);
+  const { userId, setUserId } = useContext(UserContext);
 
   const handleLoginOpen = () => {
     setLoginDialogOpen(true);
@@ -46,6 +46,15 @@ export default function Navbar() {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setUserId(null);
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -151,7 +160,7 @@ export default function Navbar() {
             <Box sx={{ flexGrow: 1 }} />
             {/* Profile Button - Always on far right */}
             <Box>
-              {user ? (
+              {userId ? (
                 <>
                   <IconButton
                     onClick={handleMenuClick}
@@ -203,7 +212,7 @@ export default function Navbar() {
                   variant="contained"
                   color="primary"
                   startIcon={<AccountCircleIcon />}
-                  onClick={logout}
+                  onClick={handleLogout}
                   sx={{
                     borderRadius: "30px",
                     px: { xs: 2, sm: 3 },

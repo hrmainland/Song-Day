@@ -75,6 +75,8 @@ router.put("/game/:id", async (req, res) => {
     const { id } = req.params;
     const game = await Game.findById(id);
 
+    
+
     if (!game) {
       return res
         .status(404)
@@ -133,6 +135,20 @@ router.get("/me", isLoggedIn, (req, res) => {
     res.status(404).json("None");
   }
 });
+
+// purely for auth check
+router.get("/my-id", (req, res) => {
+  if (req.user !== undefined) {
+    res.status(200).json(req.user._id);
+  } else {
+    res.status(200).json(null);
+  }
+});
+
+router.get("/access-token", isLoggedIn, (req, res) => {
+  res.status(200).json(req.user.access_token);
+});
+
 
 router.get('/refresh-token', function(req, res) {
 
@@ -193,8 +209,8 @@ router.get(
 router.post('/logout', function(req, res, next){
   req.logout(function(err) {
     if (err) { return next(err); }
-    // return res.status(200).json({ message: 'Successfully logged out' });
-    res.redirect('/home');
+    return res.status(200).json({ message: 'Successfully logged out' });
+    // res.redirect(redirectUrl);
   });
 });
 

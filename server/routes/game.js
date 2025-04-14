@@ -139,65 +139,13 @@ router.delete("/vote-group/:voteGroupId", async (req, res) => {
 router.get("/:gameCode", async (req, res) => {
   const { gameCode } = req.params;
   const game = await Game.findOne({ gameCode })
-    .populate("trackGroups", "player")
-    .populate("voteGroups", "player");
+    .populate("trackGroups")
+    .populate("voteGroups");
   if (game != undefined) {
     res.status(200).json(game);
   } else {
     res.status(404).json({ error: `Game with code '${gameCode}' not found` });
   }
-});
-
-router.get("/:gameId/my-track-group", isLoggedIn, async (req, res) => {
-  const { gameId } = req.params;
-  const game = await Game.findById(gameId).populate("trackGroups", "player");
-  if (!game) {
-    res.status(404).json({ message: `No game found with ID ${gameId}` });
-    return;
-  }
-  for (let trackGroup of game.trackGroups) {
-    if (trackGroup.player.equals(req.user._id)) {
-      return res.status(200).json(trackGroup);
-    }
-  }
-  return res.status(200).json(null);
-});
-
-router.get("/:gameId/my-vote-group", isLoggedIn, async (req, res) => {
-  const { gameId } = req.params;
-  const game = await Game.findById(gameId).populate("voteGroups", "player");
-  if (!game) {
-    res.status(404).json({ message: `No game found with ID ${gameId}` });
-    return;
-  }
-  for (let voteGroup of game.voteGroups) {
-    if (voteGroup.player.equals(req.user._id)) {
-      return res.status(200).json(voteGroup);
-    }
-  }
-  return res.status(200).json(null);
-});
-
-router.get("/:gameId/votable-tracks", isLoggedIn, async (req, res) => {
-  const { gameId } = req.params;
-  const game = await Game.findById(gameId).populate({
-    path: "trackGroups",
-    select: "trackIds player"
-  });
-  if (!game) {
-    res.status(404).json({ message: `No game found with ID ${gameId}` });
-    return;
-  }
-
-  let trackIds = [];
-
-  for (let trackGroup of game.trackGroups) {
-    if (!trackGroup.player.equals(req.user._id)) {
-      trackIds = trackIds.concat(trackGroup.trackIds);
-    }
-  }
-
-  return res.status(200).json(trackIds);
 });
 
 const createPlaylist = async (user, playlistName) => {

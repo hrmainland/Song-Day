@@ -9,56 +9,56 @@ import SessionsContainer from "./sessionsContainer";
 import GradientDivider from "./gradientDivider";
 import CenterBox from "./base/centerBox";
 
-export default function GamesIndex() {
+export default function GamesIndex({myGames}) {
   const navigate = useNavigate();
 
-  const [userId, setUserId] = useState(null);
-  const [myGames, setMyGames] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [userId, setUserId] = useState(null);
+  // const [myGames, setMyGames] = useState(null);
+  // const [isLoading, setIsLoading] = useState(true);
 
   // set user id
-  useEffect(() => {
-    const callBackend = async () => {
-      try {
-        const me = await fetchMe();
-        setUserId(me._id);
-      } catch (error) {
-        console.error("Error fetching user:", error);
-        setIsLoading(false);
-      }
-    };
-    callBackend();
-  }, []);
+  // useEffect(() => {
+  //   const callBackend = async () => {
+  //     try {
+  //       const me = await fetchMe();
+  //       setUserId(me._id);
+  //     } catch (error) {
+  //       console.error("Error fetching user:", error);
+  //       setIsLoading(false);
+  //     }
+  //   };
+  //   callBackend();
+  // }, []);
 
   // set my games
-  useEffect(() => {
-    const fetchGameAndSet = async () => {
-      try {
-        const data = await fetchMyGames();
-        // Reverse the order so newest appear first
-        setMyGames([...data].reverse());
-      } catch (error) {
-        console.error("Error fetching games:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    if (userId) {
-      fetchGameAndSet();
-    }
-  }, [userId]);
+  // useEffect(() => {
+  //   const fetchGameAndSet = async () => {
+  //     try {
+  //       const data = await fetchMyGames();
+  //       // Reverse the order so newest appear first
+  //       setMyGames([...data].reverse());
+  //     } catch (error) {
+  //       console.error("Error fetching games:", error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+  //   if (userId) {
+  //     fetchGameAndSet();
+  //   }
+  // }, [userId]);
 
   const handleGameClick = (gameCode) => {
     navigate(`/session/${gameCode}`);
   };
 
-  if (isLoading) {
-    return (
-      <CenterBox maxWidth="1200px" p={2}>
-        <Typography variant="body1">Loading sessions...</Typography>
-      </CenterBox>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <CenterBox maxWidth="1200px" p={2}>
+  //       <Typography variant="body1">Loading sessions...</Typography>
+  //     </CenterBox>
+  //   );
+  // }
 
   if (!myGames || myGames.length === 0) {
     return (

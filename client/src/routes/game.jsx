@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { 
   Box, 
   Button, 
@@ -38,19 +38,21 @@ import VoteSongs from "../components/gameSteps/voteSongs";
 import CreatePlaylist from "../components/gameSteps/createPlaylist";
 import PageHeader from "../components/pageHeader";
 
+import { UserContext } from "../context/userProvider";
+
+
 // Import API functions
 import { 
-  fetchMe, 
-  fetchGame, 
+  fetchGame,
   addSessionTracks,
   addTrackGroupToGame,
-  getMyTrackGroup,
-  getAllVotableTracks,
   newVoteGroup,
-  getMyVoteGroup,
   addVoteGroupToGame,
-  createPlaylist
+  createPlaylist,
+  fetchAccessToken
 } from "../../utils/apiCalls";
+
+import { votableTracks, myTrackGroup, myVoteGroup } from "../../utils/gameUtils";
 
 // Import utility functions
 import { searchTracks, getMultipleTracksById } from "../../utils/spotifyCalls";
@@ -58,6 +60,8 @@ import { artistString, usefulTrackComponents } from "../../utils/spotifyApiUtils
 
 
 export default function Game() {
+  const { userId } = useContext(UserContext);
+
   const navigate = useNavigate();
   const location = useLocation();
   const { gameCode } = useParams();
@@ -65,8 +69,8 @@ export default function Game() {
   // General state
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [tokenLoading, setTokenLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [userId, setUserId] = useState();
   const [accessToken, setAccessToken] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
   
@@ -110,23 +114,29 @@ export default function Game() {
   // CreatePlaylist state
   const [playlistId, setPlaylistId] = useState(null);
 
-  // Initialize component
+  // Fetch access token on component mount
   useEffect(() => {
-    const fetchUserData = async () => {
+    const getToken = async () => {
+      setTokenLoading(true);
       try {
-        const userData = await fetchMe();
-        setUserId(userData._id);
-        setAccessToken(userData.access_token);
+        const token = await fetchAccessToken();
+        setAccessToken(token);
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error fetching access token:", error);
+      } finally {
+        setTokenLoading(false);
       }
     };
     
-    fetchUserData();
+    getToken();
   }, []);
 
   useEffect(() => {
     const fetchGameData = async () => {
+      if (!accessToken) {
+        return; // Wait until we have access token
+      }
+      
       try {
         const gameData = await fetchGame(gameCode);
         setGame(gameData);
@@ -138,7 +148,7 @@ export default function Game() {
         const isHost = gameData.host === userId;
         
         // Check if user needs to set a display name (only for non-hosts)
-        if (!isHost && userId) {
+        if (!isHost) {
           // Find the current user in the players array
           const currentPlayer = gameData.players.find(player => {
             if (typeof player.user === 'object') {
@@ -156,12 +166,12 @@ export default function Game() {
         
         // Check user's state for each step
         // Step 1: Adding songs
-        const trackGroup = await getMyTrackGroup(gameData._id);
+        const trackGroup = myTrackGroup(gameData, userId);
         const isTracksSubmitted = Boolean(trackGroup);
         setMyTracksSubmitted(isTracksSubmitted);
         
         // Step 2: Voting
-        const voteGroup = await getMyVoteGroup(gameData._id);
+        const voteGroup = myVoteGroup(gameData, userId);
         const isVotesSubmitted = Boolean(voteGroup);
         setMyVotesSubmitted(isVotesSubmitted);
         
@@ -182,16 +192,13 @@ export default function Game() {
         }
 
         // VoteSongs initialization
-        // TODO update accessToken logic here
-        if (accessToken) {
-          fetchAndSetIds(gameData);
-          const sessionShortlist = getSessionShortlist();
-          if (sessionShortlist.length === 0 && accessToken) {
-            setOptionsFromDb(gameData);
-          } else {
-            setOptions(getSessionOptions());
-            setShortlist(getSessionShortlist());
-          }
+        fetchAndSetIds(gameData);
+        const sessionShortlist = getSessionShortlist();
+        if (sessionShortlist.length === 0) {
+          setOptionsFromDb(gameData);
+        } else {
+          setOptions(getSessionOptions());
+          setShortlist(getSessionShortlist());
         }
       } catch (error) {
         console.error("Error fetching game data:", error);
@@ -201,10 +208,8 @@ export default function Game() {
       }
     };
     
-    if (accessToken) {
-      fetchGameData();
-    }
-  }, [gameCode, accessToken, userId]);
+    fetchGameData();
+  }, [gameCode, userId, accessToken]);
 
   const handleNext = () => {
     // If user is not the host, they can only advance to step 1
@@ -212,18 +217,16 @@ export default function Game() {
     setActiveStep((prevStep) => Math.min(prevStep + 1, maxStep));
     
     // Force a refresh of game data when advancing to the next step
-    if (accessToken && userId) {
-      const refreshGameData = async () => {
-        try {
-          const gameData = await fetchGame(gameCode);
-          setGame(gameData);
-        } catch (error) {
-          console.error("Error refreshing game data:", error);
-        }
-      };
-      
-      refreshGameData();
-    }
+    const refreshGameData = async () => {
+      try {
+        const gameData = await fetchGame(gameCode);
+        setGame(gameData);
+      } catch (error) {
+        console.error("Error refreshing game data:", error);
+      }
+    };
+    
+    refreshGameData();
   };
 
   const handleBack = () => {
@@ -399,12 +402,14 @@ export default function Game() {
   // ========= VoteSongs Functions =========
   
   const fetchAndSetIds = async (gameData) => {
-    const trackIds = await getAllVotableTracks(gameData._id);
+    // const trackIds = await getAllVotableTracks(gameData._id);
+    const trackIds = votableTracks(gameData, userId);
     setInitialIds(trackIds);
   };
 
   const setOptionsFromDb = async (gameData) => {
-    const tracksResponse = await getAllVotableTracks(gameData._id);
+    // const tracksResponse = await getAllVotableTracks(gameData._id);
+    const tracksResponse = votableTracks(gameData, userId);
     if (tracksResponse.length === 0) {
       setSessionOptions([]);
       setOptions([]);
@@ -623,7 +628,7 @@ export default function Game() {
   };
 
   // Loading state
-  if (loading) {
+  if (loading || tokenLoading) {
     return (
       <ThemeProvider theme={theme}>
         <Navbar />
@@ -632,10 +637,13 @@ export default function Game() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            flexDirection: "column",
             height: "80vh",
           }}
         >
-          <Typography variant="h6">Loading...</Typography>
+          <Typography variant="h6">
+            {tokenLoading ? "Retrieving Spotify access..." : "Loading game data..."}
+          </Typography>
         </Box>
       </ThemeProvider>
     );

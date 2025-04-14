@@ -1,4 +1,4 @@
-import baseUrl from "./urlPrefix";
+import baseUrl from "./urlPrefix.js";
 
 async function apiRequest(endpoint, method = "GET", body = null) {
   try {
@@ -43,6 +43,10 @@ export async function fetchMe() {
   return await apiRequest("/user/me");
 }
 
+export async function fetchMyId() {
+  return await apiRequest("/user/my-id");
+}
+
 export async function addGameToMe(gameId) {
   return await apiRequest(`/user/game/${gameId}`, "PUT");
 }
@@ -57,6 +61,10 @@ export async function fetchMyGames() {
 
 export async function refreshToken() {
   return await apiRequest("/user/refresh-token");
+}
+
+export async function fetchAccessToken() {
+  return await apiRequest("/user/access-token");
 }
 
 export async function logout() {
@@ -97,18 +105,6 @@ export async function updateDisplayName(gameId, displayName) {
   return await apiRequest(`/game/${gameId}/display-name`, "PUT", {
     displayName,
   })
-}
-
-export async function getAllVotableTracks(gameId) {
-  return await apiRequest(`/game/${gameId}/votable-tracks`);
-}
-
-export async function getMyTrackGroup(gameId) {
-  return await apiRequest(`/game/${gameId}/my-track-group`);
-}
-
-export async function getMyVoteGroup(gameId) {
-  return await apiRequest(`/game/${gameId}/my-vote-group`);
 }
 
 export async function newVoteGroup(gameId, items) {
