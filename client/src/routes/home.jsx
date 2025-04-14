@@ -16,7 +16,7 @@ import NoSessionsBox from "../components/noSessionsBox";
 import { fetchMyGames } from "../../utils/apiCalls";
 
 
-import { UserProvider, UserContext } from "../context/userProvider";
+import { UserContext } from "../context/userProvider";
 
 export default function Home() {
   const [joinOpen, setJoinOpen] = useState(false);
@@ -24,6 +24,8 @@ export default function Home() {
   const [games, setGames] = useState([]);
   const [hasGames, setHasGames] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  const { userId } = useContext(UserContext);
 
   useEffect(() => {
     const checkUserGames = async () => {
@@ -38,9 +40,13 @@ export default function Home() {
         setIsLoading(false);
       }
     };
-    
+    if (!userId) {
+      setHasGames(false);
+      setIsLoading(false);
+      return;
+    }
     checkUserGames();
-  }, []);
+  }, [userId]);
 
   const handleJoinOpen = () => {
     setJoinOpen(true);
@@ -94,7 +100,7 @@ export default function Home() {
           <CenterBox maxWidth="1200px" p={2}>
             <Typography variant="body1">Loading...</Typography>
           </CenterBox>
-        ) : hasGames ? (
+        ) : (hasGames) ? (
           <>
             
             <Box sx={{ mb: "120px", mt: 2 }}>
