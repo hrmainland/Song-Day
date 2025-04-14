@@ -46,17 +46,18 @@ passport.deserializeUser(async function (id, done) {
 
 // TODO update secret
 const sessionConfig = {
-  // store: MongoStore.create({ 
-  //   mongoUrl: dbUrl,
-  //   collectionName: "sessions",
-  //   ttl: 24 * 60 * 60,
-  // }),
+  store: MongoStore.create({ 
+    mongoUrl: dbUrl,
+    collectionName: "sessions",
+    ttl: 24 * 60 * 60,
+  }),
   name: "session",
   secret: "thisshouldbeabettersecret!",
   resave: false,
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
+    // TODO update this when all domains point to songday.co
     // secure: process.env.NODE_ENV === "production",
     secure: false,
     sameSite: 'lax',

@@ -1,4 +1,4 @@
-import baseUrl from "./urlPrefix";
+import baseUrl from "./urlPrefix.js";
 
 async function apiRequest(endpoint, method = "GET", body = null) {
   try {
@@ -20,6 +20,12 @@ async function apiRequest(endpoint, method = "GET", body = null) {
       return false;
     }
 
+    if (response.status === 401) {
+      // Redirect to home-login on 401 Unauthorized errors
+      window.location.href = "/home-login";
+      return false;
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error - status: ${response.status}`);
     }
@@ -32,10 +38,19 @@ async function apiRequest(endpoint, method = "GET", body = null) {
   }
 }
 
+// login endpoints
+
+// TODO add login function here that accepts redirect route and sends login request
+// if successful redirect otherwise return to home-login
+
 // User endoints
 
 export async function fetchMe() {
   return await apiRequest("/user/me");
+}
+
+export async function fetchMyId() {
+  return await apiRequest("/user/my-id");
 }
 
 export async function addGameToMe(gameId) {
@@ -54,10 +69,19 @@ export async function refreshToken() {
   return await apiRequest("/user/refresh-token");
 }
 
+export async function fetchAccessToken() {
+  return await apiRequest("/user/access-token");
+}
+
+export async function logout() {
+  await apiRequest("/user/logout", "POST");
+  window.location.href = "/home";
+}
+
 // Game endpoints
 
-export async function fetchGame(gameCode) {
-  return await apiRequest(`/game/${gameCode}`);
+export async function fetchGame(gameCode, authRequired = true) {
+  return await apiRequest(`/game/${gameCode}?authRequired=${authRequired}`);
 }
 
 export async function newGame(gameName, settings) {
@@ -88,18 +112,6 @@ export async function updateDisplayName(gameId, displayName) {
   return await apiRequest(`/game/${gameId}/display-name`, "PUT", {
     displayName,
   })
-}
-
-export async function getAllVotableTracks(gameId) {
-  return await apiRequest(`/game/${gameId}/votable-tracks`);
-}
-
-export async function getMyTrackGroup(gameId) {
-  return await apiRequest(`/game/${gameId}/my-track-group`);
-}
-
-export async function getMyVoteGroup(gameId) {
-  return await apiRequest(`/game/${gameId}/my-vote-group`);
 }
 
 export async function newVoteGroup(gameId, items) {

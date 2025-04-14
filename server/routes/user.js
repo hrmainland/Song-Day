@@ -70,7 +70,8 @@ router.get("/isLoggedIn", async (req, res) => {
   res.status(200).json(false);
 });
 
-router.put("/game/:id", async (req, res) => {
+// route to add game to user
+router.put("/game/:id", isLoggedIn, async (req, res) => {
   try {
     const { id } = req.params;
     const game = await Game.findById(id);
@@ -91,7 +92,7 @@ router.put("/game/:id", async (req, res) => {
   }
 });
 
-router.get("/my-games", async (req, res) => {
+router.get("/my-games", isLoggedIn, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate("games");
 
@@ -134,7 +135,21 @@ router.get("/me", isLoggedIn, (req, res) => {
   }
 });
 
-router.get('/refresh-token', function(req, res) {
+// purely for auth check
+router.get("/my-id", (req, res) => {
+  if (req.user !== undefined) {
+    res.status(200).json(req.user._id);
+  } else {
+    res.status(200).json(null);
+  }
+});
+
+router.get("/access-token", isLoggedIn, (req, res) => {
+  res.status(200).json(req.user.access_token);
+});
+
+
+router.get('/refresh-token', isLoggedIn, function(req, res) {
 
   var refresh_token = req.user.refresh_token;
   var authOptions = {
@@ -182,10 +197,20 @@ router.get(
 // this exchanges the code for an access token, then serializes the user
 router.get(
   "/callback", // Assuming authCallbackPath is "/callback"
-  passport.authenticate("spotify", { failureRedirect: "/test" }),
+  passport.authenticate("spotify", { failureRedirect: "/home" }),
   (req, res) => {
+    // TODO add user here as context
+    // or better just return the user ID or a failure and let the frontend handle redirect
     res.redirect(redirectUrl);
   }
 );
+
+router.post('/logout', function(req, res, next){
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    return res.status(200).json({ message: 'Successfully logged out' });
+    // res.redirect(redirectUrl);
+  });
+});
 
 module.exports = router;

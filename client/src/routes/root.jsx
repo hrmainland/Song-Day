@@ -11,45 +11,21 @@ import {
   Tooltip
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import PersonIcon from '@mui/icons-material/Person';
 
 import { ParallaxProvider } from "react-scroll-parallax";
 import { Parallax } from "react-scroll-parallax";
 
-import LoginDialog from "../components/loginDialog";
-import { isLoggedIn } from "../../utils/apiCalls";
+import {UserContext} from "../context/userProvider";
 
 export default function Root() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  
-  // Check login status on component mount and when login dialog closes
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const loginStatus = await isLoggedIn();
-        setUserLoggedIn(Boolean(loginStatus));
-      } catch (error) {
-        console.error("Error checking login status:", error);
-        setUserLoggedIn(false);
-      }
-    };
-    
-    checkLoginStatus();
-  }, [loginDialogOpen]);
-  
-  const handleLoginOpen = () => {
-    setLoginDialogOpen(true);
-  };
-  
-  const handleLoginClose = () => {
-    setLoginDialogOpen(false);
-  };
+
+  const { userId } = useContext(UserContext);
   
   const handleUserMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -147,30 +123,6 @@ export default function Root() {
           
           <div className="home-buttons">
             <Button 
-              variant="contained"
-              color="primary" 
-              onClick={handleLoginOpen}
-              sx={{
-                textTransform: "none",
-                margin: "10px",
-                fontFamily: "DM Sans, sans-serif",
-                fontWeight: 500,
-                fontSize: "1rem",
-                padding: "10px 24px",
-                borderRadius: "12px",
-                boxShadow: "0 4px 12px rgba(64, 123, 255, 0.3)",
-                background: "linear-gradient(135deg, #5a93ff 0%, #407BFF 100%)",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  boxShadow: "0 6px 16px rgba(64, 123, 255, 0.4)",
-                  transform: "translateY(-2px)",
-                  background: "linear-gradient(135deg, #6a9fff 0%, #4f88ff 100%)",
-                },
-              }}
-            >
-              Login with Spotify
-            </Button>
-            <Button 
               variant="outlined" 
               component={Link} 
               to="/join-session"
@@ -198,8 +150,6 @@ export default function Root() {
         </div>
       </div>
       
-      {/* Login Dialog */}
-      <LoginDialog open={loginDialogOpen} onClose={handleLoginClose} />
     </ParallaxProvider>
   );
 }

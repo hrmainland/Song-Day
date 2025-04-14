@@ -9,6 +9,7 @@ export default function Login() {
           <h1>Login</h1>
         </Grid>
         <Grid item xs={8}>
+          {/* TODO put this into api calls */}
           <form action={`${baseUrl}/user/auth`}>
             <Button
               type="submit"
@@ -24,4 +25,3 @@ export default function Login() {
     </Container>
   );
 }
-

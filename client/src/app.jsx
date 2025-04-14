@@ -9,7 +9,12 @@ import Game from "./routes/game";
 import Login from "./routes/login";
 import Root from "./routes/root";
 import LoginRedirect from "./routes/loginRedirect";
+import HomeLogin from "./routes/homeLogin";
+import HomeNew from "./routes/homeNew";
+import HomeJoin from "./routes/homeJoin";
 import NotFound from "./routes/notFound";
+
+import { UserProvider } from "./context/userProvider";
 
 import PrivateRoutes from "../utils/privateRoutes";
 
@@ -18,28 +23,31 @@ import Pad from "./routes/pad";
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Root />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/login-redirect" element={<LoginRedirect />} />
-        <Route element={<PrivateRoutes />}>
-          <Route path="/home" element={<Home />} />
-          <Route path="/new-session" element={<NewGame />} />
-          <Route
-            path="/new-session/game-code/:gameCode"
-            element={<NewGameCode />}
-          />
-          <Route path="/join-session" element={<JoinGame />} />
-          <Route path="/session/:gameCode" element={<Game />} />
-        </Route>
-
-        {/* for dev only */}
-        <Route path="/pad" element={<Pad />} />
-
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Router>
+    <UserProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Root />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/login-redirect" element={<LoginRedirect />} />
+          <Route path="/home-login" element={<HomeLogin />} />
+          <Route path="/home-new" element={<HomeNew />} />
+          <Route path="/home-join" element={<HomeJoin />} />
+          {/* <Route element={<PrivateRoutes />}> */}
+            <Route path="/home" element={<Home />} />
+            <Route path="/new-session" element={<NewGame />} />
+            <Route
+              path="/new-session/game-code/:gameCode"
+              element={<NewGameCode />}
+            />
+            <Route path="/join-session" element={<JoinGame />} />
+            <Route path="/session/:gameCode" element={<Game />} />
+          {/* </Route> */}
+          {/* for dev only */}
+          <Route path="/pad" element={<Pad />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Router>
+    </UserProvider>
   );
 }
 
