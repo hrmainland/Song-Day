@@ -73,8 +73,8 @@ export async function logout() {
 
 // Game endpoints
 
-export async function fetchGame(gameCode) {
-  return await apiRequest(`/game/${gameCode}`);
+export async function fetchGame(gameCode, authRequired = true) {
+  return await apiRequest(`/game/${gameCode}?authRequired=${authRequired}`);
 }
 
 export async function newGame(gameName, settings) {

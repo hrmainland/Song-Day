@@ -12,8 +12,6 @@ export function votableTracks(game, userId) {
 
 export function myTrackGroup(game, userId) {
     for (let trackGroup of game.trackGroups) {
-      console.log('trackGroup.player :>> ', trackGroup.player);
-      console.log('userId :>> ', userId);
         if (trackGroup.player.toString() === userId.toString()) {
           return trackGroup
         }

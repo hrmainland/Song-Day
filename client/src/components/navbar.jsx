@@ -18,26 +18,16 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../utils/theme";
 import { Link } from "react-router-dom";
 
-import LoginDialog from "./loginDialog";
 import { isLoggedIn, logout } from "../../utils/apiCalls";
 
 import { UserContext } from "../context/userProvider";
 
 
-export default function Navbar() {
-  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+export default function Navbar({ onLoginOpen }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   
   const { userId, setUserId } = useContext(UserContext);
-
-  const handleLoginOpen = () => {
-    setLoginDialogOpen(true);
-  };
-
-  const handleLoginClose = () => {
-    setLoginDialogOpen(false);
-  };
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -198,7 +188,7 @@ export default function Navbar() {
                   variant="contained"
                   color="primary"
                   startIcon={<AccountCircleIcon />}
-                  onClick={handleLoginOpen}
+                  onClick={onLoginOpen}
                   sx={{
                     borderRadius: "30px",
                     px: { xs: 2, sm: 3 },
@@ -225,9 +215,6 @@ export default function Navbar() {
           </Toolbar>
         </Container>
       </AppBar>
-
-      {/* Login Dialog */}
-      <LoginDialog open={loginDialogOpen} onClose={handleLoginClose} />
     </ThemeProvider>
   );
 }

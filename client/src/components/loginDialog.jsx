@@ -15,7 +15,15 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import theme from "../../utils/theme";
 import baseUrl from "../../utils/urlPrefix";
 
-export default function LoginDialog({ open, onClose }) {
+export default function LoginDialog({ open, onClose, redirectTo }) {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    
+    // Navigate to the Spotify auth endpoint
+    localStorage.setItem("returnTo", redirectTo);
+    window.location.href = `${baseUrl}/user/auth`;
+  };
+  
   return (
     <ThemeProvider theme={theme}>
       <Dialog
@@ -86,8 +94,7 @@ export default function LoginDialog({ open, onClose }) {
               </Typography>
             </Box>
             
-            {/* TODO put this into api calls */}
-            <form action={`${baseUrl}/user/auth`}>
+            <form onSubmit={handleSubmit}>
               <Button
                 type="submit"
                 variant="contained"

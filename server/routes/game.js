@@ -6,16 +6,15 @@ const VoteGroup = require("../models/voteGroup");
 const router = express.Router();
 const generateGameCode = require("../utils/gameCode");
 const passport = require("passport");
-const { isLoggedIn } = require("../middleware");
+const { isLoggedIn, findGame, isAuthorized } = require("../middleware");
 const { MongoClient, ObjectId } = require("mongodb");
 
-router.put("/:gameId/add-me", isLoggedIn, async (req, res) => {
-  const { gameId } = req.params;
-  const game = await Game.findById(gameId);
-  if (!game) {
-    res.status(404).json({ message: `No game found with ID ${gameId}` });
-    return;
-  }
+function isAuthorizedFunc(game, user) {
+  return game.players.some((entry) => entry.user.equals(user._id));
+}
+
+router.put("/:gameId/add-me", findGame, isLoggedIn, async (req, res) => {
+  const game = req.game;
   game.players.push({ user: req.user._id, displayName: null });
   await game.save();
 
@@ -24,14 +23,12 @@ router.put("/:gameId/add-me", isLoggedIn, async (req, res) => {
 
 router.delete(
   "/:gameId/remove-player/:userId",
+  findGame,
   isLoggedIn,
+  isAuthorized,
   async (req, res) => {
-    const { gameId, userId } = req.params;
-    const game = await Game.findById(gameId);
-    if (!game) {
-      res.status(404).json({ message: `No game found with ID ${gameId}` });
-      return;
-    }
+    const { userId } = req.params;
+    const game = req.game;
     game.players = game.players.filter((player) => !player.user.equals(userId));
     await game.save();
     res.status(200).json(game);
@@ -40,14 +37,12 @@ router.delete(
 
 router.put(
   "/:gameId/track-group/:trackGroupId",
+  findGame,
   isLoggedIn,
+  isAuthorized,
   async (req, res) => {
-    const { gameId, trackGroupId } = req.params;
-    const game = await Game.findById(gameId);
-    if (!game) {
-      res.status(404).json({ message: `No game found with ID ${gameId}` });
-      return;
-    }
+    const { trackGroupId } = req.params;
+    const game = req.game;
     game.trackGroups.push(trackGroupId);
     await game.save();
 
@@ -55,7 +50,7 @@ router.put(
   }
 );
 
-router.post("/new", isLoggedIn, async (req, res, next) => {
+router.post("/new", isLoggedIn, isAuthorized, async (req, res, next) => {
   const { gameName, settings } = req.body;
   const gameCode = generateGameCode();
 
@@ -80,50 +75,59 @@ router.post("/new", isLoggedIn, async (req, res, next) => {
   res.status(200).json(thisGame);
 });
 
-router.put("/:gameId/display-name", isLoggedIn, async (req, res) => {
-  const { gameId } = req.params;
-  const { displayName } = req.body;
-  const game = await Game.findById(gameId);
+router.put(
+  "/:gameId/display-name",
+  findGame,
+  isLoggedIn,
+  isAuthorized,
+  async (req, res) => {
+    const { displayName } = req.body;
+    const game = req.game;
+    game.players.find((player) =>
+      player.user.equals(req.user._id)
+    ).displayName = displayName;
+    await game.save();
 
-  if (!game) {
-    res.status(404).json({ message: `No game found with ID ${gameId}` });
-    return;
+    res.status(200).json({ message: "Display name updated" });
   }
+);
 
-  game.players.find((player) => player.user.equals(req.user._id)).displayName =
-    displayName;
-  await game.save();
+router.post(
+  "/:gameId/vote-group",
+  isLoggedIn,
+  isAuthorized,
+  async (req, res) => {
+    try {
+      const { gameId } = req.params;
+      const { items } = req.body;
+      const voteGroup = new VoteGroup({ player: req.user._id, items: items });
+      await voteGroup.save();
 
-  res.status(200).json({ message: "Display name updated" });
-});
-
-router.post("/:gameId/vote-group", isLoggedIn, async (req, res) => {
-  try {
-    const { gameId } = req.params;
-    const { items } = req.body;
-    const voteGroup = new VoteGroup({ player: req.user._id, items: items });
-    await voteGroup.save();
-
-    return res.status(200).json(voteGroup);
-  } catch (error) {
-    return res.status(500).json(error);
+      return res.status(200).json(voteGroup);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
   }
-});
+);
 
-router.put("/:gameId/vote-group/:voteGroupId", isLoggedIn, async (req, res) => {
-  const { gameId, voteGroupId } = req.params;
-  const game = await Game.findById(gameId);
-  if (!game) {
-    res.status(404).json({ message: `No game found with ID ${gameId}` });
-    return;
+router.put(
+  "/:gameId/vote-group/:voteGroupId",
+  findGame,
+  isLoggedIn,
+  isAuthorized,
+  async (req, res) => {
+    const { voteGroupId } = req.params;
+    const game = req.game;
+
+    game.voteGroups.push(voteGroupId);
+    await game.save();
+
+    res.status(200).json(game);
   }
-  game.voteGroups.push(voteGroupId);
-  await game.save();
+);
 
-  res.status(200).json(game);
-});
-
-router.delete("/vote-group/:voteGroupId", async (req, res) => {
+// TODO add authorization here
+router.delete("/vote-group/:voteGroupId", isLoggedIn, async (req, res) => {
   const { voteGroupId } = req.params;
   try {
     await VoteGroup.findByIdAndDelete(voteGroupId);
@@ -135,17 +139,19 @@ router.delete("/vote-group/:voteGroupId", async (req, res) => {
   }
 });
 
-// TODO put this in useEffect and store in cookies
-router.get("/:gameCode", async (req, res) => {
-  const { gameCode } = req.params;
+router.get("/:gameCode", isLoggedIn, async (req, res) => {
+  const { gameCode, authRequired } = req.params;
   const game = await Game.findOne({ gameCode })
     .populate("trackGroups")
     .populate("voteGroups");
-  if (game != undefined) {
-    res.status(200).json(game);
-  } else {
-    res.status(404).json({ error: `Game with code '${gameCode}' not found` });
+  if (game === undefined) {
+    return res
+      .status(404)
+      .json({ error: `Game with code '${gameCode}' not found` });
+  } else if (authRequired && !isAuthorizedFunc(game, req.user)) {
+    return res.status(403).json({ error: "User not authorized" });
   }
+  return res.status(200).json(game);
 });
 
 const createPlaylist = async (user, playlistName) => {
@@ -191,58 +197,62 @@ const addTracksToPlaylist = async (user, playlistId, trackURIs) => {
   }
 };
 
-router.get("/:gameId/create-playlist", isLoggedIn, async (req, res) => {
-  const { gameId } = req.params;
-  const game = await Game.findById(gameId).populate([
-    {
-      path: "voteGroups",
-    },
-    {
-      path: "trackGroups",
-    },
-  ]);
-  const nVotes = game.config.nVotes;
+router.get(
+  "/:gameId/create-playlist",
+  isLoggedIn,
+  isAuthorized,
+  async (req, res) => {
+    const { gameId } = req.params;
+    const game = await Game.findById(gameId).populate([
+      {
+        path: "voteGroups",
+      },
+      {
+        path: "trackGroups",
+      },
+    ]);
+    const nVotes = game.config.nVotes;
 
-  const voteGroups = game.voteGroups;
-  const scoresMap = new Map();
-  for (let voteGroup of voteGroups) {
-    for (let item of voteGroup.items) {
-      const trackId = item.trackId;
-      const vote = item.vote;
-      const score = nVotes - vote;
-      if (scoresMap.has(trackId)) {
-        const current = scoresMap.get(trackId);
-        scoresMap.set(trackId, current + score);
-      } else {
-        scoresMap.set(trackId, score);
+    const voteGroups = game.voteGroups;
+    const scoresMap = new Map();
+    for (let voteGroup of voteGroups) {
+      for (let item of voteGroup.items) {
+        const trackId = item.trackId;
+        const vote = item.vote;
+        const score = nVotes - vote;
+        if (scoresMap.has(trackId)) {
+          const current = scoresMap.get(trackId);
+          scoresMap.set(trackId, current + score);
+        } else {
+          scoresMap.set(trackId, score);
+        }
       }
     }
-  }
 
-  for (let trackGroup of game.trackGroups) {
-    for (let trackId of trackGroup.trackIds) {
-      if (!scoresMap.has(trackId)) {
-        scoresMap.set(trackId, 0);
+    for (let trackGroup of game.trackGroups) {
+      for (let trackId of trackGroup.trackIds) {
+        if (!scoresMap.has(trackId)) {
+          scoresMap.set(trackId, 0);
+        }
       }
     }
+
+    const shuffledScores = new Map(
+      [...scoresMap.entries()].sort(() => Math.random() - 0.5)
+    );
+
+    const sortedScores = new Map(
+      [...shuffledScores.entries()].sort((a, b) => a[1] - b[1])
+    );
+
+    const sortedIds = Array.from(sortedScores.keys());
+    const sortedURIs = sortedIds.map((id) => "spotify:track:" + id);
+
+    const playlistData = await createPlaylist(req.user, game.title);
+    const playlistJSON = await playlistData.json();
+    await addTracksToPlaylist(req.user, playlistJSON.id, sortedURIs);
+    res.json(playlistJSON.id);
   }
-
-  const shuffledScores = new Map(
-    [...scoresMap.entries()].sort(() => Math.random() - 0.5)
-  );
-
-  const sortedScores = new Map(
-    [...shuffledScores.entries()].sort((a, b) => a[1] - b[1])
-  );
-
-  const sortedIds = Array.from(sortedScores.keys());
-  const sortedURIs = sortedIds.map((id) => "spotify:track:" + id);
-
-  const playlistData = await createPlaylist(req.user, game.title);
-  const playlistJSON = await playlistData.json();
-  await addTracksToPlaylist(req.user, playlistJSON.id, sortedURIs);
-  res.json(playlistJSON.id);
-});
+);
 
 module.exports = router;
-

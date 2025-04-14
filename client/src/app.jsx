@@ -9,6 +9,9 @@ import Game from "./routes/game";
 import Login from "./routes/login";
 import Root from "./routes/root";
 import LoginRedirect from "./routes/loginRedirect";
+import HomeLogin from "./routes/homeLogin";
+import HomeNew from "./routes/homeNew";
+import HomeJoin from "./routes/homeJoin";
 import NotFound from "./routes/notFound";
 
 import { UserProvider } from "./context/userProvider";
@@ -26,6 +29,9 @@ export default function App() {
           <Route path="/" element={<Root />} />
           <Route path="/login" element={<Login />} />
           <Route path="/login-redirect" element={<LoginRedirect />} />
+          <Route path="/home-login" element={<HomeLogin />} />
+          <Route path="/home-new" element={<HomeNew />} />
+          <Route path="/home-join" element={<HomeJoin />} />
           {/* <Route element={<PrivateRoutes />}> */}
             <Route path="/home" element={<Home />} />
             <Route path="/new-session" element={<NewGame />} />
