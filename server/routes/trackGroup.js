@@ -10,7 +10,7 @@ const { isLoggedIn } = require("../middleware");
 const { MongoClient, ObjectId } = require("mongodb");
 
 
-router.post("/", async (req, res, next) => {
+router.post("/", isLoggedIn, async (req, res, next) => {
   const { sessionTracks } = req.body;
 
   const trackIds = sessionTracks.map(({ id }) => id);
@@ -23,7 +23,7 @@ router.post("/", async (req, res, next) => {
   res.status(200).json(trackGroup);
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", isLoggedIn, async (req, res) => {
   const { id } = req.params;
   const trackGroup = await TrackGroup.findById(id);
   try {

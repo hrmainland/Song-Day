@@ -70,12 +70,11 @@ router.get("/isLoggedIn", async (req, res) => {
   res.status(200).json(false);
 });
 
-router.put("/game/:id", async (req, res) => {
+// route to add game to user
+router.put("/game/:id", isLoggedIn, async (req, res) => {
   try {
     const { id } = req.params;
     const game = await Game.findById(id);
-
-    
 
     if (!game) {
       return res
@@ -93,7 +92,7 @@ router.put("/game/:id", async (req, res) => {
   }
 });
 
-router.get("/my-games", async (req, res) => {
+router.get("/my-games", isLoggedIn, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate("games");
 
@@ -150,7 +149,7 @@ router.get("/access-token", isLoggedIn, (req, res) => {
 });
 
 
-router.get('/refresh-token', function(req, res) {
+router.get('/refresh-token', isLoggedIn, function(req, res) {
 
   var refresh_token = req.user.refresh_token;
   var authOptions = {

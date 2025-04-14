@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Dialog from "@mui/material/Dialog";
 import { 
   Box, 
@@ -8,7 +8,8 @@ import {
   Divider,
   DialogContent,
   DialogTitle,
-  ThemeProvider
+  ThemeProvider,
+  CircularProgress
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
@@ -16,12 +17,21 @@ import theme from "../../utils/theme";
 import baseUrl from "../../utils/urlPrefix";
 
 export default function LoginDialog({ open, onClose, redirectTo }) {
+  const [isLoading, setIsLoading] = useState(false);
+  
   const handleSubmit = (event) => {
     event.preventDefault();
+    setIsLoading(true);
     
     // Navigate to the Spotify auth endpoint
     localStorage.setItem("returnTo", redirectTo);
     window.location.href = `${baseUrl}/user/auth`;
+    
+    // Note: The navigation above will redirect the page, but we'll
+    // set a timeout in case there's any delay to show the spinner
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 10000); // Safety timeout in case redirect fails
   };
   
   return (
@@ -77,41 +87,55 @@ export default function LoginDialog({ open, onClose, redirectTo }) {
               alignItems: 'center'
             }}
           >
-            <Box 
-              sx={{ 
-                width: '150px', 
-                height: '150px', 
-                border: '1px dashed rgba(0,0,0,0.2)',
-                borderRadius: '16px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                mb: 3
-              }}
-            >
-              <Typography variant="body2" color="text.secondary">
-                Spotify Logo Placeholder
-              </Typography>
-            </Box>
-            
             <form onSubmit={handleSubmit}>
               <Button
                 type="submit"
                 variant="contained"
-                color="primary"
                 size="large"
+                disabled={isLoading}
                 sx={{ 
                   borderRadius: '12px',
                   py: 1.5,
                   px: 4,
-                  color: 'white',
-                  boxShadow: '0 4px 12px rgba(64,126,160,0.25)',
+                  backgroundColor: isLoading ? '#1DB954' : 'white',
+                  color: isLoading ? 'white' : '#1DB954',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                   fontSize: '1rem',
                   textTransform: 'none',
-                  mb: 1
+                  mb: 1,
+                  minWidth: '220px',
+                  '&:hover': {
+                    backgroundColor: isLoading ? '#1DB954' : '#f5f5f5',
+                  },
+                  '&.Mui-disabled': {
+                    backgroundColor: '#1DB954',
+                    color: 'white',
+                  }
                 }}
+                startIcon={
+                  !isLoading && (
+                    <Box 
+                      component="img"
+                      src="/Spotify_Logo.svg"
+                      alt="Spotify"
+                      sx={{ 
+                        height: 24,
+                        mr: 1
+                      }}
+                    />
+                  )
+                }
               >
-                Continue with Spotify
+                {isLoading ? (
+                  <CircularProgress 
+                    size={24} 
+                    sx={{ 
+                      color: 'white' 
+                    }} 
+                  />
+                ) : (
+                  'Continue with Spotify'
+                )}
               </Button>
             </form>
           </Box>

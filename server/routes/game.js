@@ -50,7 +50,7 @@ router.put(
   }
 );
 
-router.post("/new", isLoggedIn, isAuthorized, async (req, res, next) => {
+router.post("/new", isLoggedIn, async (req, res, next) => {
   const { gameName, settings } = req.body;
   const gameCode = generateGameCode();
 
@@ -140,7 +140,9 @@ router.delete("/vote-group/:voteGroupId", isLoggedIn, async (req, res) => {
 });
 
 router.get("/:gameCode", isLoggedIn, async (req, res) => {
-  const { gameCode, authRequired } = req.params;
+  const { gameCode } = req.params;
+  const { authRequired } = req.query;
+  const authRequiredBool = authRequired === "true";
   const game = await Game.findOne({ gameCode })
     .populate("trackGroups")
     .populate("voteGroups");
@@ -148,7 +150,7 @@ router.get("/:gameCode", isLoggedIn, async (req, res) => {
     return res
       .status(404)
       .json({ error: `Game with code '${gameCode}' not found` });
-  } else if (authRequired && !isAuthorizedFunc(game, req.user)) {
+  } else if (authRequiredBool && !isAuthorizedFunc(game, req.user)) {
     return res.status(403).json({ error: "User not authorized" });
   }
   return res.status(200).json(game);

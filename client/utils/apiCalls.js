@@ -20,6 +20,12 @@ async function apiRequest(endpoint, method = "GET", body = null) {
       return false;
     }
 
+    if (response.status === 401) {
+      // Redirect to home-login on 401 Unauthorized errors
+      window.location.href = "/home-login";
+      return false;
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error - status: ${response.status}`);
     }
@@ -68,7 +74,8 @@ export async function fetchAccessToken() {
 }
 
 export async function logout() {
-  return await apiRequest("/user/logout", "POST");
+  await apiRequest("/user/logout", "POST");
+  window.location.href = "/home";
 }
 
 // Game endpoints

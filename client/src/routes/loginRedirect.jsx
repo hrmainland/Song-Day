@@ -11,7 +11,7 @@ export default function LoginRedirect() {
   const returnTo = localStorage.getItem("returnTo");
   localStorage.removeItem("returnTo");
 
-  if (returnTo) {
+  if (returnTo && returnTo !== "null") {
     return <Navigate to={returnTo} />;
   }
   return <Navigate to="/home" />;
