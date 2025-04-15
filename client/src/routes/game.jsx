@@ -706,8 +706,9 @@ export default function Game() {
         if (isHost) {
           return (
             <MoveToVoting
-              gameId={game._id}
-              gameCode={gameCode}
+              // gameId={game._id}
+              // gameCode={gameCode}
+              initialGame={game}
               userId={userId}
               handleMoveToVotingPhase={handleMoveToVotingPhase}
               movingToVotingPhase={movingToVotingPhase}

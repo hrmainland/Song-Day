@@ -14,15 +14,15 @@ import PlayerProgressPaper from "../playerProgressPaper";
 import MovePhasePaper from "../movePhasePaper";
 
 export default function MoveToVoting({
-  gameId,
-  gameCode,
+  // gameId,
+  // gameCode,
+  initialGame,
   userId,
   handleMoveToVotingPhase,
   movingToVotingPhase,
 }) {
   // State for game data
-  const [game, setGame] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [game, setGame] = useState(initialGame);
   const [error, setError] = useState(null);
   const [submitterIds, setSubmitterIds] = useState([]);
   const [nameMap, setNameMap] = useState(new Map());
@@ -32,15 +32,12 @@ export default function MoveToVoting({
   useEffect(() => {
     const getGameData = async () => {
       try {
-        setLoading(true);
-        const gameData = await fetchGame(gameCode);
+        const gameData = await fetchGame(initialGame.gameCode);
         setGame(gameData);
       } catch (err) {
         console.error("Error fetching game data:", err);
         setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+      } 
     };
 
     getGameData();
@@ -50,7 +47,7 @@ export default function MoveToVoting({
 
     // Clean up interval on component unmount
     return () => clearInterval(refreshInterval);
-  }, [gameCode]);
+  }, []);
 
 
   useEffect(() => {
@@ -64,15 +61,6 @@ export default function MoveToVoting({
     }
   }, [game]);
 
-
-  // Show loading state
-  if (loading && !game) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   // Show error state
   if (error) {
