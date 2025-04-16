@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   Paper,
   Box,
@@ -11,6 +11,7 @@ import {
 import { useGame } from "../hooks/useGame";
 import { UserContext } from "../context/userProvider";
 import { Link } from "react-router-dom";
+import { myTrackGroup, myVoteGroup } from "../../utils/gameUtils";
 
 // Define steps - Move to Voting and Create Playlist only shown to host
 const getSteps = (isHost) => {
@@ -32,18 +33,104 @@ export default function GameStepper({
   activeStep,
   handleBack,
   handleNext,
-  submitTracks,
-  submitVotes,
-  addedTracks,
-  trackLimit,
-  myTracksSubmitted,
-  getSessionShortlist,
-  voteLimit,
-  myVotesSubmitted,
-  addView,
 }) {
-  const { userId, setUserId } = useContext(UserContext);
-  const { isHost, game, refreshGame, loading, gameError } = useGame();
+  const { userId } = useContext(UserContext);
+  const { isHost, game } = useGame();
+  
+  // Local state for UI
+  const [addedTracks, setAddedTracks] = useState([]);
+  const [myTracksSubmitted, setMyTracksSubmitted] = useState(false);
+  const [trackLimit, setTrackLimit] = useState(null);
+  const [voteLimit, setVoteLimit] = useState(null);
+  const [myVotesSubmitted, setMyVotesSubmitted] = useState(false);
+  const [isAddView, setIsAddView] = useState(true);
+  
+  // Track key for localStorage
+  const TRACK_KEY = `${game?.gameCode}: tracks`;
+  
+  // Get data from local storage for the stepper UI
+  useEffect(() => {
+    if (!game) return;
+    
+    // Set track limit
+    setTrackLimit(game.config.nSongs);
+    
+    // Set vote limit
+    setVoteLimit(game.config.nVotes);
+    
+    // Check if tracks are submitted
+    const trackGroup = myTrackGroup(game, userId);
+    setMyTracksSubmitted(Boolean(trackGroup));
+    
+    // Check if votes are submitted
+    const voteGroup = myVoteGroup(game, userId);
+    setMyVotesSubmitted(Boolean(voteGroup));
+    
+    // Get tracks from localStorage
+    const tracks = localStorage.getItem(TRACK_KEY);
+    try {
+      const parsedTracks = JSON.parse(tracks);
+      setAddedTracks(parsedTracks || []);
+    } catch {
+      setAddedTracks([]);
+    }
+  }, [game, userId, TRACK_KEY]);
+  
+  // Function to submit tracks (will be passed to the button)
+  const submitTracks = async () => {
+    const addSongsElement = document.querySelector('[data-submit-tracks]');
+    if (addSongsElement && typeof addSongsElement.submitTracks === 'function') {
+      addSongsElement.submitTracks();
+    }
+  };
+  
+  // Function to submit votes (will be passed to the button)
+  const submitVotes = async () => {
+    const voteSongsElement = document.querySelector('[data-submit-votes]');
+    if (voteSongsElement && typeof voteSongsElement.submitVotes === 'function') {
+      voteSongsElement.submitVotes();
+    }
+  };
+  
+  // Get the current shortlist length for the vote button
+  const getShortlistLength = () => {
+    // Find the VoteSongs component with data-submit-votes attribute
+    const voteSongsElement = document.querySelector('[data-submit-votes]');
+    
+    // If the component doesn't exist yet, try to get from localStorage directly
+    if (!voteSongsElement) {
+      const SHORTLIST_KEY = `${game?.gameCode}: shortlist`;
+      try {
+        const shortlistData = localStorage.getItem(SHORTLIST_KEY);
+        if (shortlistData) {
+          const shortlist = JSON.parse(shortlistData);
+          return Array.isArray(shortlist) ? shortlist.length : 0;
+        }
+      } catch (error) {
+        console.error("Error reading shortlist data:", error);
+      }
+      return 0;
+    }
+    
+    // If the component's getSessionShortlist function exists, use it
+    if (typeof voteSongsElement.getSessionShortlist === 'function') {
+      const shortlist = voteSongsElement.getSessionShortlist();
+      return Array.isArray(shortlist) ? shortlist.length : 0;
+    }
+    
+    return 0;
+  };
+  
+  // Check if we're in the shortlist view (not addView)
+  useEffect(() => {
+    // Find the VoteSongs component
+    const voteSongsElement = document.querySelector('[data-submit-votes]');
+    if (voteSongsElement && typeof voteSongsElement.getAddView === 'function') {
+      // Update our isAddView state based on the VoteSongs component
+      const addViewValue = voteSongsElement.getAddView();
+      setIsAddView(addViewValue);
+    }
+  }, []);
   return (
     <Paper 
       elevation={0} 
@@ -128,13 +215,13 @@ export default function GameStepper({
         )}
         
         {/* Vote submission button - adjusted for new step indexing */}
-        {((activeStep === 1 && !myVotesSubmitted && !addView && game.host !== userId) ||
-          (activeStep === 2 && !myVotesSubmitted && !addView && game.host === userId)) && (
+        {((activeStep === 1 && !myVotesSubmitted && !isAddView && game.host !== userId) ||
+          (activeStep === 2 && !myVotesSubmitted && !isAddView && game.host === userId)) && (
           <Button
             variant="contained"
             color="primary"
             onClick={submitVotes}
-            disabled={getSessionShortlist().length < voteLimit}
+            disabled={getShortlistLength() < voteLimit}
             sx={{ 
               borderRadius: '12px',
               px: 3,
@@ -166,7 +253,7 @@ export default function GameStepper({
           (activeStep === 2 && myVotesSubmitted && game.host === userId) ||
           (activeStep === 1 && myVotesSubmitted && game.host !== userId) ||
           ((activeStep === 1 && game.host !== userId) || 
-           (activeStep === 2 && game.host === userId)) && addView) && (
+           (activeStep === 2 && game.host === userId)) && isAddView) && (
           <Button
             variant="contained"
             color="primary"

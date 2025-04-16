@@ -58,7 +58,6 @@ export default function SearchDialog({
         open={open}
         onClose={onClose}
         maxWidth={false}
-        onEntered={focusSearchInput}
         PaperProps={{
           sx: {
             width: { xs: "90%", sm: "1000px" },
