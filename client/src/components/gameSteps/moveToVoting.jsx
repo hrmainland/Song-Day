@@ -2,10 +2,6 @@ import React, { useEffect, useState, useContext } from "react";
 import {
   Box,
   Typography,
-  Button,
-  Paper,
-  CircularProgress,
-  Grid,
 } from "@mui/material";
 import CenterBox from "../base/centerBox";
 import MoveToVotingDialog from "./moveToVotingDialog";
@@ -15,11 +11,9 @@ import { useGame } from "../../hooks/useGame";
 import { UserContext } from "../../context/userProvider";
 
 export default function MoveToVoting({
-  handleMoveToVotingPhase,
-  movingToVotingPhase,
 }) {
   // State for game data
-  const { game, refreshGame, loading, gameError } = useGame();
+  const { isHost, game, refreshGame, loading, gameError } = useGame();
   const {userId} = useContext(UserContext);
   const [submitterIds, setSubmitterIds] = useState([]);
   const [nameMap, setNameMap] = useState(new Map());
@@ -69,7 +63,6 @@ export default function MoveToVoting({
   }
 
   // Only host should access this page
-  const isHost = game.host === userId;
   const participantCount = game.trackGroups.length || 0;
   const expectedParticipants = game.players?.length || 0;
 
@@ -123,7 +116,8 @@ export default function MoveToVoting({
               setDialogOpen(false);
               handleMoveToVotingPhase();
             }}
-            isProcessing={movingToVotingPhase}
+            // TODO update
+            isProcessing={false}
             participantCount={participantCount}
             expectedParticipants={expectedParticipants}
           />

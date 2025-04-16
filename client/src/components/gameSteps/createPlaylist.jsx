@@ -11,7 +11,7 @@ export default function CreatePlaylist({
   playlistId,
   handleCreatePlaylist,
 }) {
-  const { game, refreshGame, loading, gameError } = useGame();
+  const { isHost, game, refreshGame, loading, gameError } = useGame();
   const gameCode = game?.gameCode;
   const { userId } = useContext(UserContext);
   const [voterIds, setVoterIds] = useState([]);
@@ -29,7 +29,7 @@ export default function CreatePlaylist({
 
     // Clean up interval on component unmount
     return () => clearInterval(refreshInterval);
-  }, [loading, error]);
+  }, []);
 
   useEffect(() => {
     // Get voters - players who have voted on tracks
@@ -53,7 +53,7 @@ export default function CreatePlaylist({
   }
 
   // Show error state
-  if (error) {
+  if (gameError) {
     return (
       <Box sx={{ p: 3 }}>
         <Typography color="error">Error loading game data: {error}</Typography>
@@ -71,7 +71,6 @@ export default function CreatePlaylist({
   }
 
   // Only host should access this page
-  const isHost = game.host === userId;
   const participantCount = game.voteGroups.length || 0;
   const expectedParticipants = game.players?.length || 0;
 

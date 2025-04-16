@@ -19,7 +19,6 @@ export default function PlayerProgressPaper({
 }) {
   const participantCount = submitterIds.length;
   const expectedParticipants = nameMap.size;
-  // console.log('nameMap :>> ', nameMap);
 
   return (
     <Paper
@@ -139,7 +138,7 @@ export default function PlayerProgressPaper({
           dotColor="warning.main"
           bgColorHover="rgba(255, 152, 0, 0.04)"
           emptyMessage={{
-            text: "All players have submitted",
+            text: "No pending players",
             color: "success.main",
             fontWeight: 500,
           }}

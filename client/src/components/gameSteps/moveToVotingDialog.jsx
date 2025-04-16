@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useContext} from "react";
 import {
   Box,
   Button,
@@ -13,6 +13,9 @@ import {
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import WarningIcon from "@mui/icons-material/Warning";
 
+import { useGame } from "../../hooks/useGame";
+import { moveToVoting } from "../../../utils/apiCalls";
+
 export default function MoveToVotingDialog({
   open,
   onClose,
@@ -21,6 +24,7 @@ export default function MoveToVotingDialog({
   participantCount,
   expectedParticipants,
 }) {
+  const {game} = useGame();
   const notAllSubmitted = expectedParticipants > 0 && participantCount < expectedParticipants;
 
   return (
@@ -167,7 +171,7 @@ export default function MoveToVotingDialog({
         </Button>
         
         <Button 
-          onClick={onProceed} 
+          onClick={() => moveToVoting(game._id)} 
           variant="contained" 
           color="warning"
           disabled={isProcessing || (participantCount === 0)}

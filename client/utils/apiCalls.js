@@ -127,6 +127,11 @@ export async function newVoteGroup(gameId, items) {
   return await response.json();
 }
 
+export async function moveToVoting(gameId) {
+  const response = await apiRequest(`/game/${gameId}/move-to-voting`, "POST");
+  return await response.json();
+}
+
 export async function createPlaylist(gameId) {
   const response = await apiRequest(`/game/${gameId}/create-playlist`);
   return await response.json();

@@ -24,7 +24,10 @@ const gameSchema = new Schema({
   title: String,
   config: gameConfigSchema,
   gameCode: String,
-  status: String,
+  status: {
+    type: String,
+    enum: ["add", "vote", "completed"],
+  },
   host: {
     type: Schema.Types.ObjectId,
     ref: "User",
@@ -45,3 +48,4 @@ const gameSchema = new Schema({
 });
 
 module.exports = mongoose.model("Game", gameSchema);
+

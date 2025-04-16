@@ -43,7 +43,7 @@ export default function GameStepper({
   addView,
 }) {
   const { userId, setUserId } = useContext(UserContext);
-  const { game, refreshGame, loading, gameError } = useGame();
+  const { isHost, game, refreshGame, loading, gameError } = useGame();
   return (
     <Paper 
       elevation={0} 
@@ -56,7 +56,7 @@ export default function GameStepper({
     >
       {/* Stepper Component */}
       <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
-        {getSteps(game.host === userId).map((label, index) => (
+        {getSteps(isHost).map((label, index) => (
           <Step key={label}>
             <StepLabel>{label}</StepLabel>
           </Step>

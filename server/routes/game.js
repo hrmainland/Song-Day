@@ -65,6 +65,7 @@ router.post("/new", isLoggedIn, async (req, res, next) => {
     title: gameName,
     config,
     gameCode,
+    status: "add",
     host: userId,
     players: [{ user: userId, displayName: null }],
   };
@@ -74,6 +75,21 @@ router.post("/new", isLoggedIn, async (req, res, next) => {
 
   res.status(200).json(thisGame);
 });
+
+
+router.post(
+  "/:gameId/move-to-voting",
+  findGame,
+  isLoggedIn,
+  isAuthorized,
+  async (req, res) => {
+    const game = req.game;
+    game.status = "vote";
+    await game.save();
+
+    res.status(200).json(game);
+  }
+);
 
 router.put(
   "/:gameId/display-name",
@@ -94,6 +110,7 @@ router.put(
 
 router.post(
   "/:gameId/vote-group",
+  findGame,
   isLoggedIn,
   isAuthorized,
   async (req, res) => {

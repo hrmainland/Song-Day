@@ -50,11 +50,16 @@ import {
   usefulTrackComponents,
 } from "../../utils/spotifyApiUtils";
 
+const gameStatus = Object.freeze({
+  add: "add",
+  vote: "vote",
+  completed: "completed",
+});
+
 export default function Game() {
   const { userId, accessToken, tokenLoading } = useContext(UserContext);
-  const { game, refreshGame, loading, gameError } = useGame();
+  const { game, refreshGame, loading, gameError, isHost } = useGame();
 
-  const navigate = useNavigate();
   const location = useLocation();
   const { gameCode } = useParams();
 
@@ -96,10 +101,6 @@ export default function Game() {
   const [addView, setAddView] = useState(true);
   const [myVotesSubmitted, setMyVotesSubmitted] = useState(false);
 
-  // MoveToVoting state
-  const [trackGroups, setTrackGroups] = useState([]);
-  const [movingToVotingPhase, setMovingToVotingPhase] = useState(false);
-
   // CreatePlaylist state
   const [playlistId, setPlaylistId] = useState(null);
 
@@ -123,11 +124,8 @@ export default function Game() {
       setTrackLimit(game.config.nSongs);
       setVoteLimit(game.config.nVotes);
 
-      // Check if user is host
-      const isHost = game.host === userId;
-
       // Check if user needs to set a display name (only for non-hosts)
-      if (!isHost) {
+      if (!game.host === userId) {
         // Find the current user in the players array
         const currentPlayer = game.players.find((player) => {
           if (typeof player.user === "object") {
@@ -498,8 +496,8 @@ export default function Game() {
       const item = { trackId: track.id, vote: index };
       items.push(item);
     }
-
     const voteGroup = await newVoteGroup(game._id, items);
+
     await addVoteGroupToGame(game._id, voteGroup._id);
 
     // Update state
@@ -511,49 +509,6 @@ export default function Game() {
 
     // Move to next step
     handleNext();
-  };
-
-  // ========= MoveToVoting Functions =========
-
-  // Fetch track groups for the game
-  useEffect(() => {
-    const fetchTrackGroups = async () => {
-      if (game && game._id && game.host === userId && activeStep === 1) {
-        try {
-          // We'll simulate fetching track groups here - in a real app, you'd make an API call
-          // This is just a placeholder to show the concept
-          const groups = game.trackGroups || [];
-          setTrackGroups(groups);
-        } catch (error) {
-          console.error("Error fetching track groups:", error);
-        }
-      }
-    };
-
-    fetchTrackGroups();
-  }, [game, userId, activeStep]);
-
-  const handleMoveToVotingPhase = async () => {
-    if (!game || !game._id || game.host !== userId) return;
-
-    try {
-      setMovingToVotingPhase(true);
-
-      // Simulate an API call to update the game phase
-      // In a real app, you'd make an actual API call here
-      // await updateGamePhase(game._id, 'voting');
-
-      // For this demo, we'll just wait a moment and then move to the next step
-      setTimeout(() => {
-        setMovingToVotingPhase(false);
-        setAlertMsg("Session moved to voting phase successfully!");
-        setAlertOpen(true);
-        handleNext();
-      }, 1500);
-    } catch (error) {
-      console.error("Error moving to voting phase:", error);
-      setMovingToVotingPhase(false);
-    }
   };
 
   // ========= CreatePlaylist Functions =========
@@ -624,11 +579,10 @@ export default function Game() {
       <ThemeProvider theme={theme}>
         <Navbar />
         <CenterBox maxWidth="800px" p={3} sx={{ mt: 5 }}>
-        <Typography variant="h5">
-          No Game Found
-        </Typography>
+          <Typography variant="h5">No Session Found</Typography>
           <Typography variant="body1">
-            It looks like the game you're looking for doesn't exist or you're not a part of it.
+            It looks like the session you're looking for doesn't exist or you're
+            not a part of it.
           </Typography>
         </CenterBox>
       </ThemeProvider>
@@ -648,13 +602,96 @@ export default function Game() {
   }
 
   // Render the appropriate step content
-  const getStepContent = (step) => {
-    // Non-host users have a different step sequence than host users
-    const isHost = game.host === userId;
+  // const getStepContent = (step) => {
+  //   // Non-host users have a different step sequence than host users
 
-    switch (step) {
-      case 0:
-        // Add Songs step (same for both host and non-host)
+  //   switch (step) {
+  //     case 0:
+  //       // Add Songs step (same for both host and non-host)
+  //       return (
+  //         <AddSongs
+  //           myTracksSubmitted={myTracksSubmitted}
+  //           addedTracks={addedTracks}
+  //           trackLimit={trackLimit}
+  //           handleSearchOpen={handleSearchOpen}
+  //           searchOpen={searchOpen}
+  //           searchQuery={searchQuery}
+  //           setSearchQuery={setSearchQuery}
+  //           searching={searching}
+  //           searchResult={searchResult}
+  //           removeTrackFromSession={removeTrackFromSession}
+  //           handleSearchClose={handleSearchClose}
+  //           formatTrack={formatTrack}
+  //           addTrack={addTrack}
+  //           handleSearch={handleSearch}
+  //         />
+  //       );
+
+  //     case 1:
+  //       // For hosts: Move to Voting step
+  //       // For non-hosts: Vote Songs step
+  //       if (isHost) {
+  //         return (
+  //           <MoveToVoting/>
+  //         );
+  //       } else {
+  //         return (
+  //           <VoteSongs
+  //             myVotesSubmitted={myVotesSubmitted}
+  //             addView={addView}
+  //             setAddView={setAddView}
+  //             getSessionOptions={getSessionOptions}
+  //             addTrackToShortlist={addTrackToShortlist}
+  //             getSessionShortlist={getSessionShortlist}
+  //             shortlistToOptions={shortlistToOptions}
+  //             submitVotes={submitVotes}
+  //             voteLimit={voteLimit}
+  //             onDragEnd={onDragEnd}
+  //           />
+  //         );
+  //       }
+
+  //     case 2:
+  //       // For hosts: Vote Songs step
+  //       // For non-hosts: This would not be accessible
+  //       if (isHost) {
+  //         return (
+  //           <VoteSongs
+  //             myVotesSubmitted={myVotesSubmitted}
+  //             addView={addView}
+  //             setAddView={setAddView}
+  //             getSessionOptions={getSessionOptions}
+  //             addTrackToShortlist={addTrackToShortlist}
+  //             getSessionShortlist={getSessionShortlist}
+  //             shortlistToOptions={shortlistToOptions}
+  //             submitVotes={submitVotes}
+  //             voteLimit={voteLimit}
+  //             onDragEnd={onDragEnd}
+  //           />
+  //         );
+  //       }
+  //       return <Typography>Not authorized</Typography>;
+
+  //     case 3:
+  //       // Create Playlist step (host only)
+  //       if (isHost) {
+  //         return (
+  //           <CreatePlaylist
+  //             playlistId={playlistId}
+  //             handleCreatePlaylist={handleCreatePlaylist}
+  //           />
+  //         );
+  //       }
+  //       return <Typography>Not authorized</Typography>;
+
+  //     default:
+  //       return <Typography>Unknown step</Typography>;
+  //   }
+  // };
+
+  const getStepContent = (step) => {
+    if (isHost) {
+      if (game.status === gameStatus.add && !myTracksSubmitted) {
         return (
           <AddSongs
             myTracksSubmitted={myTracksSubmitted}
@@ -673,71 +710,78 @@ export default function Game() {
             handleSearch={handleSearch}
           />
         );
-
-      case 1:
-        // For hosts: Move to Voting step
-        // For non-hosts: Vote Songs step
-        if (isHost) {
-          return (
-            <MoveToVoting
-              handleMoveToVotingPhase={handleMoveToVotingPhase}
-              movingToVotingPhase={movingToVotingPhase}
-            />
-          );
-        } else {
-          return (
-            <VoteSongs
-              myVotesSubmitted={myVotesSubmitted}
-              addView={addView}
-              setAddView={setAddView}
-              getSessionOptions={getSessionOptions}
-              addTrackToShortlist={addTrackToShortlist}
-              getSessionShortlist={getSessionShortlist}
-              shortlistToOptions={shortlistToOptions}
-              submitVotes={submitVotes}
-              voteLimit={voteLimit}
-              onDragEnd={onDragEnd}
-            />
-          );
-        }
-
-      case 2:
-        // For hosts: Vote Songs step
-        // For non-hosts: This would not be accessible
-        if (isHost) {
-          return (
-            <VoteSongs
-              myVotesSubmitted={myVotesSubmitted}
-              addView={addView}
-              setAddView={setAddView}
-              getSessionOptions={getSessionOptions}
-              addTrackToShortlist={addTrackToShortlist}
-              getSessionShortlist={getSessionShortlist}
-              shortlistToOptions={shortlistToOptions}
-              submitVotes={submitVotes}
-              voteLimit={voteLimit}
-              onDragEnd={onDragEnd}
-            />
-          );
-        }
-        return <Typography>Not authorized</Typography>;
-
-      case 3:
-        // Create Playlist step (host only)
-        if (isHost) {
-          return (
-            <CreatePlaylist
-              playlistId={playlistId}
-              handleCreatePlaylist={handleCreatePlaylist}
-            />
-          );
-        }
-        return <Typography>Not authorized</Typography>;
-
-      default:
-        return <Typography>Unknown step</Typography>;
+      } else if (game.status === gameStatus.add && myTracksSubmitted) {
+        return <MoveToVoting />;
+      } else if (game.status === gameStatus.vote && !myVotesSubmitted) {
+        return (
+          <VoteSongs
+            myVotesSubmitted={myVotesSubmitted}
+            addView={addView}
+            setAddView={setAddView}
+            getSessionOptions={getSessionOptions}
+            addTrackToShortlist={addTrackToShortlist}
+            getSessionShortlist={getSessionShortlist}
+            shortlistToOptions={shortlistToOptions}
+            submitVotes={submitVotes}
+            voteLimit={voteLimit}
+            onDragEnd={onDragEnd}
+          />
+        );
+      } else if (game.status === gameStatus.vote) {
+        return (
+          <CreatePlaylist
+            playlistId={playlistId}
+            handleCreatePlaylist={handleCreatePlaylist}
+          />
+        );
+      }
+      return <h1>other</h1>;
     }
-  };
+
+
+    else if (!isHost){
+      if (game.status === gameStatus.add && !myTracksSubmitted) {
+        return (
+          <AddSongs
+            myTracksSubmitted={myTracksSubmitted}
+            addedTracks={addedTracks}
+            trackLimit={trackLimit}
+            handleSearchOpen={handleSearchOpen}
+            searchOpen={searchOpen}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            searching={searching}
+            searchResult={searchResult}
+            removeTrackFromSession={removeTrackFromSession}
+            handleSearchClose={handleSearchClose}
+            formatTrack={formatTrack}
+            addTrack={addTrack}
+            handleSearch={handleSearch}
+          />
+        );
+      } else if (game.status === gameStatus.add && myTracksSubmitted) {
+        return (<h1>Put Your Feet Up</h1>);
+      } else if (game.status === gameStatus.vote && !myVotesSubmitted) {
+        return (
+          <VoteSongs
+            myVotesSubmitted={myVotesSubmitted}
+            addView={addView}
+            setAddView={setAddView}
+            getSessionOptions={getSessionOptions}
+            addTrackToShortlist={addTrackToShortlist}
+            getSessionShortlist={getSessionShortlist}
+            shortlistToOptions={shortlistToOptions}
+            submitVotes={submitVotes}
+            voteLimit={voteLimit}
+            onDragEnd={onDragEnd}
+          />
+        );
+      } else if (game.status === gameStatus.vote) {
+        return (<h1>Playlist Created</h1>);
+      }
+      return <h1>other</h1>;
+    }
+    };
 
   return (
     <ThemeProvider theme={theme}>
