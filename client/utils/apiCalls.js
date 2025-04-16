@@ -16,22 +16,13 @@ async function apiRequest(endpoint, method = "GET", body = null) {
 
     const response = await fetch(`${baseUrl}${endpoint}`, options);
 
-    if (response.status === 404) {
-      return false;
-    }
-
     if (response.status === 401) {
       // Redirect to home-login on 401 Unauthorized errors
       window.location.href = "/home-login";
       return false;
     }
 
-    if (!response.ok) {
-      throw new Error(`HTTP error - status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    return response;
   } catch (error) {
     console.error(`There was a problem with the request to ${endpoint}`, error);
     throw error;
@@ -46,31 +37,38 @@ async function apiRequest(endpoint, method = "GET", body = null) {
 // User endoints
 
 export async function fetchMe() {
-  return await apiRequest("/user/me");
+  const response = await apiRequest("/user/me");
+  return await response.json();
 }
 
 export async function fetchMyId() {
-  return await apiRequest("/user/my-id");
+  const response = await apiRequest("/user/my-id");
+  return await response.json();
 }
 
 export async function addGameToMe(gameId) {
-  return await apiRequest(`/user/game/${gameId}`, "PUT");
+  const response = await apiRequest(`/user/game/${gameId}`, "PUT");
+  return await response.json();
 }
 
 export async function isLoggedIn() {
-  return await apiRequest("/user/isLoggedIn");
+  const response = await apiRequest("/user/isLoggedIn");
+  return await response.json();
 }
 
 export async function fetchMyGames() {
-  return await apiRequest("/user/my-games");
+  const response = await apiRequest("/user/my-games");
+  return await response.json();
 }
 
 export async function refreshToken() {
-  return await apiRequest("/user/refresh-token");
+  const response = await apiRequest("/user/refresh-token");
+  return await response.json();
 }
 
 export async function fetchAccessToken() {
-  return await apiRequest("/user/access-token");
+  const response = await apiRequest("/user/access-token");
+  return await response.json();
 }
 
 export async function logout() {
@@ -81,27 +79,36 @@ export async function logout() {
 // Game endpoints
 
 export async function fetchGame(gameCode, authRequired = true) {
-  return await apiRequest(`/game/${gameCode}?authRequired=${authRequired}`);
+  const response = await apiRequest(`/game/${gameCode}?authRequired=${authRequired}`);
+  if ([403, 404].includes(response.status)) {
+    return false;
+  }
+  return await response.json();
 }
 
 export async function newGame(gameName, settings) {
-  return await apiRequest("/game/new", "POST", { gameName, settings });
+  const response = await apiRequest("/game/new", "POST", { gameName, settings });
+  return await response.json();
 }
 
 export async function addMeToGame(gameId) {
-  return await apiRequest(`/game/${gameId}/add-me`, "PUT");
+  const response = await apiRequest(`/game/${gameId}/add-me`, "PUT");
+  return await response.json();
 }
 
 export async function removePlayerFromGame(gameId, userId) {
-  return await apiRequest(`/game/${gameId}/remove-player/${userId}`, "DELETE");
+  const response = await apiRequest(`/game/${gameId}/remove-player/${userId}`, "DELETE");
+  return await response.json();
 }
 
 export async function addTrackGroupToGame(gameId, trackGroupId) {
-  return await apiRequest(`/game/${gameId}/track-group/${trackGroupId}`, "PUT");
+  const response = await apiRequest(`/game/${gameId}/track-group/${trackGroupId}`, "PUT");
+  return await response.json();
 }
 
 export async function addVoteGroupToGame(gameId, voteGroupId) {
-  return await apiRequest(`/game/${gameId}/vote-group/${voteGroupId}`, "PUT");
+  const response = await apiRequest(`/game/${gameId}/vote-group/${voteGroupId}`, "PUT");
+  return await response.json();
 }
 
 // export async function getAllGameTracks(gameId) {
@@ -109,21 +116,26 @@ export async function addVoteGroupToGame(gameId, voteGroupId) {
 // }
 
 export async function updateDisplayName(gameId, displayName) {
-  return await apiRequest(`/game/${gameId}/display-name`, "PUT", {
+  const response = await apiRequest(`/game/${gameId}/display-name`, "PUT", {
     displayName,
   })
+  return await response.json();
 }
 
 export async function newVoteGroup(gameId, items) {
-  return await apiRequest(`/game/${gameId}/vote-group`, "POST", { items });
+  const response = await apiRequest(`/game/${gameId}/vote-group`, "POST", { items });
+  return await response.json();
 }
 
 export async function createPlaylist(gameId) {
-  return await apiRequest(`/game/${gameId}/create-playlist`);
+  const response = await apiRequest(`/game/${gameId}/create-playlist`);
+  return await response.json();
 }
 
 // Trackgroup endpoints
 
 export async function addSessionTracks(sessionTracks) {
-  return await apiRequest("/track-group", "POST", { sessionTracks });
+  const response = await apiRequest("/track-group", "POST", { sessionTracks });
+  return await response.json();
 }
+

@@ -1,47 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Box, Typography, Button, CircularProgress } from "@mui/material";
-import { fetchGame } from "../../../utils/apiCalls";
 import CenterBox from "../base/centerBox";
 import PlayerProgressPaper from "../playerProgressPaper";
 import MovePhasePaper from "../movePhasePaper";
 import CreatePlaylistDialog from "./createPlaylistDialog";
+import { UserContext } from "../../context/userProvider";
+import { useGame } from "../../hooks/useGame";
 
 export default function CreatePlaylist({
-  gameCode,
-  userId,
   playlistId,
   handleCreatePlaylist,
 }) {
-  const [game, setGame] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { game, refreshGame, loading, error } = useGame();
+  const gameCode = game?.gameCode;
+  const { userId } = useContext(UserContext);
   const [voterIds, setVoterIds] = useState([]);
   const [nameMap, setNameMap] = useState(new Map());
   const [dialogOpen, setDialogOpen] = useState(false);
 
+
   // Fetch game data
   useEffect(() => {
-    const getGameData = async () => {
-      try {
-        setLoading(true);
-        const gameData = await fetchGame(gameCode);
-        setGame(gameData);
-      } catch (err) {
-        console.error("Error fetching game data:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getGameData();
+    if (!game) return;
+    refreshGame(game.gameCode);
 
     // Set up interval to refresh data every 10 seconds
-    const refreshInterval = setInterval(getGameData, 10000);
+    const refreshInterval = setInterval(() => refreshGame(game.gameCode), 10000);
 
     // Clean up interval on component unmount
     return () => clearInterval(refreshInterval);
-  }, [gameCode]);
+  }, [loading, error]);
 
   useEffect(() => {
     // Get voters - players who have voted on tracks

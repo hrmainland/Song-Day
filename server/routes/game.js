@@ -146,7 +146,7 @@ router.get("/:gameCode", isLoggedIn, async (req, res) => {
   const game = await Game.findOne({ gameCode })
     .populate("trackGroups")
     .populate("voteGroups");
-  if (game === undefined) {
+  if (!game) {
     return res
       .status(404)
       .json({ error: `Game with code '${gameCode}' not found` });

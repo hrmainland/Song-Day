@@ -1,4 +1,3 @@
-// src/routes/NotFound.jsx
 
 export default function NotFound() {
   return (

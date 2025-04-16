@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Dialog from "@mui/material/Dialog";
 import { 
   Box, 
@@ -16,8 +16,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import FaceIcon from '@mui/icons-material/Face';
 import theme from "../../utils/theme";
 import { updateDisplayName } from "../../utils/apiCalls";
+import { useGame } from "../hooks/useGame";
 
-export default function DisplayNameDialog({ open, onClose, game }) {
+export default function DisplayNameDialog({ open, onClose }) {
+  const { game, refreshGame, loading, error } = useGame();
   const [displayName, setDisplayName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 

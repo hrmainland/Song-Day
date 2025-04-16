@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useContext} from "react";
 import {
   Paper,
   Box,
@@ -8,6 +8,8 @@ import {
   StepLabel,
   Button,
 } from "@mui/material";
+import { useGame } from "../hooks/useGame";
+import { UserContext } from "../context/userProvider";
 import { Link } from "react-router-dom";
 
 // Define steps - Move to Voting and Create Playlist only shown to host
@@ -24,6 +26,8 @@ const getSteps = (isHost) => {
   }
 };
 
+
+
 export default function GameStepper({
   activeStep,
   handleBack,
@@ -37,9 +41,9 @@ export default function GameStepper({
   voteLimit,
   myVotesSubmitted,
   addView,
-  game,
-  userId
 }) {
+  const { userId, setUserId } = useContext(UserContext);
+  const { game, refreshGame, loading, error } = useGame();
   return (
     <Paper 
       elevation={0} 

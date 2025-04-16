@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Box,
   Typography,
@@ -8,46 +8,34 @@ import {
   Grid,
 } from "@mui/material";
 import CenterBox from "../base/centerBox";
-import { fetchGame } from "../../../utils/apiCalls";
 import MoveToVotingDialog from "./moveToVotingDialog";
 import PlayerProgressPaper from "../playerProgressPaper";
 import MovePhasePaper from "../movePhasePaper";
+import { useGame } from "../../hooks/useGame";
+import { UserContext } from "../../context/userProvider";
 
 export default function MoveToVoting({
-  // gameId,
-  // gameCode,
-  initialGame,
-  userId,
   handleMoveToVotingPhase,
   movingToVotingPhase,
 }) {
   // State for game data
-  const [game, setGame] = useState(initialGame);
-  const [error, setError] = useState(null);
+  const { game, refreshGame, loading, error } = useGame();
+  const {userId} = useContext(UserContext);
   const [submitterIds, setSubmitterIds] = useState([]);
   const [nameMap, setNameMap] = useState(new Map());
   const [dialogOpen, setDialogOpen] = useState(false);
 
   // Fetch game data
   useEffect(() => {
-    const getGameData = async () => {
-      try {
-        const gameData = await fetchGame(initialGame.gameCode);
-        setGame(gameData);
-      } catch (err) {
-        console.error("Error fetching game data:", err);
-        setError(err.message);
-      } 
-    };
-
-    getGameData();
+    if (!game) return;
+    refreshGame(game.gameCode);
 
     // Set up interval to refresh data every 10 seconds
-    const refreshInterval = setInterval(getGameData, 10000);
+    const refreshInterval = setInterval(() => refreshGame(game.gameCode), 10000);
 
     // Clean up interval on component unmount
     return () => clearInterval(refreshInterval);
-  }, []);
+  }, [loading, error]);
 
 
   useEffect(() => {

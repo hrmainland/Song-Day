@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Dialog from "@mui/material/Dialog";
 import { 
   Box, 
@@ -22,8 +22,10 @@ import FaceIcon from '@mui/icons-material/Face';
 import { Link } from "react-router-dom";
 import theme from "../../utils/theme";
 import { updateDisplayName } from "../../utils/apiCalls";
+import { useGame } from "../hooks/useGame";
 
-export default function GameCodeDialog({ open, onClose, game }) {
+export default function GameCodeDialog({ open, onClose }) {
+  const { game, refreshGame, loading, error } = useGame();
   const [copied, setCopied] = useState(false);
   const [displayName, setDisplayName] = useState(null);
   
