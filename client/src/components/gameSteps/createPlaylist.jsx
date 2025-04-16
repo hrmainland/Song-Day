@@ -11,7 +11,7 @@ export default function CreatePlaylist({
   playlistId,
   handleCreatePlaylist,
 }) {
-  const { game, refreshGame, loading, error } = useGame();
+  const { game, refreshGame, loading, gameError } = useGame();
   const gameCode = game?.gameCode;
   const { userId } = useContext(UserContext);
   const [voterIds, setVoterIds] = useState([]);

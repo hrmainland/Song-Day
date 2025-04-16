@@ -43,7 +43,7 @@ export default function GameStepper({
   addView,
 }) {
   const { userId, setUserId } = useContext(UserContext);
-  const { game, refreshGame, loading, error } = useGame();
+  const { game, refreshGame, loading, gameError } = useGame();
   return (
     <Paper 
       elevation={0} 

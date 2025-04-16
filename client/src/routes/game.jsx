@@ -1,28 +1,14 @@
 /* eslint-disable no-undef */
 import { useState, useEffect, useContext } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  Container,
-  Grid,
-  Alert,
-  Paper,
-  IconButton,
-  Tabs,
-  Tab,
-  Tooltip,
-} from "@mui/material";
+import { Box, Button, Typography, IconButton, Tooltip } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../utils/theme";
 import CheckIcon from "@mui/icons-material/Check";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import MenuIcon from "@mui/icons-material/Menu";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import baseUrl from "../../utils/urlPrefix";
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 
 import Navbar from "../components/navbar";
@@ -30,7 +16,7 @@ import CenterBox from "../components/base/centerBox";
 import TopContainer from "../components/base/topContainer";
 import GameCodeDialog from "../components/gameCodeDialog";
 import GameStepper from "../components/gameStepper";
-import DisplayNameDialog from "../components/displayNameDialog"; 
+import DisplayNameDialog from "../components/displayNameDialog";
 
 // Import game step components
 import AddSongs from "../components/gameSteps/addSongs";
@@ -49,7 +35,6 @@ import {
   newVoteGroup,
   addVoteGroupToGame,
   createPlaylist,
-  fetchAccessToken,
 } from "../../utils/apiCalls";
 
 import {
@@ -66,17 +51,14 @@ import {
 } from "../../utils/spotifyApiUtils";
 
 export default function Game() {
-  const { userId } = useContext(UserContext);
-  const { game, refreshGame, loading, error } = useGame();
+  const { userId, accessToken, tokenLoading } = useContext(UserContext);
+  const { game, refreshGame, loading, gameError } = useGame();
 
   const navigate = useNavigate();
   const location = useLocation();
   const { gameCode } = useParams();
 
   // General state
-  const [badAuth, setBadAuth] = useState(false);
-  const [tokenLoading, setTokenLoading] = useState(true);
-  const [accessToken, setAccessToken] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
 
   // GameCodeDialog state
@@ -121,29 +103,14 @@ export default function Game() {
   // CreatePlaylist state
   const [playlistId, setPlaylistId] = useState(null);
 
-  // Fetch access token on component mount
-  useEffect(() => {
-    const getToken = async () => {
-      setTokenLoading(true);
-      try {
-        const token = await fetchAccessToken();
-        setAccessToken(token);
-      } catch (error) {
-        console.error("Error fetching access token:", error);
-      } finally {
-        setTokenLoading(false);
-      }
-    };
-
-    getToken();
-  }, []);
-
   useEffect(() => {
     const pullGame = async () => {
       await refreshGame(gameCode);
+    };
+    if (!gameError) {
+      pullGame();
     }
-    pullGame();
-  }, [loading, error]);
+  }, []);
 
   useEffect(() => {
     const processGameData = async () => {
@@ -652,26 +619,17 @@ export default function Game() {
   }
 
   // Error state
-  if (error) {
+  if (gameError) {
     return (
       <ThemeProvider theme={theme}>
         <Navbar />
         <CenterBox maxWidth="800px" p={3} sx={{ mt: 5 }}>
-          <Typography color="error" variant="body1">
-            Error: {error}
+        <Typography variant="h5">
+          No Game Found
+        </Typography>
+          <Typography variant="body1">
+            It looks like the game you're looking for doesn't exist or you're not a part of it.
           </Typography>
-        </CenterBox>
-      </ThemeProvider>
-    );
-  }
-
-  // 403 or 404 errors
-  if (badAuth) {
-    return (
-      <ThemeProvider theme={theme}>
-        <Navbar />
-        <CenterBox maxWidth="800px" p={3} sx={{ mt: 5 }}>
-          <Typography variant="body1">No Game Found</Typography>
         </CenterBox>
       </ThemeProvider>
     );
@@ -957,7 +915,7 @@ export default function Game() {
               // Show success message
               setAlertMsg("Display name set successfully!");
               setAlertOpen(true);
-              
+
               refreshGame(gameCode);
               // // Refresh the game data to update the display name in the UI
               // const updatedGame = { ...game };

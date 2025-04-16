@@ -5,8 +5,8 @@ export const GameContext = createContext();
 
 export function GameProvider({ children }) {
   const [game, setGame] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(!game);
+  const [gameError, setGameError] = useState(null);
 
   const refreshGame = async (gameCode) => {
     try {
@@ -14,10 +14,13 @@ export function GameProvider({ children }) {
         setLoading(true);
       }
       const gameData = await fetchGame(gameCode);
+      if (!gameData) {
+        throw new Error("Game not found");
+      }
       setGame(gameData);
     } catch (err) {
       console.error("Error fetching game data:", err);
-      setError(err.message);
+      setGameError(err.message);
     } finally {
       setLoading(false);
     }
@@ -27,7 +30,7 @@ export function GameProvider({ children }) {
     game,
     refreshGame,
     loading,
-    error,
+    gameError,
   };
   
   return (

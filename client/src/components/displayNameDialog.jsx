@@ -19,7 +19,7 @@ import { updateDisplayName } from "../../utils/apiCalls";
 import { useGame } from "../hooks/useGame";
 
 export default function DisplayNameDialog({ open, onClose }) {
-  const { game, refreshGame, loading, error } = useGame();
+  const { game, refreshGame, loading, gameError } = useGame();
   const [displayName, setDisplayName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 

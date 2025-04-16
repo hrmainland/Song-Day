@@ -19,7 +19,7 @@ export default function MoveToVoting({
   movingToVotingPhase,
 }) {
   // State for game data
-  const { game, refreshGame, loading, error } = useGame();
+  const { game, refreshGame, loading, gameError } = useGame();
   const {userId} = useContext(UserContext);
   const [submitterIds, setSubmitterIds] = useState([]);
   const [nameMap, setNameMap] = useState(new Map());
@@ -35,7 +35,7 @@ export default function MoveToVoting({
 
     // Clean up interval on component unmount
     return () => clearInterval(refreshInterval);
-  }, [loading, error]);
+  }, [loading, gameError]);
 
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function MoveToVoting({
 
 
   // Show error state
-  if (error) {
+  if (gameError) {
     return (
       <Box sx={{ p: 3 }}>
         <Typography color="error">Error loading game data: {error}</Typography>
