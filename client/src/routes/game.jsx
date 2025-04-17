@@ -1,13 +1,13 @@
 /* eslint-disable no-undef */
 import { useState, useEffect, useContext } from "react";
-import { 
-  Box, 
-  Button, 
-  Typography, 
-  IconButton, 
-  Tooltip, 
+import {
+  Box,
+  Button,
+  Typography,
+  IconButton,
+  Tooltip,
   Snackbar,
-  Alert
+  Alert,
 } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../utils/theme";
@@ -23,7 +23,8 @@ import Navbar from "../components/navbar";
 import CenterBox from "../components/base/centerBox";
 import TopContainer from "../components/base/topContainer";
 import GameCodeDialog from "../components/gameCodeDialog";
-import GameStepper from "../components/gameStepper";
+import HostStepper from "../components/hostStepper";
+import GuestStepper from "../components/guestStepper";
 import DisplayNameDialog from "../components/displayNameDialog";
 
 // Import game step components
@@ -37,20 +38,9 @@ import { UserContext } from "../context/userProvider";
 import { useGame } from "../hooks/useGame";
 
 // Import API functions
-import {
-  createPlaylist,
-} from "../../utils/apiCalls";
+import { createPlaylist } from "../../utils/apiCalls";
 
-import {
-  myTrackGroup,
-  myVoteGroup,
-} from "../../utils/gameUtils";
-
-const gameStatus = Object.freeze({
-  add: "add",
-  vote: "vote",
-  completed: "completed",
-});
+import { myTrackGroup, myVoteGroup, gameStatus } from "../../utils/gameUtils";
 
 export default function Game() {
   const { userId, accessToken, tokenLoading } = useContext(UserContext);
@@ -58,9 +48,6 @@ export default function Game() {
 
   const location = useLocation();
   const { gameCode } = useParams();
-
-  // General state
-  const [activeStep, setActiveStep] = useState(0);
 
   // GameCodeDialog state
   const [showGameCodeDialog, setShowGameCodeDialog] = useState(
@@ -75,7 +62,7 @@ export default function Game() {
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const menuOpen = Boolean(menuAnchorEl);
   const [copySuccess, setCopySuccess] = useState(false);
-  
+
   // Alert state - for success messages
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
@@ -139,36 +126,10 @@ export default function Game() {
       const voteGroup = myVoteGroup(game, userId);
       const isVotesSubmitted = Boolean(voteGroup);
       setMyVotesSubmitted(isVotesSubmitted);
-
-      // If user has already submitted tracks and not voted, start at voting step
-      if (isTracksSubmitted && !isVotesSubmitted) {
-        setActiveStep(1);
-      } else if (isTracksSubmitted && isVotesSubmitted) {
-        // If user has submitted both tracks and votes, go to playlist step for host only
-        if (isHost) {
-          setActiveStep(2); // Go to playlist creation step for host
-        } else {
-          setActiveStep(1); // Keep non-hosts at voting step with submitted view
-        }
-      }
-
-      // No more VoteSongs initialization needed here
     };
 
     processGameData();
   }, [game]);
-
-  const handleNext = () => {
-    // If user is not the host, they can only advance to step 1
-    const maxStep = game.host === userId ? 3 : 1;
-    setActiveStep((prevStep) => Math.min(prevStep + 1, maxStep));
-
-    // Game data is managed by the context provider, no need to refresh it here
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevStep) => Math.max(prevStep - 1, 0));
-  };
 
   // ========= CreatePlaylist Functions =========
 
@@ -260,7 +221,7 @@ export default function Game() {
     );
   }
 
-  const getStepContent = (step) => {
+  const getMainContent = () => {
     if (isHost) {
       if (game.status === gameStatus.add && !myTracksSubmitted) {
         return <AddSongs />;
@@ -277,21 +238,19 @@ export default function Game() {
         );
       }
       return <h1>other</h1>;
-    }
-
-    else if (!isHost){
+    } else if (!isHost) {
       if (game.status === gameStatus.add && !myTracksSubmitted) {
         return <AddSongs />;
       } else if (game.status === gameStatus.add && myTracksSubmitted) {
-        return (<h1>Put Your Feet Up</h1>);
+        return <h1>Put Your Feet Up</h1>;
       } else if (game.status === gameStatus.vote && !myVotesSubmitted) {
         return <VoteSongs />;
       } else if (game.status === gameStatus.vote) {
-        return (<h1>Playlist Created</h1>);
+        return <h1>Playlist Created</h1>;
       }
       return <h1>other</h1>;
     }
-    };
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -420,15 +379,21 @@ export default function Game() {
         </Box>
       </TopContainer>
 
-      {getStepContent(activeStep)}
+      {getMainContent()}
 
       {/* Stepper and Navigation Box */}
-      <CenterBox maxWidth="800px">
-        <GameStepper
-          activeStep={activeStep}
-          handleBack={handleBack}
-          handleNext={handleNext}
-        />
+      <CenterBox maxWidth="1000px">
+        {isHost ? (
+          <HostStepper
+            myTracksSubmitted={myTracksSubmitted}
+            myVotesSubmitted={myVotesSubmitted}
+          />
+        ) : (
+          <GuestStepper
+            myTracksSubmitted={myTracksSubmitted}
+            myVotesSubmitted={myVotesSubmitted}
+          />
+        )}
       </CenterBox>
 
       {/* Game Code Success Dialog */}
@@ -472,13 +437,13 @@ export default function Game() {
         open={alertOpen}
         autoHideDuration={6000}
         onClose={() => setAlertOpen(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert 
-          onClose={() => setAlertOpen(false)} 
-          severity="success" 
+        <Alert
+          onClose={() => setAlertOpen(false)}
+          severity="success"
           variant="filled"
-          sx={{ width: '100%' }}
+          sx={{ width: "100%" }}
         >
           {alertMsg}
         </Alert>

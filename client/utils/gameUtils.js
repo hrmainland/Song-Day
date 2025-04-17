@@ -1,3 +1,9 @@
+export const gameStatus = Object.freeze({
+  add: "add",
+  vote: "vote",
+  completed: "completed",
+});
+
 export function votableTracks(game, userId) {
 
     let trackIds = [];

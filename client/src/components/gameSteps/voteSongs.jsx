@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Box, Typography, Grid, Tabs, Tab } from '@mui/material';
 import { DragDropContext } from 'react-beautiful-dnd';
 import AddedTracksList from '../trackDisplays/addedTracksList';
@@ -13,7 +13,6 @@ import { newVoteGroup, addVoteGroupToGame } from '../../../utils/apiCalls';
 export default function VoteSongs() {
   const { game, refreshGame } = useGame();
   const { userId, accessToken } = useContext(UserContext);
-  const containerRef = useRef(null);
   
   // VoteSongs state
   const OPTIONS_KEY = `${game?.gameCode}: options`;
@@ -47,14 +46,6 @@ export default function VoteSongs() {
     }
   }, [game, userId]);
   
-  // Expose functions to parent components via DOM attribute
-  useLayoutEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.submitVotes = submitVotes;
-      containerRef.current.getSessionShortlist = getSessionShortlist;
-      containerRef.current.getAddView = () => addView;
-    }
-  }, [game, addView]);
   
   // Fetch track IDs that can be voted on
   const fetchAndSetIds = async () => {
@@ -243,7 +234,7 @@ export default function VoteSongs() {
   }
 
   return (
-    <Box sx={{ mt: 1.5, mb: 3 }} ref={containerRef} data-submit-votes>
+    <Box sx={{ mt: 1.5, mb: 3 }}>
       <CenterBox
         maxWidth="1200px"
         p={{ xs: 2, sm: 2.5 }}
@@ -307,7 +298,7 @@ export default function VoteSongs() {
                 title="Your Shortlist"
                 isShortlist={true}
                 submitFunc={submitVotes}
-                missingTracks={voteLimit - getSessionShortlist().length}
+                isMissingTracks={voteLimit - getSessionShortlist().length}
                 isDraggable={true}
               />
             </DragDropContext>
@@ -334,7 +325,7 @@ export default function VoteSongs() {
                   title="Your Shortlist"
                   isShortlist={true}
                   submitFunc={submitVotes}
-                  missingTracks={voteLimit - getSessionShortlist().length}
+                  isMissingTracks={voteLimit - getSessionShortlist().length}
                   isDraggable={true}
                 />
               </Grid>

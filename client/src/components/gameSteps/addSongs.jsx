@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Box, Typography } from '@mui/material';
 import AddedTracksList from '../trackDisplays/addedTracksList';
 import EmptyTracksView from '../trackDisplays/emptyTracksView';
@@ -16,7 +16,6 @@ import { myTrackGroup } from '../../../utils/gameUtils';
 export default function AddSongs() {
   const { game, refreshGame } = useGame();
   const { userId, accessToken } = useContext(UserContext);
-  const containerRef = useRef(null);
   
   // AddSongs state
   const TRACK_KEY = `${game?.gameCode}: tracks`;
@@ -28,12 +27,6 @@ export default function AddSongs() {
   const [searching, setSearching] = useState(false);
   const [addedTracks, setAddedTracks] = useState([]);
   
-  // Expose submitTracks function to parent components via a DOM attribute
-  useLayoutEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.submitTracks = submitTracks;
-    }
-  }, [game]);
 
   useEffect(() => {
     if (!game) return;
@@ -216,7 +209,7 @@ export default function AddSongs() {
   }
 
   return (
-    <Box sx={{ mt: 1.5, mb: 3 }} ref={containerRef} data-submit-tracks>
+    <Box sx={{ mt: 1.5, mb: 3 }}>
       <CenterBox
         maxWidth="1000px"
         p={{ xs: 2, sm: 2.5 }}
@@ -256,9 +249,11 @@ export default function AddSongs() {
         </Box>
 
         {addedTracks.length > 0 ? (
-          <AddedTracksList 
+          <AddedTracksList
             tracks={addedTracks} 
             onRemoveTrack={removeTrackFromSession} 
+            submitFunc={submitTracks}
+            isMissingTracks={trackLimit - addedTracks.length}
           />
         ) : (
           <EmptyTracksView />

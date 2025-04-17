@@ -179,21 +179,19 @@ function TrackItem({
           />
         </Grid>
 
-
-          <Grid
-            item
-            xs={getGridSize(width, 3)}
-            sx={{ display: width < 600 ? "none" : "block" }}
-          >
-            <ListItemText
-              secondary={track.album || ""}
-              secondaryTypographyProps={{
-                variant: "body2",
-                sx: STYLES.ALBUM_TEXT,
-              }}
-            />
-          </Grid>
-
+        <Grid
+          item
+          xs={getGridSize(width, 3)}
+          sx={{ display: width < 600 ? "none" : "block" }}
+        >
+          <ListItemText
+            secondary={track.album || ""}
+            secondaryTypographyProps={{
+              variant: "body2",
+              sx: STYLES.ALBUM_TEXT,
+            }}
+          />
+        </Grid>
 
         <Grid item xs={getGridSize(width, 4)}>
           <Typography variant="body2" color="text.secondary">
@@ -254,23 +252,48 @@ export default function AddedTracksList({
   isShortlist = false,
   addFunc,
   submitFunc,
-  missingTracks,
+  isMissingTracks,
   isDraggable = false,
 }) {
+
+  function submitButton(){
+    if (!submitFunc) return null;
+    
+    return <Button 
+        variant="outlined" 
+        disabled={isMissingTracks}
+        onClick={submitFunc}
+        sx={{
+          borderRadius: '12px',
+          px: 3,
+          py: 1.2
+        }}
+      >
+        Submit
+      </Button>
+  }
+
   // Render the component
   return (
     <Paper sx={STYLES.PAPER}>
       {/* Header */}
       <Box sx={{ p: 2, ...STYLES.TABLE_HEADER_BG }}>
-        <Typography variant="h6" fontWeight={500}>
-          {title}
-        </Typography>
-        {isShortlist && (
-          <Typography variant="body2">Drag and drop to rearrange</Typography>
-        )}
-        {isOptions && (
-          <Typography variant="body2">Select songs to shortlist</Typography>
-        )}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box>
+            <Typography variant="h6" fontWeight={500}>
+              {title}
+            </Typography>
+            {isShortlist && (
+              <Typography variant="body2">Drag and drop to rearrange</Typography>
+            )}
+            {isOptions && (
+              <Typography variant="body2">Select songs to shortlist</Typography>
+            )}
+          </Box>
+          {submitFunc && (
+            <Box>{submitButton()}</Box>
+          )}
+        </Box>
       </Box>
 
       {/* Content - Conditional Droppable */}
@@ -283,7 +306,7 @@ export default function AddedTracksList({
               {...provided.droppableProps}
             >
               {/* Table Header */}
-              <ListItemHeader/>
+              <ListItemHeader />
 
               {/* Track Items */}
               {tracks.map((track, index) => (
@@ -301,25 +324,13 @@ export default function AddedTracksList({
                   tracksLength={tracks.length}
                 />
               ))}
+
               {provided.placeholder}
 
               {/* Submit Button */}
-              {isShortlist && (
-                <ListItem
-                  sx={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  {missingTracks ? (
-                    <Button variant="outlined" disabled onClick={submitFunc}>
-                      Submit
-                    </Button>
-                  ) : (
-                    <Button variant="outlined" onClick={submitFunc}>
-                      Submit
-                    </Button>
-                  )}
+              {submitFunc && (
+                <ListItem sx={{ display: 'flex', justifyContent: 'end', mt: 2 }}>
+                  {submitButton()}
                 </ListItem>
               )}
             </List>
@@ -344,9 +355,13 @@ export default function AddedTracksList({
               isOptions={isOptions}
               isDraggable={false}
               tracksLength={tracks.length}
-              
             />
           ))}
+          {submitFunc && (
+            <ListItem sx={{ display: 'flex', justifyContent: 'end', mt: 2 }}>
+              {submitButton()}
+            </ListItem>
+          )}
         </List>
       )}
     </Paper>
@@ -390,19 +405,19 @@ function ListItemHeader() {
           />
         </Grid>
 
-          <Grid
-            item
-            xs={getGridSize(width, 3)}
-            sx={{ display: width < 600 ? "none" : "block" }}
-          >
-            <ListItemText
-              secondary="ALBUM"
-              secondaryTypographyProps={{
-                variant: "caption",
-                sx: STYLES.HEADER_TEXT,
-              }}
-            />
-          </Grid>
+        <Grid
+          item
+          xs={getGridSize(width, 3)}
+          sx={{ display: width < 600 ? "none" : "block" }}
+        >
+          <ListItemText
+            secondary="ALBUM"
+            secondaryTypographyProps={{
+              variant: "caption",
+              sx: STYLES.HEADER_TEXT,
+            }}
+          />
+        </Grid>
 
         <Grid item xs={getGridSize(width, 4)}>
           <Box display="flex" justifyContent="flex-start">

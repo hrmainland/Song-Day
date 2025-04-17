@@ -24,7 +24,7 @@ export default function MoveToVotingDialog({
   participantCount,
   expectedParticipants,
 }) {
-  const {game} = useGame();
+  const {game, refreshGame} = useGame();
   const notAllSubmitted = expectedParticipants > 0 && participantCount < expectedParticipants;
 
   return (
@@ -171,7 +171,10 @@ export default function MoveToVotingDialog({
         </Button>
         
         <Button 
-          onClick={() => moveToVoting(game._id)} 
+          onClick={async () => {
+            await moveToVoting(game._id);
+            refreshGame(game.gameCode)
+          }} 
           variant="contained" 
           color="warning"
           disabled={isProcessing || (participantCount === 0)}
