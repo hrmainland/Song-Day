@@ -100,7 +100,7 @@ export default function Game() {
       setVoteLimit(game.config.nVotes);
 
       // Check if user needs to set a display name (only for non-hosts)
-      if (!game.host === userId) {
+      if (game.host !== userId) {
         // Find the current user in the players array
         const currentPlayer = game.players.find((player) => {
           if (typeof player.user === "object") {
@@ -245,7 +245,9 @@ export default function Game() {
         return <h1>Put Your Feet Up</h1>;
       } else if (game.status === gameStatus.vote && !myVotesSubmitted) {
         return <VoteSongs />;
-      } else if (game.status === gameStatus.vote) {
+      } else if (game.status === gameStatus.vote && myVotesSubmitted) {
+        return <h1>Awaiting Playlist Creation</h1>;
+      } else if (game.status === gameStatus.completed) {
         return <h1>Playlist Created</h1>;
       }
       return <h1>other</h1>;

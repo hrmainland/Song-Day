@@ -89,6 +89,11 @@ export default function DisplayNameDialog({ open, onClose }) {
             placeholder="eg. Jeff"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && displayName && displayName.length >= 2 && !isSubmitting) {
+                handleSubmit();
+              }
+            }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">

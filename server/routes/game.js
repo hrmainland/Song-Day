@@ -218,6 +218,7 @@ const addTracksToPlaylist = async (user, playlistId, trackURIs) => {
 
 router.get(
   "/:gameId/create-playlist",
+  findGame,
   isLoggedIn,
   isAuthorized,
   async (req, res) => {
