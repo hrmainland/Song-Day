@@ -149,33 +149,50 @@ router.get("/access-token", isLoggedIn, (req, res) => {
 });
 
 
-router.get('/refresh-token', isLoggedIn, function(req, res) {
-
-  var refresh_token = req.user.refresh_token;
-  var authOptions = {
-    url: 'https://accounts.spotify.com/api/token',
-    headers: {
-      'content-type': 'application/x-www-form-urlencoded',
-      'Authorization': 'Basic ' + (new Buffer.from(process.env.CLIENT_ID + ':' + process.env.CLIENT_SECRET).toString('base64'))
-    },
-    form: {
-      grant_type: 'refresh_token',
-      refresh_token: refresh_token
-    },
-    json: true
-  };
-
-  console.log('authOptions :>> ', authOptions);
-
-  router.post(authOptions, function(error, response, body) {
-    if (!error && response.statusCode === 200) {
-      var access_token = body.access_token,
-          refresh_token = body.refresh_token || refresh_token;
+router.get('/refresh-token', isLoggedIn, async function(req, res) {
+  try {
+    const refresh_token = req.user.refresh_token;
+    const authHeader = 'Basic ' + Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`).toString('base64');
+    
+    // Create form data
+    const formData = new URLSearchParams();
+    formData.append('grant_type', 'refresh_token');
+    formData.append('refresh_token', refresh_token);
+    
+    // Send request to Spotify API
+    const response = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': authHeader
+      },
+      body: formData
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Error refreshing token: ${response.status} ${response.statusText}`);
     }
-    else {
-      console.log('error :>> ', error);
+    
+    const data = await response.json();
+    const access_token = data.access_token;
+    const new_refresh_token = data.refresh_token || refresh_token;
+    
+    // Update user with new tokens
+    req.user.access_token = access_token;
+    if (data.refresh_token) {
+      req.user.refresh_token = new_refresh_token;
     }
-  });
+    
+    await req.user.save();
+    
+    // Return the new access token
+    console.log('access_token :>> ', access_token);
+    return res.status(200).json({ access_token });
+    
+  } catch (error) {
+    console.error('Error refreshing token:', error);
+    res.status(500).json({ error: 'Failed to refresh token' });
+  }
 });
 
 // Authentication route, this passes you to Spotify
