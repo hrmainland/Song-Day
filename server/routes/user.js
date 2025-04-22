@@ -186,7 +186,6 @@ router.get('/refresh-token', isLoggedIn, async function(req, res) {
     await req.user.save();
     
     // Return the new access token
-    console.log('access_token :>> ', access_token);
     return res.status(200).json({ access_token });
     
   } catch (error) {

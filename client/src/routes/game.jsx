@@ -32,6 +32,8 @@ import AddSongs from "../components/gameSteps/addSongs";
 import MoveToVoting from "../components/gameSteps/moveToVoting";
 import VoteSongs from "../components/gameSteps/voteSongs";
 import CreatePlaylist from "../components/gameSteps/createPlaylist";
+import FeetUp from "../components/feetUp";
+import AllSet from "../components/allSet";
 import PageHeader from "../components/pageHeader";
 
 import { UserContext } from "../context/userProvider";
@@ -242,13 +244,13 @@ export default function Game() {
       if (game.status === gameStatus.add && !myTracksSubmitted) {
         return <AddSongs />;
       } else if (game.status === gameStatus.add && myTracksSubmitted) {
-        return <h1>Put Your Feet Up</h1>;
+        return <FeetUp/>;
       } else if (game.status === gameStatus.vote && !myVotesSubmitted) {
         return <VoteSongs />;
       } else if (game.status === gameStatus.vote && myVotesSubmitted) {
-        return <h1>Awaiting Playlist Creation</h1>;
+        return <AllSet/>
       } else if (game.status === gameStatus.completed) {
-        return <h1>Playlist Created</h1>;
+        return <AllSet/>
       }
       return <h1>other</h1>;
     }

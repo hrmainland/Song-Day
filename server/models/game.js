@@ -24,6 +24,11 @@ const gameSchema = new Schema({
   title: String,
   config: gameConfigSchema,
   gameCode: String,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  playlistId: String,
   status: {
     type: String,
     enum: ["add", "vote", "completed"],

@@ -8,7 +8,6 @@ const VoteGroup = require("../models/voteGroup");
 const User = require("../models/user");
 
 const dbUrl = process.env.DB_URL;
-console.log("process.env.DB_URL :>> ", process.env.DB_URL);
 async function deleteAllDocuments() {
   try {
     await Game.deleteMany({});
