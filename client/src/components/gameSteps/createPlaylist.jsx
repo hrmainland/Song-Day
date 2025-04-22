@@ -7,10 +7,7 @@ import CreatePlaylistDialog from "./createPlaylistDialog";
 import { UserContext } from "../../context/userProvider";
 import { useGame } from "../../hooks/useGame";
 
-export default function CreatePlaylist({
-  playlistId,
-  handleCreatePlaylist,
-}) {
+export default function CreatePlaylist({ handleCreatePlaylist }) {
   const { isHost, game, refreshGame, loading, gameError } = useGame();
   const gameCode = game?.gameCode;
   const { userId } = useContext(UserContext);
@@ -18,14 +15,16 @@ export default function CreatePlaylist({
   const [nameMap, setNameMap] = useState(new Map());
   const [dialogOpen, setDialogOpen] = useState(false);
 
-
   // Fetch game data
   useEffect(() => {
     if (!game) return;
     refreshGame(game.gameCode);
 
     // Set up interval to refresh data every 10 seconds
-    const refreshInterval = setInterval(() => refreshGame(game.gameCode), 10000);
+    const refreshInterval = setInterval(
+      () => refreshGame(game.gameCode),
+      10000
+    );
 
     // Clean up interval on component unmount
     return () => clearInterval(refreshInterval);
@@ -91,24 +90,23 @@ export default function CreatePlaylist({
           Create Playlist
         </Typography>
 
-        <PlayerProgressPaper
-          title="Who's voted"
-          nameMap={nameMap}
-          submitterIds={voterIds}
-          userId={userId}
-          hostId={game.host}
-        />
 
-        {isHost && (
-          <MovePhasePaper
-            onButtonClick={() => setDialogOpen(true)}
-            title="Ready to create the playlist?"
-            text="Click to create your playlist with all the best songs"
-            buttonText="Create Playlist"
-            color="success"
-            bgColor="#f0fff0"
+          <PlayerProgressPaper
+            title="Who's voted"
+            nameMap={nameMap}
+            submitterIds={voterIds}
+            userId={userId}
+            hostId={game.host}
           />
-        )}
+
+            <MovePhasePaper
+              onButtonClick={() => setDialogOpen(true)}
+              title="Ready to create the playlist?"
+              text="Click to create your playlist with all the best songs"
+              buttonText="Create Playlist"
+              color="success"
+              bgColor="#f0fff0"
+            />
 
         {/* Dialog for confirming playlist creation */}
         <CreatePlaylistDialog
@@ -121,31 +119,6 @@ export default function CreatePlaylist({
           participantCount={participantCount}
           expectedParticipants={expectedParticipants}
         />
-
-        {!playlistId ? (
-          null // Removed the button as we're using the MovePhasePaper instead
-        ) : (
-          <Box sx={{ mt: 3 }}>
-            <iframe
-              style={{ borderRadius: "12px" }}
-              src={`https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator`}
-              width="100%"
-              height="352"
-              allowFullScreen
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              loading="lazy"
-            ></iframe>
-          </Box>
-        )}
-
-        {game.host !== userId && (
-          <Typography
-            variant="body2"
-            sx={{ mt: 3, textAlign: "center", color: "text.secondary" }}
-          >
-            Only the session host can create the playlist
-          </Typography>
-        )}
       </CenterBox>
     </Box>
   );

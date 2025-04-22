@@ -34,6 +34,7 @@ import VoteSongs from "../components/gameSteps/voteSongs";
 import CreatePlaylist from "../components/gameSteps/createPlaylist";
 import FeetUp from "../components/feetUp";
 import AllSet from "../components/allSet";
+import PlaylistDisplay from "../components/playlistDisplay";
 import PageHeader from "../components/pageHeader";
 
 import { UserContext } from "../context/userProvider";
@@ -79,7 +80,7 @@ export default function Game() {
   const [myVotesSubmitted, setMyVotesSubmitted] = useState(false);
 
   // CreatePlaylist state
-  const [playlistId, setPlaylistId] = useState(null);
+  // const [playlistId, setPlaylistId] = useState(null);
 
   useEffect(() => {
     const pullGame = async () => {
@@ -137,7 +138,7 @@ export default function Game() {
 
   const handleCreatePlaylist = async () => {
     const incomingPlaylistId = await createPlaylist(game._id);
-    setPlaylistId(incomingPlaylistId);
+    await refreshGame(gameCode);
     setAlertMsg("Spotify playlist created successfully! Ready to listen.");
     setAlertOpen(true);
   };
@@ -231,26 +232,23 @@ export default function Game() {
         return <MoveToVoting />;
       } else if (game.status === gameStatus.vote && !myVotesSubmitted) {
         return <VoteSongs />;
-      } else if (game.status === gameStatus.vote) {
-        return (
-          <CreatePlaylist
-            playlistId={playlistId}
-            handleCreatePlaylist={handleCreatePlaylist}
-          />
-        );
+      } else if (game.status === gameStatus.vote && myVotesSubmitted) {
+        return <CreatePlaylist handleCreatePlaylist={handleCreatePlaylist} />;
+      } else if (game.status === gameStatus.completed) {
+        return <PlaylistDisplay />;
       }
       return <h1>other</h1>;
     } else if (!isHost) {
       if (game.status === gameStatus.add && !myTracksSubmitted) {
         return <AddSongs />;
       } else if (game.status === gameStatus.add && myTracksSubmitted) {
-        return <FeetUp/>;
+        return <FeetUp />;
       } else if (game.status === gameStatus.vote && !myVotesSubmitted) {
         return <VoteSongs />;
       } else if (game.status === gameStatus.vote && myVotesSubmitted) {
-        return <AllSet/>
+        return <AllSet />;
       } else if (game.status === gameStatus.completed) {
-        return <AllSet/>
+        return <AllSet />;
       }
       return <h1>other</h1>;
     }
