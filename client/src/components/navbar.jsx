@@ -15,6 +15,8 @@ import HeadphonesIcon from "@mui/icons-material/Headphones";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 import { ThemeProvider } from "@mui/material/styles";
+import Divider from '@mui/material/Divider';
+
 import theme from "../../utils/theme";
 import { Link } from "react-router-dom";
 
@@ -185,7 +187,7 @@ export default function Navbar({ onLoginOpen }) {
                       handleLogout();
                       handleMenuClose();
                     }}>Logout</MenuItem>
-                    <MenuItem divider />
+                    <Divider />
                     <MenuItem 
                       onClick={() => {
                         setDeleteDialogOpen(true);

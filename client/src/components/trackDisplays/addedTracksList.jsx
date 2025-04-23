@@ -77,6 +77,8 @@ const STYLES = {
   LIST_ITEM_PADDING: { py: 1.5 },
 };
 
+const dropAlbumWidth = 600;
+
 // Format track duration
 const formatDuration = (ms) => {
   if (!ms) return "";
@@ -106,7 +108,7 @@ function getGridSize(width, columnIndex) {
     case 5:
       return 1;
   }
-  if (width < 600) {
+  if (width < dropAlbumWidth) {
     switch (columnIndex) {
       case 1:
         return 3;
@@ -167,7 +169,16 @@ function TrackItem({
         <Grid item xs={getGridSize(width, 2)}>
           <ListItemText
             primary={track.name}
-            secondary={track.artists}
+            secondary={
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                {track.artists}
+                {width < dropAlbumWidth ? (
+                  <Typography variant="body2" color="text.secondary">
+                    {track.album}
+                  </Typography>
+                ) : null}
+              </Box>
+            }
             primaryTypographyProps={{
               variant: "body1",
               sx: STYLES.TRACK_NAME,
@@ -182,7 +193,7 @@ function TrackItem({
         <Grid
           item
           xs={getGridSize(width, 3)}
-          sx={{ display: width < 600 ? "none" : "block" }}
+          sx={{ display: width < dropAlbumWidth ? "none" : "block" }}
         >
           <ListItemText
             secondary={track.album || ""}
@@ -247,7 +258,7 @@ function TrackItem({
 export default function AddedTracksList({
   tracks,
   onRemoveTrack,
-  title = "Tracks",
+  title = null,
   isOptions = false,
   isShortlist = false,
   addFunc,
@@ -275,8 +286,13 @@ export default function AddedTracksList({
 
   // Render the component
   return (
-    <Paper sx={STYLES.PAPER}>
+    <Paper sx={{
+      ...STYLES.PAPER,
+      display: 'flex',
+      flexDirection: 'column'
+    }}>
       {/* Header */}
+{      title && 
       <Box sx={{ p: 2, ...STYLES.TABLE_HEADER_BG }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box>
@@ -294,14 +310,19 @@ export default function AddedTracksList({
             <Box>{submitButton()}</Box>
           )}
         </Box>
-      </Box>
+      </Box>}
 
       {/* Content - Conditional Droppable */}
       {isDraggable ? (
         <Droppable droppableId="main-column">
           {(provided) => (
             <List
-              sx={{ width: "100%", bgcolor: "background.paper" }}
+              sx={{ 
+                width: "100%", 
+                bgcolor: "background.paper",
+                p: 0,
+                m: 0
+              }}
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
@@ -337,7 +358,12 @@ export default function AddedTracksList({
           )}
         </Droppable>
       ) : (
-        <List sx={{ width: "100%", bgcolor: "background.paper" }}>
+        <List sx={{ 
+          width: "100%", 
+          bgcolor: "background.paper",
+          p: 0,
+          m: 0
+        }}>
           {/* Table Header */}
           <ListItemHeader />
 
@@ -408,7 +434,7 @@ function ListItemHeader() {
         <Grid
           item
           xs={getGridSize(width, 3)}
-          sx={{ display: width < 600 ? "none" : "block" }}
+          sx={{ display: width < dropAlbumWidth ? "none" : "block" }}
         >
           <ListItemText
             secondary="ALBUM"

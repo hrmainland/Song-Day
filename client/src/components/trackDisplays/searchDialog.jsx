@@ -5,16 +5,11 @@ import {
   TextField,
   IconButton,
   Typography,
-  List,
-  ListItem,
-  Grid,
-  Avatar,
-  ListItemText,
   DialogTitle,
-  Divider,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
+import AddedTracksList from "./addedTracksList";
 
 const spinAnimation = `
 @keyframes spin {
@@ -166,66 +161,13 @@ export default function SearchDialog({
         searchResult.tracks &&
         searchResult.tracks.items &&
         searchResult.tracks.items.length > 0 ? (
-          <List sx={{ width: "100%" }}>
-            {searchResult.tracks.items.map((track) => {
-              const formattedTrack = formatTrack(track);
-              return (
-                <ListItem
-                  key={track.id}
-                  sx={{
-                    py: 1.5,
-                    cursor: "pointer",
-                    transition: "all 0.2s ease",
-                    "&:hover": {
-                      backgroundColor: "rgba(0,0,0,0.04)",
-                    },
-                    borderBottom: "1px solid rgba(0,0,0,0.06)",
-                  }}
-                  onClick={() => onAddTrack(formattedTrack)}
-                >
-                  <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={2} sm={1}>
-                      <Avatar
-                        variant="square"
-                        src={formattedTrack.img}
-                        sx={{
-                          width: 50,
-                          height: 50,
-                          borderRadius: "4px",
-                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={10} sm={11}>
-                      <ListItemText
-                        primary={formattedTrack.name}
-                        secondary={`${formattedTrack.artists} • ${formattedTrack.album}`}
-                        primaryTypographyProps={{
-                          variant: "body1",
-                          sx: {
-                            fontSize: 16,
-                            fontWeight: 500,
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          },
-                        }}
-                        secondaryTypographyProps={{
-                          variant: "body2",
-                          sx: {
-                            color: "text.secondary",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          },
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
-                </ListItem>
-              );
-            })}
-          </List>
+          <Box sx={{ px: { xs: 2, sm: 3 }, pt: 2 }}>
+            <AddedTracksList
+              tracks={searchResult.tracks.items.map(track => formatTrack(track))}
+              isOptions={true}
+              addFunc={(track) => onAddTrack(track)}
+            />
+          </Box>
         ) : searching ? (
           <Box sx={{ p: 4, textAlign: "center" }}>
             <Typography color="text.secondary">Searching...</Typography>
