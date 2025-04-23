@@ -10,8 +10,11 @@ import {
   Grid,
   Avatar,
   ListItemText,
+  DialogTitle,
+  Divider,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import CloseIcon from "@mui/icons-material/Close";
 
 const spinAnimation = `
 @keyframes spin {
@@ -62,14 +65,38 @@ export default function SearchDialog({
           sx: {
             width: { xs: "90%", sm: "1000px" },
             borderRadius: "20px",
-            padding: { xs: 2, sm: 4 },
             position: "absolute",
             top: { xs: "100px", sm: "127px" },
             maxHeight: "calc(100vh - 150px)",
             overflow: "auto",
+            padding: { xs: "16px 0", sm: "20px 0" },
           },
         }}
       >
+        <DialogTitle sx={{ 
+          px: { xs: 3, sm: 4 },
+          pt: { xs: 1, sm: 1 },
+          pb: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <SearchIcon sx={{ color: 'primary.main', mr: 1.5, fontSize: 24 }} />
+            <Typography variant="h5" fontWeight={600} sx={{ letterSpacing: '-0.3px' }}>
+              Search
+            </Typography>
+          </Box>
+          <IconButton 
+            edge="end" 
+            onClick={onClose}
+            aria-label="close"
+            sx={{ color: 'text.secondary' }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        
         <Box sx={{ width: "90%", p: { xs: 1, sm: 2 }, mx: "auto" }}>
           <TextField
             inputRef={searchInputRef}
@@ -134,7 +161,6 @@ export default function SearchDialog({
           />
         </Box>
 
-        <Box sx={{ width: "100%", height: "1px", bgcolor: "divider", mb: 3 }} />
 
         {searchResult &&
         searchResult.tracks &&

@@ -76,6 +76,11 @@ export async function logout() {
   window.location.href = "/home";
 }
 
+export async function deleteMe() {
+  await apiRequest("/user/delete-me", "DELETE");
+  window.location.href = "/home";
+}
+
 // Game endpoints
 
 export async function fetchGame(gameCode, authRequired = true) {

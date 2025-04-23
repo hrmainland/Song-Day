@@ -29,7 +29,7 @@ const gameSchema = new Schema({
     default: Date.now,
   },
   playlistId: String,
-  status: {
+status: {
     type: String,
     enum: ["add", "vote", "completed"],
   },

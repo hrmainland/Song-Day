@@ -20,7 +20,7 @@ export default function PlaylistDisplay({}) {
   return (
     <CenterBox maxWidth="1000px">
       <Typography variant="h4" sx={{ mt: 4, mx: 2 }}>
-        Here's your playlist
+        Here's your playlist!
       </Typography>
       <Typography gutterTop variant="body1" sx={{ my: 2, mx:2}}>
         It's been saved to your Spotify library

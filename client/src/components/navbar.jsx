@@ -19,6 +19,7 @@ import theme from "../../utils/theme";
 import { Link } from "react-router-dom";
 
 import { isLoggedIn, logout } from "../../utils/apiCalls";
+import DeleteAccountDialog from "./deleteAccountDialog";
 
 import { UserContext } from "../context/userProvider";
 
@@ -26,6 +27,7 @@ import { UserContext } from "../context/userProvider";
 export default function Navbar({ onLoginOpen }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   
   const { userId, setUserId } = useContext(UserContext);
 
@@ -179,9 +181,32 @@ export default function Navbar({ onLoginOpen }) {
                       "aria-labelledby": "account-button",
                     }}
                   >
-                    <MenuItem onClick={handleMenuClose}>Account</MenuItem>
-                    <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
+                    <MenuItem onClick={() => {
+                      handleLogout();
+                      handleMenuClose();
+                    }}>Logout</MenuItem>
+                    <MenuItem divider />
+                    <MenuItem 
+                      onClick={() => {
+                        setDeleteDialogOpen(true);
+                        handleMenuClose();
+                      }}
+                      sx={{ 
+                        color: 'error.main',
+                        '&:hover': {
+                          backgroundColor: 'error.light',
+                          color: 'error.contrastText'
+                        }
+                      }}
+                    >
+                      Delete Account
+                    </MenuItem>
                   </Menu>
+                  
+                  <DeleteAccountDialog 
+                    open={deleteDialogOpen}
+                    onClose={() => setDeleteDialogOpen(false)}
+                  />
                 </>
               ) : (
                 <Button
@@ -198,19 +223,6 @@ export default function Navbar({ onLoginOpen }) {
                   Login
                 </Button>
               )}
-               <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<AccountCircleIcon />}
-                  onClick={handleLogout}
-                  sx={{
-                    borderRadius: "30px",
-                    px: { xs: 2, sm: 3 },
-                    boxShadow: "0 2px 8px rgba(64,126,160,0.2)",
-                  }}
-                >
-                  Logout
-                </Button>
             </Box>
           </Toolbar>
         </Container>

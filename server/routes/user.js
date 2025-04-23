@@ -229,4 +229,18 @@ router.post('/logout', function(req, res, next){
   });
 });
 
+router.delete('/delete-me', isLoggedIn, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    await User.findByIdAndDelete(userId);
+    req.logout(function(err) {
+      if (err) { return next(err); }
+      return res.status(200).json({ message: 'User deleted successfully' });
+    });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ error: 'Failed to delete user' });
+  }
+});
+
 module.exports = router;

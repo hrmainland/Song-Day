@@ -40,8 +40,16 @@ export default function SessionCard({ game, onClick }) {
     game.gameCode.charCodeAt(game.gameCode.length - 1) % images.length : 
     Math.floor(Math.random() * images.length);
   
-  // Demo date - will be replaced later
-  const demoDate = "4 Feb 2024";
+  // Format the createdAt date
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
   
   return (
     <ThemeProvider theme={theme}>
@@ -70,7 +78,7 @@ export default function SessionCard({ game, onClick }) {
             gutterBottom
             sx={{ display: "block", color: theme.palette.primary.main }}
           >
-            {demoDate}
+            {formatDate(game?.createdAt)}
           </Typography>
           <Typography
             variant="h3"
@@ -83,8 +91,17 @@ export default function SessionCard({ game, onClick }) {
             {game?.title || "Greece Hottest 100"}
           </Typography>
           <Stack direction="row" spacing={2}>
-            <Chip icon={<PersonOutlineIcon />} label="8" size="small" />
-            <Chip icon={<MusicNoteIcon />} label="80" size="small" />
+            <Chip 
+              icon={<PersonOutlineIcon />} 
+              label={game?.players?.length || 0} 
+              size="small" 
+            />
+            {/* TODO update this to get a more accurate number in the event of double ups */}
+            <Chip 
+              icon={<MusicNoteIcon />} 
+              label={game?.players?.length * (game?.config?.nSongs || 0) * (game?.trackGroups?.length || 0)} 
+              size="small" 
+            />
           </Stack>
         </CardContent>
       </Card>

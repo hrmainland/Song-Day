@@ -271,7 +271,6 @@ router.get(
     const playlistData = await createPlaylist(req.user, game.title);
     const playlistJSON = await playlistData.json();
     await addTracksToPlaylist(req.user, playlistJSON.id, sortedURIs);
-    
     game.playlistId = playlistJSON.id;
     game.status = "completed";
     await game.save();

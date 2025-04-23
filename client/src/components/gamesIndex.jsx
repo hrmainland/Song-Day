@@ -24,54 +24,70 @@ export default function GamesIndex({myGames}) {
     );
   }
 
-  // Take the first 2 games which will be the most recent ones
-  // since we reversed the array above
-  const recentGames = myGames.slice(0, 2);
+  // Sort games by creation date (newest first)
+  const sortedGames = [...myGames].sort((a, b) => {
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+
+  // Get games created in the last month (maximum of 4)
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+  
+  const recentGames = sortedGames
+    .filter(game => new Date(game.createdAt) >= oneMonthAgo)
+    .slice(0, 4);
+    
+  // Create a set of recent game IDs for fast lookups
+  const recentGameIds = new Set(recentGames.map(game => game.gameCode));
+  
+  // Filter out recent games from the all games list
+  const remainingGames = sortedGames.filter(game => !recentGameIds.has(game.gameCode));
+  
+  // Determine which sections to show
+  const hasRecentGames = recentGames.length > 0;
+  const hasRemainingGames = remainingGames.length > 0;
   
   return (
     <CenterBox maxWidth="1200px" p={2}>
-      <Box sx={{ mb: 4 }}>
-        <SessionsHeader title="Recent" />
-        
-        <SessionsContainer borderColor="rgba(93,74,156,0.1)">
-          {recentGames.map((game) => (
-            <Grid item key={game.gameCode}>
-              <SessionCard 
-                game={game} 
-                onClick={() => handleGameClick(game.gameCode)} 
-              />
-            </Grid>
-          ))}
-          {recentGames.length === 0 && (
-            <Grid item>
-              <Typography variant="body2" sx={{ p: 2, color: "text.secondary" }}>
-                No recent sessions
-              </Typography>
-            </Grid>
-          )}
-        </SessionsContainer>
-      </Box>
+      {hasRecentGames && (
+        <Box sx={{ mb: hasRemainingGames ? 4 : 0 }}>
+          <SessionsHeader title="Recent" />
+          
+          <SessionsContainer borderColor="rgba(93,74,156,0.1)">
+            {recentGames.map((game) => (
+              <Grid item key={game.gameCode}>
+                <SessionCard 
+                  game={game} 
+                  onClick={() => handleGameClick(game.gameCode)} 
+                />
+              </Grid>
+            ))}
+          </SessionsContainer>
+        </Box>
+      )}
       
-      <GradientDivider />
+      {hasRecentGames && hasRemainingGames && <GradientDivider />}
       
-      <Box>
-        <SessionsHeader 
-          title="All Sessions" 
-          color="primary.main" 
-          boxShadow="0 2px 8px rgba(64,126,160,0.3)" 
-        />
-        
-        <SessionsContainer borderColor="rgba(64,126,160,0.1)">
-          {myGames.map((game) => (
-            <Grid item key={game.gameCode}>
-              <SessionCard 
-                game={game} 
-                onClick={() => handleGameClick(game.gameCode)} 
-              />
-            </Grid>
-          ))}
-        </SessionsContainer>
-      </Box>
+      {hasRemainingGames && (
+        <Box>
+          <SessionsHeader 
+            title="All" 
+            color="primary.main" 
+            boxShadow="0 2px 8px rgba(64,126,160,0.3)" 
+          />
+          
+          <SessionsContainer borderColor="rgba(64,126,160,0.1)">
+            {remainingGames.map((game) => (
+              <Grid item key={game.gameCode}>
+                <SessionCard 
+                  game={game} 
+                  onClick={() => handleGameClick(game.gameCode)} 
+                />
+              </Grid>
+            ))}
+          </SessionsContainer>
+        </Box>
+      )}
     </CenterBox>
   );
 }

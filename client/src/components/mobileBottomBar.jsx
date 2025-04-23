@@ -40,13 +40,14 @@ export default function MobileBottomBar({ onCreateClick, onJoinClick }) {
         </Button>
         <Button 
           variant="contained" 
-          color="secondary" 
+          color="warning" 
           fullWidth
           onClick={onJoinClick}
           sx={{ 
             borderRadius: '12px',
             py: 1.5,
-            color: 'white'
+            color: 'white',
+            boxShadow: '0 4px 12px rgba(93,74,156,0.25)'
           }}
         >
           Join Session
