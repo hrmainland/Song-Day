@@ -94,7 +94,12 @@ router.put("/game/:id", isLoggedIn, async (req, res) => {
 
 router.get("/my-games", isLoggedIn, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate("games");
+    const user = await User.findById(req.user._id).populate({
+      path: "games",
+      populate: {
+        path: "trackGroups"
+      }
+    });
 
     // this should never happen once we have proper route protection on
     if (!user) {

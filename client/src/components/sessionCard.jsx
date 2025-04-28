@@ -96,10 +96,20 @@ export default function SessionCard({ game, onClick }) {
               label={game?.players?.length || 0} 
               size="small" 
             />
-            {/* TODO update this to get a more accurate number in the event of double ups */}
             <Chip 
               icon={<MusicNoteIcon />} 
-              label={game?.players?.length * (game?.config?.nSongs || 0) * (game?.trackGroups?.length || 0)} 
+              label={(() => {
+                // Get all unique track IDs across all track groups
+                const uniqueTrackIds = new Set();
+                if (game?.trackGroups && game.trackGroups.length > 0) {
+                  game.trackGroups.forEach(group => {
+                    if (group.trackIds) {
+                      group.trackIds.forEach(id => uniqueTrackIds.add(id));
+                    }
+                  });
+                }
+                return uniqueTrackIds.size;
+              })()} 
               size="small" 
             />
           </Stack>

@@ -196,25 +196,40 @@ const createPlaylist = async (user, playlistName) => {
 
 const addTracksToPlaylist = async (user, playlistId, trackURIs) => {
   const accessToken = user.access_token;
-  const addTracksResponse = await fetch(
-    `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        uris: trackURIs,
-      }),
-    }
-  );
 
-  if (!addTracksResponse.ok) {
-    const addTracksData = await addTracksResponse.json();
-    throw new Error(`Error adding tracks: ${addTracksData.error.message}`);
+  // Function to chunk the array into parts of 100
+  const chunkArray = (array, chunkSize) => {
+    const chunks = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      chunks.push(array.slice(i, i + chunkSize));
+    }
+    return chunks;
+  };
+
+  const chunks = chunkArray(trackURIs, 100);
+
+  for (const chunk of chunks) {
+    const addTracksResponse = await fetch(
+      `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          uris: chunk,
+        }),
+      }
+    );
+
+    if (!addTracksResponse.ok) {
+      const addTracksData = await addTracksResponse.json();
+      throw new Error(`Error adding tracks: ${addTracksData.error.message}`);
+    }
   }
 };
+
 
 router.get(
   "/:gameId/create-playlist",
