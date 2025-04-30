@@ -59,12 +59,6 @@ const STYLES = {
   },
 
   // Component styling
-  AVATAR_SQUARE: {
-    width: 45,
-    height: 45,
-    borderRadius: "4px",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-  },
   ICON_BUTTON: {
     opacity: 0.5,
     transition: "all 0.2s ease",
@@ -260,7 +254,12 @@ function TrackItem({
             <Avatar
               variant="square"
               src={track.img}
-              sx={STYLES.AVATAR_SQUARE}
+              sx={{
+                width: width < dropAlbumWidth ? 55 : 45,
+                height: width < dropAlbumWidth ? 55 : 45,
+                borderRadius: width < dropAlbumWidth ? "4px" : "2px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+              }}
             />
           </Grid>
 

@@ -43,6 +43,14 @@ router.put(
   async (req, res) => {
     const { trackGroupId } = req.params;
     const game = req.game;
+
+    const existingTrackGroup = game.trackGroups.find(
+      (trackGroup) => trackGroup.player.equals(req.user._id)
+    );
+    if (existingTrackGroup) {
+      return res.status(409).json({ message: "You've already submitted a track group" });
+    }
+
     game.trackGroups.push(trackGroupId);
     await game.save();
 

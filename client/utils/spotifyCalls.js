@@ -68,7 +68,7 @@ export async function getProfile(accessToken) {
 }
 
 export async function searchTracks(accessToken, query) {
-    const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=30`;
+    const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track`;
     return await apiRequest(url, "GET", null, accessToken);
   }
 
