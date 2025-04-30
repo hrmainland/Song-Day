@@ -28,6 +28,8 @@ export default function SearchDialog({
   onAddTrack,
   formatTrack,
   onSearch,
+  tracksLimit,
+  currentTracksCount,
 }) {
   const searchInputRef = useRef(null);
 
@@ -166,6 +168,9 @@ export default function SearchDialog({
               tracks={searchResult.tracks.items.map(track => formatTrack(track))}
               isOptions={true}
               addFunc={(track) => onAddTrack(track)}
+              isShortlist={true}
+              isMissingTracks={!tracksLimit || currentTracksCount < tracksLimit}
+              tracksLimit={tracksLimit}
             />
           </Box>
         ) : searching ? (

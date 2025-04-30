@@ -99,29 +99,45 @@ function useSize(ref) {
 }
 
 function getGridSize(width, columnIndex) {
-  switch (columnIndex) {
-    case 0:
-      return 1;
-    case 3:
-      return 3;
-    case 4:
-      return 2;
-    case 5:
-      return 1;
-  }
+  // Return values are [size, display]
+  // If display is false, the column should be hidden
+  
+  // Handle small screen sizes
   if (width < dropAlbumWidth) {
     switch (columnIndex) {
-      case 1:
-        return 3;
-      case 2:
-        return 5;
+      case 0: // Track number
+        return { size: 1, display: true };
+      case 1: // Album cover
+        return { size: 3, display: true };
+      case 2: // Title & artists
+        return { size: 6, display: true }; // Expanded to fill space from removed columns
+      case 3: // Album name
+        return { size: 0, display: false }; // Hide on small screens
+      case 4: // Duration
+        return { size: 0, display: false }; // Hide on small screens
+      case 5: // Action button
+        return { size: 2, display: true }; // Slightly larger action button on small screens
+      default:
+        return { size: 1, display: true };
     }
   }
+  
+  // Handle larger screen sizes
   switch (columnIndex) {
-    case 1:
-      return 2;
-    case 2:
-      return 3;
+    case 0: // Track number
+      return { size: 1, display: true };
+    case 1: // Album cover
+      return { size: 2, display: true };
+    case 2: // Title & artists
+      return { size: 3, display: true };
+    case 3: // Album name
+      return { size: 3, display: true };
+    case 4: // Duration
+      return { size: 2, display: true };
+    case 5: // Action button
+      return { size: 1, display: true };
+    default:
+      return { size: 1, display: true };
   }
 }
 
@@ -133,6 +149,7 @@ function TrackItem({
   isOptions,
   isDraggable,
   tracksLength,
+  isLimitReached, // Add new prop to check if track limit is reached
 }) {
   const ref = useRef(null);
   const width = useSize(ref);
@@ -141,6 +158,11 @@ function TrackItem({
 
   // Handle click with animation
   const handleAction = () => {
+    // If options list and limit reached, don't animate or trigger action
+    if (isOptions && isLimitReached) {
+      return;
+    }
+    
     if (isAnimating) return; // Prevent multiple clicks during animation
 
     setIsAnimating(true);
@@ -161,7 +183,7 @@ function TrackItem({
         // Keep the full-width overlay for a moment before completing the action
         setTimeout(() => {
           if (onAction) onAction();
-        }, 50); // Short delay to ensure animation completes visually
+        }, 20); // Short delay to ensure animation completes visually
       }
     };
 
@@ -209,24 +231,31 @@ function TrackItem({
         sx={{
           width: "100%",
           py: 1.5, // Match the original padding
+          px: 2, // Add horizontal padding
           position: "relative",
           zIndex: 1,
         }}
       >
         <Grid container spacing={1} alignItems="center" sx={{ height: "100%" }}>
+          {/* Track number */}
           <Grid
             item
-            xs={getGridSize(width, 0)}
-            sx={STYLES.RESPONSIVE_HIDE_MOBILE}
+            xs={getGridSize(width, 0).size}
+            sx={{ display: getGridSize(width, 0).display ? "block" : "none" }}
           >
             <Typography variant="body2" color="text.secondary" align="center">
               {index + 1}
             </Typography>
           </Grid>
+
+          {/* Album cover */}
           <Grid
             item
-            xs={getGridSize(width, 1)}
-            sx={{ display: "flex", justifyContent: "center" }}
+            xs={getGridSize(width, 1).size}
+            sx={{ 
+              display: getGridSize(width, 1).display ? "flex" : "none",
+              justifyContent: "center" 
+            }}
           >
             <Avatar
               variant="square"
@@ -235,8 +264,12 @@ function TrackItem({
             />
           </Grid>
 
-          <Grid item xs={getGridSize(width, 2)}>
-            {/* Use separate ListItemText components instead of nesting Box in secondary */}
+          {/* Title and artists */}
+          <Grid 
+            item 
+            xs={getGridSize(width, 2).size}
+            sx={{ display: getGridSize(width, 2).display ? "block" : "none" }}
+          >
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               <ListItemText
                 primary={track.name}
@@ -250,7 +283,7 @@ function TrackItem({
                   sx: STYLES.ALBUM_TEXT,
                 }}
               />
-              {width < dropAlbumWidth && track.album ? (
+              {!getGridSize(width, 3).display && track.album ? (
                 <Typography
                   variant="body2"
                   color="text.secondary"
@@ -262,10 +295,11 @@ function TrackItem({
             </Box>
           </Grid>
 
+          {/* Album name */}
           <Grid
             item
-            xs={getGridSize(width, 3)}
-            sx={{ display: width < dropAlbumWidth ? "none" : "block" }}
+            xs={getGridSize(width, 3).size}
+            sx={{ display: getGridSize(width, 3).display ? "block" : "none" }}
           >
             <ListItemText
               secondary={track.album || ""}
@@ -276,50 +310,67 @@ function TrackItem({
             />
           </Grid>
 
+          {/* Duration */}
           <Grid
             item
-            xs={getGridSize(width, 4)}
-            sx={{ display: width < dropAlbumWidth ? "none" : "block" }}
+            xs={getGridSize(width, 4).size}
+            sx={{ display: getGridSize(width, 4).display ? "block" : "none" }}
           >
             <Typography variant="body2" color="text.secondary">
               {formatDuration(track.duration_ms)}
             </Typography>
           </Grid>
+
+          {/* Action button */}
           <Grid
             item
-            xs={getGridSize(width, 5)}
+            xs={getGridSize(width, 5).size}
+            sx={{ display: getGridSize(width, 5).display ? "flex" : "none" }}
             container
             justifyContent="center"
           >
-            <IconButton
-              edge="end"
-              aria-label={isOptions ? "add" : isDraggable ? "remove" : "delete"}
-              onClick={isOptions ? undefined : handleAction}
-              disabled={isAnimating}
-              sx={{
-                ...STYLES.ICON_BUTTON,
-                color: isAnimating ? "#4caf50" : "text.secondary",
-                "&:hover": {
-                  color: isAnimating
-                    ? "#4caf50"
-                    : isOptions
-                    ? "primary.main"
-                    : "error.main",
-                },
+            {isOptions && isLimitReached ? (
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                color: 'text.secondary',
+                opacity: 0.7,
                 mr: 1.5,
-                transition: "all 0.2s ease",
-              }}
-            >
-              {isAnimating ? (
-                <CheckCircleIcon />
-              ) : isOptions ? (
-                <AddIcon />
-              ) : isDraggable ? (
-                <RemoveIcon />
-              ) : (
-                <DeleteIcon />
-              )}
-            </IconButton>
+                fontSize: '0.85rem'
+              }}>
+                Limit reached
+              </Box>
+            ) : (
+              <IconButton
+                edge="end"
+                aria-label={isOptions ? "add" : isDraggable ? "remove" : "delete"}
+                onClick={isOptions ? undefined : handleAction}
+                disabled={isAnimating || (isOptions && isLimitReached)}
+                sx={{
+                  ...STYLES.ICON_BUTTON,
+                  color: isAnimating ? "#4caf50" : "text.secondary",
+                  "&:hover": {
+                    color: isAnimating
+                      ? "#4caf50"
+                      : isOptions
+                      ? "primary.main"
+                      : "error.main",
+                  },
+                  mr: 1.5,
+                  transition: "all 0.2s ease",
+                }}
+              >
+                {isAnimating ? (
+                  <CheckCircleIcon />
+                ) : isOptions ? (
+                  <AddIcon />
+                ) : isDraggable ? (
+                  <RemoveIcon />
+                ) : (
+                  <DeleteIcon />
+                )}
+              </IconButton>
+            )}
           </Grid>
         </Grid>
       </Box>
@@ -357,6 +408,7 @@ export default function AddedTracksList({
   submitFunc,
   isMissingTracks,
   isDraggable = false,
+  tracksLimit, // New prop for the maximum number of tracks allowed
 }) {
   function submitButton() {
     if (!submitFunc) return null;
@@ -400,7 +452,7 @@ export default function AddedTracksList({
               <Typography variant="h6" fontWeight={500}>
                 {title}
               </Typography>
-              {isShortlist && (
+              {isShortlist && !isOptions && (
                 <Typography variant="body2">
                   Drag and drop to rearrange
                 </Typography>
@@ -447,6 +499,7 @@ export default function AddedTracksList({
                   isOptions={isOptions}
                   isDraggable={isDraggable}
                   tracksLength={tracks.length}
+                  isLimitReached={isOptions && !isMissingTracks}
                 />
               ))}
 
@@ -489,6 +542,7 @@ export default function AddedTracksList({
               isOptions={isOptions}
               isDraggable={false}
               tracksLength={tracks.length}
+              isLimitReached={isOptions && !isMissingTracks}
             />
           ))}
           {submitFunc && (
@@ -512,15 +566,27 @@ function ListItemHeader() {
       sx={{
         ...STYLES.TABLE_HEADER_BG,
         ...STYLES.BORDER_BOTTOM,
+        p: 0, // Remove default padding
       }}
     >
       <Grid container spacing={2} alignItems="center" sx={{ height: "100%" }}>
-        <Grid item xs={getGridSize(width, 0)}>
+        {/* Track number header */}
+        <Grid 
+          item 
+          xs={getGridSize(width, 0).size}
+          sx={{ display: getGridSize(width, 0).display ? "block" : "none" }}
+        >
           <Typography variant="subtitle2" color="text.secondary" align="center">
             #
           </Typography>
         </Grid>
-        <Grid item xs={getGridSize(width, 1)}>
+        
+        {/* Album cover placeholder */}
+        <Grid 
+          item 
+          xs={getGridSize(width, 1).size}
+          sx={{ display: getGridSize(width, 1).display ? "block" : "none" }}
+        >
           <Box
             sx={{
               width: 45,
@@ -529,7 +595,13 @@ function ListItemHeader() {
             }}
           />
         </Grid>
-        <Grid item xs={getGridSize(width, 2)}>
+        
+        {/* Title header */}
+        <Grid 
+          item 
+          xs={getGridSize(width, 2).size}
+          sx={{ display: getGridSize(width, 2).display ? "block" : "none" }}
+        >
           <ListItemText
             secondary="TITLE"
             secondaryTypographyProps={{
@@ -539,10 +611,11 @@ function ListItemHeader() {
           />
         </Grid>
 
+        {/* Album header */}
         <Grid
           item
-          xs={getGridSize(width, 3)}
-          sx={{ display: width < dropAlbumWidth ? "none" : "block" }}
+          xs={getGridSize(width, 3).size}
+          sx={{ display: getGridSize(width, 3).display ? "block" : "none" }}
         >
           <ListItemText
             secondary="ALBUM"
@@ -553,16 +626,23 @@ function ListItemHeader() {
           />
         </Grid>
 
+        {/* Duration header */}
         <Grid
           item
-          xs={getGridSize(width, 4)}
-          sx={{ display: width < dropAlbumWidth ? "none" : "block" }}
+          xs={getGridSize(width, 4).size}
+          sx={{ display: getGridSize(width, 4).display ? "block" : "none" }}
         >
           <Box display="flex" justifyContent="flex-start">
             <AccessTimeIcon fontSize="small" sx={{ color: "text.secondary" }} />
           </Box>
         </Grid>
-        <Grid item xs={getGridSize(width, 5)}>
+        
+        {/* Action button placeholder */}
+        <Grid 
+          item 
+          xs={getGridSize(width, 5).size}
+          sx={{ display: getGridSize(width, 5).display ? "block" : "none" }}
+        >
           <IconButton edge="end" sx={{ mr: 1.5 }}>
             <Box sx={{ width: 24, height: 24 }} />
           </IconButton>

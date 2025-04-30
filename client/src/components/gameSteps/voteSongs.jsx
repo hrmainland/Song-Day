@@ -236,7 +236,7 @@ export default function VoteSongs() {
   return (
     <Box sx={{ mt: 1.5, mb: 3 }}>
       <CenterBox
-        maxWidth="1200px"
+        maxWidth="1600px"
         p={{ xs: 2, sm: 2.5 }}
         sx={{
           borderRadius: "16px",
@@ -281,6 +281,9 @@ export default function VoteSongs() {
               title="Your Options"
               isOptions={true}
               addFunc={addTrackToShortlist}
+              isShortlist={false}
+              isMissingTracks={voteLimit > getSessionShortlist().length}
+              tracksLimit={voteLimit}
             />
           </Box>
           <Box
@@ -316,6 +319,9 @@ export default function VoteSongs() {
                   title="Your Options"
                   isOptions={true}
                   addFunc={addTrackToShortlist}
+                  isShortlist={false}
+                  isMissingTracks={voteLimit > getSessionShortlist().length}
+                  tracksLimit={voteLimit}
                 />
               </Grid>
               <Grid item md={6}>

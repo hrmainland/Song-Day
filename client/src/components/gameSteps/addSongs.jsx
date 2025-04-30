@@ -271,6 +271,8 @@ export default function AddSongs() {
         onAddTrack={addTrack}
         formatTrack={formatTrack}
         onSearch={handleSearch}
+        tracksLimit={trackLimit}
+        currentTracksCount={addedTracks.length}
       />
     </Box>
   );
