@@ -5,24 +5,33 @@ export const gameStatus = Object.freeze({
 });
 
 export function votableTracks(game, userId) {
-  let trackIds = [];
 
   const myTracks = game.trackGroups.find(
     (trackGroup) => trackGroup.player.toString() === userId.toString()
   )?.trackIds || [];
+  const uniqueTrackIds = new Set();
 
   for (let trackGroup of game.trackGroups) {
     if (trackGroup.player.toString() !== userId.toString()) {
-      trackIds.push(...trackGroup.trackIds);
+      // remove duplicates
+      for (let trackId of trackGroup.trackIds) {
+        if (!uniqueTrackIds.has(trackId)) {
+          uniqueTrackIds.add(trackId);
+        }
+      }
     }
   }
 
-  // this is to remove tracks that you voted for
+  const trackIds = [...uniqueTrackIds];
+
+  // this is to remove tracks that you added even if someone else did
   for (let trackId of trackIds) {
     if (myTracks.includes(trackId)) {
       trackIds.splice(trackIds.indexOf(trackId), 1);
     }
   }
+
+
 
   return trackIds;
 }

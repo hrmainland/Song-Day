@@ -18,6 +18,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 
 import { useRef, useState } from "react";
@@ -135,6 +136,38 @@ function TrackItem({
 }) {
   const ref = useRef(null);
   const width = useSize(ref);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  // Handle click with animation
+  const handleAction = () => {
+    if (isAnimating) return; // Prevent multiple clicks during animation
+
+    setIsAnimating(true);
+    setProgress(0); // Reset progress to ensure animation starts from beginning
+
+    // Animate the progress
+    const animationDuration = 100; // 100ms (faster animation)
+    const startTime = Date.now();
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const newProgress = Math.min(100, (elapsed / animationDuration) * 100);
+      setProgress(newProgress);
+
+      if (newProgress < 100) {
+        requestAnimationFrame(animate);
+      } else {
+        // Keep the full-width overlay for a moment before completing the action
+        setTimeout(() => {
+          if (onAction) onAction();
+        }, 50); // Short delay to ensure animation completes visually
+      }
+    };
+
+    requestAnimationFrame(animate);
+  };
+
   // Create the item content
   const item = (
     <ListItem
@@ -145,92 +178,151 @@ function TrackItem({
         ...STYLES.LIST_HOVER,
         ...(index < tracksLength - 1 ? STYLES.BORDER_BOTTOM_LIGHT : {}),
         cursor: isDraggable ? "grab" : isOptions ? "pointer" : "default",
+        position: "relative",
+        overflow: "hidden",
+        width: "100%", // Ensure the list item takes full width
+        p: 0, // Remove padding to allow overlay to cover entire item
       }}
-      onClick={isOptions ? onAction : undefined}
+      onClick={isOptions ? handleAction : undefined}
     >
-      <Grid container spacing={1} alignItems="center" sx={{ height: "100%" }}>
-        <Grid
-          item
-          xs={getGridSize(width, 0)}
-          sx={STYLES.RESPONSIVE_HIDE_MOBILE}
-        >
-          <Typography variant="body2" color="text.secondary" align="center">
-            {index + 1}
-          </Typography>
-        </Grid>
-        <Grid
-          item
-          xs={getGridSize(width, 1)}
-          sx={{ display: "flex", justifyContent: "center" }}
-        >
-          <Avatar variant="square" src={track.img} sx={STYLES.AVATAR_SQUARE} />
-        </Grid>
+      {/* Animation overlay - positioned directly in the ListItem for full width coverage */}
+      {isAnimating && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            height: "100%",
+            width: `${progress}%`,
+            backgroundColor: isOptions
+              ? "rgba(76, 175, 80, 0.2)" // Green for adding to shortlist
+              : "rgba(211, 47, 47, 0.2)", // Red for removing from shortlist
+            zIndex: 10, // Higher z-index to ensure it appears above all content
+            transition: "none", // Remove transition to use direct RAF updates
+            pointerEvents: "none", // Ensure the overlay doesn't block interaction
+          }}
+        />
+      )}
 
-        <Grid item xs={getGridSize(width, 2)}>
-          <ListItemText
-            primary={track.name}
-            secondary={
-              <Box sx={{ display: "flex", flexDirection: "column" }}>
-                {track.artists}
-                {width < dropAlbumWidth ? (
-                  <Typography variant="body2" color="text.secondary">
-                    {track.album}
-                  </Typography>
-                ) : null}
-              </Box>
-            }
-            primaryTypographyProps={{
-              variant: "body1",
-              sx: STYLES.TRACK_NAME,
-            }}
-            secondaryTypographyProps={{
-              variant: "body2",
-              sx: STYLES.ALBUM_TEXT,
-            }}
-          />
-        </Grid>
-
-        <Grid
-          item
-          xs={getGridSize(width, 3)}
-          sx={{ display: width < dropAlbumWidth ? "none" : "block" }}
-        >
-          <ListItemText
-            secondary={track.album || ""}
-            secondaryTypographyProps={{
-              variant: "body2",
-              sx: STYLES.ALBUM_TEXT,
-            }}
-          />
-        </Grid>
-
-        <Grid item xs={getGridSize(width, 4)}>
-          <Typography variant="body2" color="text.secondary">
-            {formatDuration(track.duration_ms)}
-          </Typography>
-        </Grid>
-        <Grid item xs={getGridSize(width, 5)} container justifyContent="center">
-          <IconButton
-            edge="end"
-            aria-label={isOptions ? "add" : isDraggable ? "remove" : "delete"}
-            onClick={isOptions ? undefined : onAction}
-            sx={{
-              ...STYLES.ICON_BUTTON,
-              color: "text.secondary",
-              "&:hover": { color: isOptions ? "primary.main" : "error.main" },
-              mr: 1.5,
-            }}
+      {/* Padding container - this ensures content still has padding */}
+      <Box
+        sx={{
+          width: "100%",
+          py: 1.5, // Match the original padding
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        <Grid container spacing={1} alignItems="center" sx={{ height: "100%" }}>
+          <Grid
+            item
+            xs={getGridSize(width, 0)}
+            sx={STYLES.RESPONSIVE_HIDE_MOBILE}
           >
-            {isOptions ? (
-              <AddIcon />
-            ) : isDraggable ? (
-              <RemoveIcon />
-            ) : (
-              <DeleteIcon />
-            )}
-          </IconButton>
+            <Typography variant="body2" color="text.secondary" align="center">
+              {index + 1}
+            </Typography>
+          </Grid>
+          <Grid
+            item
+            xs={getGridSize(width, 1)}
+            sx={{ display: "flex", justifyContent: "center" }}
+          >
+            <Avatar
+              variant="square"
+              src={track.img}
+              sx={STYLES.AVATAR_SQUARE}
+            />
+          </Grid>
+
+          <Grid item xs={getGridSize(width, 2)}>
+            {/* Use separate ListItemText components instead of nesting Box in secondary */}
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <ListItemText
+                primary={track.name}
+                secondary={track.artists}
+                primaryTypographyProps={{
+                  variant: "body1",
+                  sx: STYLES.TRACK_NAME,
+                }}
+                secondaryTypographyProps={{
+                  variant: "body2",
+                  sx: STYLES.ALBUM_TEXT,
+                }}
+              />
+              {width < dropAlbumWidth && track.album ? (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={STYLES.ALBUM_TEXT}
+                >
+                  {track.album}
+                </Typography>
+              ) : null}
+            </Box>
+          </Grid>
+
+          <Grid
+            item
+            xs={getGridSize(width, 3)}
+            sx={{ display: width < dropAlbumWidth ? "none" : "block" }}
+          >
+            <ListItemText
+              secondary={track.album || ""}
+              secondaryTypographyProps={{
+                variant: "body2",
+                sx: STYLES.ALBUM_TEXT,
+              }}
+            />
+          </Grid>
+
+          <Grid
+            item
+            xs={getGridSize(width, 4)}
+            sx={{ display: width < dropAlbumWidth ? "none" : "block" }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              {formatDuration(track.duration_ms)}
+            </Typography>
+          </Grid>
+          <Grid
+            item
+            xs={getGridSize(width, 5)}
+            container
+            justifyContent="center"
+          >
+            <IconButton
+              edge="end"
+              aria-label={isOptions ? "add" : isDraggable ? "remove" : "delete"}
+              onClick={isOptions ? undefined : handleAction}
+              disabled={isAnimating}
+              sx={{
+                ...STYLES.ICON_BUTTON,
+                color: isAnimating ? "#4caf50" : "text.secondary",
+                "&:hover": {
+                  color: isAnimating
+                    ? "#4caf50"
+                    : isOptions
+                    ? "primary.main"
+                    : "error.main",
+                },
+                mr: 1.5,
+                transition: "all 0.2s ease",
+              }}
+            >
+              {isAnimating ? (
+                <CheckCircleIcon />
+              ) : isOptions ? (
+                <AddIcon />
+              ) : isDraggable ? (
+                <RemoveIcon />
+              ) : (
+                <DeleteIcon />
+              )}
+            </IconButton>
+          </Grid>
         </Grid>
-      </Grid>
+      </Box>
     </ListItem>
   );
 
@@ -266,62 +358,74 @@ export default function AddedTracksList({
   isMissingTracks,
   isDraggable = false,
 }) {
-
-  function submitButton(){
+  function submitButton() {
     if (!submitFunc) return null;
-    
-    return <Button 
-        variant="outlined" 
+
+    return (
+      <Button
+        variant="outlined"
         disabled={isMissingTracks}
         onClick={submitFunc}
         sx={{
-          borderRadius: '12px',
+          borderRadius: "12px",
           px: 3,
-          py: 1.2
+          py: 1.2,
         }}
       >
         Submit
       </Button>
+    );
   }
 
   // Render the component
   return (
-    <Paper sx={{
-      ...STYLES.PAPER,
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
+    <Paper
+      sx={{
+        ...STYLES.PAPER,
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       {/* Header */}
-{      title && 
-      <Box sx={{ p: 2, ...STYLES.TABLE_HEADER_BG }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Box>
-            <Typography variant="h6" fontWeight={500}>
-              {title}
-            </Typography>
-            {isShortlist && (
-              <Typography variant="body2">Drag and drop to rearrange</Typography>
-            )}
-            {isOptions && (
-              <Typography variant="body2">Select songs to shortlist</Typography>
-            )}
+      {title && (
+        <Box sx={{ p: 2, ...STYLES.TABLE_HEADER_BG }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Box>
+              <Typography variant="h6" fontWeight={500}>
+                {title}
+              </Typography>
+              {isShortlist && (
+                <Typography variant="body2">
+                  Drag and drop to rearrange
+                </Typography>
+              )}
+              {isOptions && (
+                <Typography variant="body2">
+                  Select songs to shortlist
+                </Typography>
+              )}
+            </Box>
+            {submitFunc && <Box>{submitButton()}</Box>}
           </Box>
-          {submitFunc && (
-            <Box>{submitButton()}</Box>
-          )}
         </Box>
-      </Box>}
+      )}
 
       {/* Content - Conditional Droppable */}
       {isDraggable ? (
         <Droppable droppableId="main-column">
           {(provided) => (
             <List
-              sx={{ 
-                width: "100%", 
+              sx={{
+                width: "100%",
                 bgcolor: "background.paper",
                 p: 0,
-                m: 0
+                m: 0,
               }}
               ref={provided.innerRef}
               {...provided.droppableProps}
@@ -350,7 +454,9 @@ export default function AddedTracksList({
 
               {/* Submit Button */}
               {submitFunc && (
-                <ListItem sx={{ display: 'flex', justifyContent: 'end', mt: 2 }}>
+                <ListItem
+                  sx={{ display: "flex", justifyContent: "end", mt: 2 }}
+                >
                   {submitButton()}
                 </ListItem>
               )}
@@ -358,12 +464,14 @@ export default function AddedTracksList({
           )}
         </Droppable>
       ) : (
-        <List sx={{ 
-          width: "100%", 
-          bgcolor: "background.paper",
-          p: 0,
-          m: 0
-        }}>
+        <List
+          sx={{
+            width: "100%",
+            bgcolor: "background.paper",
+            p: 0,
+            m: 0,
+          }}
+        >
           {/* Table Header */}
           <ListItemHeader />
 
@@ -384,7 +492,7 @@ export default function AddedTracksList({
             />
           ))}
           {submitFunc && (
-            <ListItem sx={{ display: 'flex', justifyContent: 'end', mt: 2 }}>
+            <ListItem sx={{ display: "flex", justifyContent: "end", mt: 2 }}>
               {submitButton()}
             </ListItem>
           )}
@@ -445,7 +553,11 @@ function ListItemHeader() {
           />
         </Grid>
 
-        <Grid item xs={getGridSize(width, 4)}>
+        <Grid
+          item
+          xs={getGridSize(width, 4)}
+          sx={{ display: width < dropAlbumWidth ? "none" : "block" }}
+        >
           <Box display="flex" justifyContent="flex-start">
             <AccessTimeIcon fontSize="small" sx={{ color: "text.secondary" }} />
           </Box>

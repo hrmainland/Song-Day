@@ -253,7 +253,7 @@ export default function AddSongs() {
             tracks={addedTracks} 
             onRemoveTrack={removeTrackFromSession} 
             submitFunc={submitTracks}
-            isMissingTracks={trackLimit - addedTracks.length}
+            isMissingTracks={trackLimit > addedTracks.length}
           />
         ) : (
           <EmptyTracksView />

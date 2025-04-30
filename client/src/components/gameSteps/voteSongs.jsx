@@ -298,7 +298,7 @@ export default function VoteSongs() {
                 title="Your Shortlist"
                 isShortlist={true}
                 submitFunc={submitVotes}
-                isMissingTracks={voteLimit - getSessionShortlist().length}
+                isMissingTracks={voteLimit > getSessionShortlist().length}
                 isDraggable={true}
               />
             </DragDropContext>
@@ -325,7 +325,7 @@ export default function VoteSongs() {
                   title="Your Shortlist"
                   isShortlist={true}
                   submitFunc={submitVotes}
-                  isMissingTracks={voteLimit - getSessionShortlist().length}
+                  isMissingTracks={voteLimit > getSessionShortlist().length}
                   isDraggable={true}
                 />
               </Grid>
