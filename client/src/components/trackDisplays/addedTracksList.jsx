@@ -78,7 +78,7 @@ const STYLES = {
   LIST_ITEM_PADDING: { py: 1.5 },
 };
 
-const dropAlbumWidth = 600;
+const dropAlbumWidth = 750;
 
 // Format track duration
 const formatDuration = (ms) => {
@@ -569,7 +569,8 @@ function ListItemHeader() {
         p: 0, // Remove default padding
       }}
     >
-      <Grid container spacing={2} alignItems="center" sx={{ height: "100%" }}>
+      <Box sx={{ width: "100%", py: 1.5, px: 2 }}>
+        <Grid container spacing={1} alignItems="center" sx={{ height: "100%" }}>
         {/* Track number header */}
         <Grid 
           item 
@@ -648,6 +649,7 @@ function ListItemHeader() {
           </IconButton>
         </Grid>
       </Grid>
+      </Box>
     </ListItem>
   );
 }

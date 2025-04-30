@@ -244,7 +244,7 @@ export default function VoteSongs() {
         }}
       >
         {/* Mobile View Selector Tabs */}
-        <Box sx={{ display: { xs: 'block', md: 'none' }, width: '100%', mb: 2 }}>
+        <Box sx={{ display: { xs: 'block', lg: 'none' }, width: '100%', mb: 2 }}>
           <Tabs 
             value={addView ? 0 : 1} 
             onChange={(e, newValue) => setAddView(newValue === 0)}
@@ -266,7 +266,7 @@ export default function VoteSongs() {
         </Box>
 
         {/* Mobile View Content */}
-        <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+        <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
           <Box
             display="flex"
             justifyContent="center"
@@ -309,7 +309,7 @@ export default function VoteSongs() {
         </Box>
 
         {/* Desktop Side-by-Side View */}
-        <Box sx={{ display: { xs: 'none', md: 'block' }, width: "100%" }}>
+        <Box sx={{ display: { xs: 'none', lg: 'block' }, width: "100%" }}>
           <DragDropContext onDragEnd={onDragEnd}>
             <Grid container spacing={3}>
               <Grid item md={6}>
