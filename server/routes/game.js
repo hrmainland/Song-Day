@@ -48,9 +48,12 @@ router.put(
       (trackGroup) => trackGroup.player.equals(req.user._id)
     );
     if (existingTrackGroup) {
-      return res.status(409).json({ message: "You've already submitted a track group" });
+      return res.status(409).json({
+        message: "You've already submitted a track group",
+      });
     }
-
+    // TODO remove!
+    game.trackGroups.push(trackGroupId);
     game.trackGroups.push(trackGroupId);
     await game.save();
 
@@ -163,6 +166,7 @@ router.delete("/vote-group/:voteGroupId", isLoggedIn, async (req, res) => {
     return res.status(500).json({ error: "Error deleting VoteGroup" });
   }
 });
+
 
 router.get("/:gameCode", isLoggedIn, async (req, res) => {
   const { gameCode } = req.params;

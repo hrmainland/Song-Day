@@ -410,13 +410,18 @@ export default function AddedTracksList({
   tracksLimit, // New prop for the maximum number of tracks allowed
 }) {
   function submitButton() {
+    const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
+
     if (!submitFunc) return null;
 
     return (
       <Button
         variant="outlined"
-        disabled={isMissingTracks}
-        onClick={submitFunc}
+        disabled={isMissingTracks || isSubmitDisabled}
+        onClick={() => {
+          setIsSubmitDisabled(true);
+          submitFunc();
+        }}
         sx={{
           borderRadius: "12px",
           px: 3,

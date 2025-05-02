@@ -16,10 +16,44 @@ module.exports.isAuthorized = function (req, res, next) {
   next();
 };
 
+
+async function removeDuplicateGroups(game) {
+  const uniqueTrackGroups = new Map();
+  const uniqueVoteGroups = new Map();
+  let foundDuplicate = false;
+
+  game.trackGroups.forEach((trackGroup) => {
+    if (!uniqueTrackGroups.has(trackGroup.player.toString())) {
+      uniqueTrackGroups.set(trackGroup.player.toString(), trackGroup);
+    } else {
+      foundDuplicate = true;
+    }
+  });
+
+  game.voteGroups.forEach((voteGroup) => {
+    if (!uniqueVoteGroups.has(voteGroup.player.toString())) {
+      uniqueVoteGroups.set(voteGroup.player.toString(), voteGroup);
+    } else {
+      foundDuplicate = true;
+    }
+  });
+
+  if (foundDuplicate) {
+    game.trackGroups = [...uniqueTrackGroups.values()];
+    game.voteGroups = [...uniqueVoteGroups.values()];
+    await game.save();
+  }
+}
+
 // adds game to req
 module.exports.findGame = async function (req, res, next) {
   const { gameId } = req.params;
-  const game = await Game.findById(gameId);
+  const game = await Game.findById(gameId)
+    .populate("trackGroups")
+    .populate("voteGroups");
+
+  await removeDuplicateGroups(game);
+
   if (!game) {
     res.status(404).json({ message: `No game found with ID ${gameId}` });
     return;
