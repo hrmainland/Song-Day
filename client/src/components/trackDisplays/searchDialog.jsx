@@ -166,6 +166,7 @@ export default function SearchDialog({
           <Box sx={{ px: { xs: 2, sm: 3 }, pt: 2 }}>
             <AddedTracksList
               tracks={searchResult.tracks.items.map(track => formatTrack(track))}
+              title="Add Tracks"
               isOptions={true}
               addFunc={(track) => onAddTrack(track)}
               isShortlist={true}

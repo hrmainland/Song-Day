@@ -72,7 +72,8 @@ const STYLES = {
   LIST_ITEM_PADDING: { py: 1.5 },
 };
 
-const dropAlbumWidth = 750;
+const smallWidth = 750;
+const verySmallWidth = 450;
 
 // Format track duration
 const formatDuration = (ms) => {
@@ -95,9 +96,29 @@ function useSize(ref) {
 function getGridSize(width, columnIndex) {
   // Return values are [size, display]
   // If display is false, the column should be hidden
+
+    // Handle very small screen sizes
+    if (width < verySmallWidth) {
+      switch (columnIndex) {
+        case 0: // Track number
+          return { size: 0, display: false };
+        case 1: // Album cover
+          return { size: 2, display: true };
+        case 2: // Title & artists
+          return { size: 8, display: true }; // Expanded to fill space from removed columns
+        case 3: // Album name
+          return { size: 0, display: false }; // Hide on small screens
+        case 4: // Duration
+          return { size: 0, display: false }; // Hide on small screens
+        case 5: // Action button
+          return { size: 2, display: true }; // Slightly larger action button on small screens
+        default:
+          return { size: 1, display: true };
+      }
+    }
   
   // Handle small screen sizes
-  if (width < dropAlbumWidth) {
+  if (width < smallWidth) {
     switch (columnIndex) {
       case 0: // Track number
         return { size: 1, display: true };
@@ -121,13 +142,13 @@ function getGridSize(width, columnIndex) {
     case 0: // Track number
       return { size: 1, display: true };
     case 1: // Album cover
-      return { size: 2, display: true };
+      return { size: 1, display: true };
     case 2: // Title & artists
-      return { size: 3, display: true };
+      return { size: 4, display: true };
     case 3: // Album name
-      return { size: 3, display: true };
+      return { size: 4, display: true };
     case 4: // Duration
-      return { size: 2, display: true };
+      return { size: 1, display: true };
     case 5: // Action button
       return { size: 1, display: true };
     default:
@@ -163,7 +184,7 @@ function TrackItem({
     setProgress(0); // Reset progress to ensure animation starts from beginning
 
     // Animate the progress
-    const animationDuration = 100; // 100ms (faster animation)
+    const animationDuration = 200; // 100ms (faster animation)
     const startTime = Date.now();
 
     const animate = () => {
@@ -255,9 +276,9 @@ function TrackItem({
               variant="square"
               src={track.img}
               sx={{
-                width: width < dropAlbumWidth ? 55 : 45,
-                height: width < dropAlbumWidth ? 55 : 45,
-                borderRadius: width < dropAlbumWidth ? "4px" : "2px",
+                width: width < smallWidth ? 55 : 45,
+                height: width < smallWidth ? 55 : 45,
+                borderRadius: width < smallWidth ? "4px" : "2px",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
               }}
             />
@@ -401,6 +422,7 @@ export default function AddedTracksList({
   tracks,
   onRemoveTrack,
   title = null,
+  subtitle = null,
   isOptions = false,
   isShortlist = false,
   addFunc,
@@ -456,18 +478,17 @@ export default function AddedTracksList({
               <Typography variant="h6" fontWeight={500}>
                 {title}
               </Typography>
-              {isShortlist && !isOptions && (
-                <Typography variant="body2">
-                  Drag and drop to rearrange
-                </Typography>
-              )}
-              {isOptions && (
-                <Typography variant="body2">
-                  Select songs to shortlist
-                </Typography>
-              )}
+              {subtitle && <Typography variant="body2">{subtitle}</Typography>}
             </Box>
-            {submitFunc && <Box>{submitButton()}</Box>}
+            <Box
+              component="img"
+              src="/Spotify_Logo.svg"
+              alt="Spotify logo"
+              sx={{
+                height: 25,
+                mr: 2,
+              }}
+            ></Box>
           </Box>
         </Box>
       )}

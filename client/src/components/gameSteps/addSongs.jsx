@@ -220,29 +220,12 @@ export default function AddSongs() {
       >
         <Box
           sx={{ 
-            display: "flex", 
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
             mb: 2,
-            gap: 2
+            pr: 3,
           }}
         >
-          <Box>
-            <Typography
-              variant="h5"
-              fontWeight="500"
-              sx={{ letterSpacing: "-0.3px", mb: 0.5 }}
-            >
-              Your List ({addedTracks.length}/{trackLimit})
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {trackLimit - addedTracks.length} more track{trackLimit - addedTracks.length === 1 ? '' : 's'} needed
-            </Typography>
-          </Box>
-          
           <Box sx={{ 
-            maxWidth: { xs: '100%', sm: '60%', md: '50%' } 
+            maxWidth: "100%"
           }}>
             <SearchBar onClick={handleSearchOpen} />
           </Box>
@@ -251,6 +234,7 @@ export default function AddSongs() {
         {addedTracks.length > 0 ? (
           <AddedTracksList
             tracks={addedTracks} 
+            title={`Your List (${addedTracks.length}/${trackLimit})`}
             onRemoveTrack={removeTrackFromSession} 
             submitFunc={submitTracks}
             isMissingTracks={trackLimit > addedTracks.length}

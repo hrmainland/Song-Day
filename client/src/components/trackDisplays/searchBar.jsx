@@ -14,7 +14,7 @@ export default function SearchBar({ onClick }) {
         display: "flex",
         alignItems: "center",
         cursor: "pointer",
-        height: 40,
+        height: 50,
         width: "100%",
         transition: "all 0.2s ease",
         "&:hover": {

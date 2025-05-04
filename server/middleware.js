@@ -17,7 +17,14 @@ module.exports.isAuthorized = function (req, res, next) {
 };
 
 
+  /**
+   * Checks a game for duplicate track or vote groups from the same player and removes them.
+   * If duplicates are found, the game is updated with the new (non-duplicate) lists.
+   * @param {Game} game - The game to check for duplicates.
+   * @returns {Promise<void>}
+   */
 async function removeDuplicateGroups(game) {
+
   const uniqueTrackGroups = new Map();
   const uniqueVoteGroups = new Map();
   let foundDuplicate = false;
