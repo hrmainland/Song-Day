@@ -116,7 +116,7 @@ export default function LoginDialog({ open, onClose, redirectTo }) {
                   !isLoading && (
                     <Box 
                       component="img"
-                      src="/Spotify_Logo.svg"
+                      src="/Spotify_Icon.svg"
                       alt="Spotify"
                       sx={{ 
                         height: 24,
