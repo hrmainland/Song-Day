@@ -12,6 +12,8 @@ import {
   Button,
   Tabs,
   Tab,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -19,6 +21,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 
 import { useRef, useState } from "react";
@@ -170,6 +173,8 @@ function TrackItem({
   const width = useSize(ref);
   const [isAnimating, setIsAnimating] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const menuOpen = Boolean(menuAnchorEl);
 
   // Handle click with animation
   const handleAction = () => {
@@ -205,6 +210,41 @@ function TrackItem({
     requestAnimationFrame(animate);
   };
 
+  // Handle track element click to open menu
+  const handleTrackClick = (event) => {
+    event.stopPropagation();
+    if (menuOpen) {
+      handleCloseMenu();
+    } else {
+      setMenuAnchorEl(event.currentTarget);
+    }
+  };
+
+  // Close track menu
+  const handleCloseMenu = () => {
+    setMenuAnchorEl(null);
+  };
+
+  // Play track on Spotify
+  const handlePlayOnSpotify = () => {
+    handleCloseMenu();
+    
+    const uri = `spotify:track:${track.id}`;
+    const fallbackUrl = `https://open.spotify.com/track/${track.id}`;
+    
+    // Try to open in app
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = uri;
+    document.body.appendChild(iframe);
+    
+    // Fallback to browser
+    setTimeout(() => {
+      window.open(fallbackUrl, "_blank");
+      document.body.removeChild(iframe);
+    }, 1000);
+  };
+
   // Create the item content
   const item = (
     <ListItem
@@ -214,13 +254,13 @@ function TrackItem({
         transition: "all 0.2s ease",
         ...STYLES.LIST_HOVER,
         ...(index < tracksLength - 1 ? STYLES.BORDER_BOTTOM_LIGHT : {}),
-        cursor: isDraggable ? "grab" : isOptions ? "pointer" : "default",
+        cursor: isDraggable ? "grab" : "pointer", // Always show pointer cursor
         position: "relative",
         overflow: "hidden",
         width: "100%", // Ensure the list item takes full width
         p: 0, // Remove padding to allow overlay to cover entire item
       }}
-      onClick={isOptions ? handleAction : undefined}
+      onClick={handleTrackClick}
     >
       {/* Animation overlay - positioned directly in the ListItem for full width coverage */}
       {isAnimating && (
@@ -276,8 +316,8 @@ function TrackItem({
               variant="square"
               src={track.img}
               sx={{
-                width: width < smallWidth ? 55 : 45,
-                height: width < smallWidth ? 55 : 45,
+                width: width < smallWidth ? 60 : 50,
+                height: width < smallWidth ? 60 : 50,
                 borderRadius: width < smallWidth ? "4px" : "2px",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
               }}
@@ -364,7 +404,10 @@ function TrackItem({
               <IconButton
                 edge="end"
                 aria-label={isOptions ? "add" : isDraggable ? "remove" : "delete"}
-                onClick={isOptions ? undefined : handleAction}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAction();
+                }}
                 disabled={isAnimating || (isOptions && isLimitReached)}
                 sx={{
                   ...STYLES.ICON_BUTTON,
@@ -394,6 +437,39 @@ function TrackItem({
           </Grid>
         </Grid>
       </Box>
+      
+      {/* Spotify Menu */}
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={menuOpen}
+        onClose={handleCloseMenu}
+        onClick={(e) => e.stopPropagation()}
+        disableRestoreFocus
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        slotProps={{
+          paper: {
+            elevation: 3,
+            sx: { minWidth: 180 }
+          }
+        }}
+      >
+        <MenuItem onClick={handlePlayOnSpotify} sx={{ px: 2 }}>
+          <Box
+            component="img"
+            src="/Spotify_Icon.svg"
+            alt="Spotify icon"
+            sx={{ height: 20, width: 20, mr: 1 }}
+          />
+          <Typography variant="body2" fontWeight={500}>PLAY ON SPOTIFY</Typography>
+        </MenuItem>
+      </Menu>
     </ListItem>
   );
 
@@ -508,7 +584,7 @@ export default function AddedTracksList({
               {...provided.droppableProps}
             >
               {/* Table Header */}
-              <ListItemHeader />
+              <ListItemHeader isOptions={isOptions} />
 
               {/* Track Items */}
               {tracks.map((track, index) => (
@@ -551,7 +627,7 @@ export default function AddedTracksList({
           }}
         >
           {/* Table Header */}
-          <ListItemHeader />
+          <ListItemHeader isOptions={isOptions} />
 
           {/* Track Items */}
           {tracks.map((track, index) => (
@@ -582,7 +658,7 @@ export default function AddedTracksList({
 }
 
 // Helper component for the list header
-function ListItemHeader() {
+function ListItemHeader({ isOptions = false }) {
   const ref = useRef(null);
   const width = useSize(ref);
   return (
@@ -667,11 +743,20 @@ function ListItemHeader() {
         <Grid 
           item 
           xs={getGridSize(width, 5).size}
-          sx={{ display: getGridSize(width, 5).display ? "block" : "none" }}
+          sx={{ 
+            display: getGridSize(width, 5).display ? "flex" : "none",
+            justifyContent: "center"
+          }}
         >
-          <IconButton edge="end" sx={{ mr: 1.5 }}>
-            <Box sx={{ width: 24, height: 24 }} />
-          </IconButton>
+          <Typography 
+            variant="caption" 
+            sx={{
+              ...STYLES.HEADER_TEXT,
+              mr: 1.5
+            }}
+          >
+            {isOptions ? "ADD" : "REMOVE"}
+          </Typography>
         </Grid>
       </Grid>
       </Box>

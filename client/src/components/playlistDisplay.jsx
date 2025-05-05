@@ -65,9 +65,6 @@ export default function PlaylistDisplay({}) {
           iframe.src = uri;
           document.body.appendChild(iframe);
 
-          // open in browser
-          window.open(fallbackUrl, "_blank", "noopener,noreferrer");
-          document.body.removeChild(iframe);
 
         }}
         sx={{
