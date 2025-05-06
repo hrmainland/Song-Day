@@ -48,14 +48,13 @@ export default function PlaylistDisplay({}) {
               window.location.href = "https://apps.apple.com/app/spotify-music/id324684580";
             }, 2500);
             
-            // Clear the timeout if the page is left before timeout completes
-            window.addEventListener("blur", () => {
-              clearTimeout(iosTimeout);
-            }, { once: true });
+            // No need to clear on IOS
             
           } else if (isAndroid) {
             // Android deep linking
-            window.location.href = `spotify:playlist:${playlistId}`;
+            // window.location.href = `spotify:playlist:${playlistId}`;
+            window.location.href = `fakeapp:playlist:${playlistId}`;
+
             
             // Fallback for Android
             const androidTimeout = setTimeout(() => {
