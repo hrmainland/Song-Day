@@ -41,7 +41,7 @@ export default function PlaylistDisplay({}) {
           // Different handling based on device
           if (isIOS) {
             // iOS requires different handling - direct link often works better than iframe
-            window.location.href = `spotify:playlist:${playlistId}`;
+            // window.location.href = `spotify:playlist:${playlistId}`;
             
             // Fallback timer for iOS - direct to App Store
             setTimeout(() => {
@@ -49,7 +49,7 @@ export default function PlaylistDisplay({}) {
             }, 2500);
           } else if (isAndroid) {
             // Android deep linking
-            window.location.href = `spotify:playlist:${playlistId}`;
+            // window.location.href = `spotify:playlist:${playlistId}`;
             
             // Fallback for Android
             setTimeout(() => {
