@@ -41,20 +41,31 @@ export default function PlaylistDisplay({}) {
           // Different handling based on device
           if (isIOS) {
             // iOS requires different handling - direct link often works better than iframe
-            // window.location.href = `spotify:playlist:${playlistId}`;
+            window.location.href = `spotify:playlist:${playlistId}`;
             
             // Fallback timer for iOS - direct to App Store
-            setTimeout(() => {
+            const iosTimeout = setTimeout(() => {
               window.location.href = "https://apps.apple.com/app/spotify-music/id324684580";
             }, 2500);
+            
+            // Clear the timeout if the page is left before timeout completes
+            window.addEventListener("blur", () => {
+              clearTimeout(iosTimeout);
+            }, { once: true });
+            
           } else if (isAndroid) {
             // Android deep linking
-            // window.location.href = `spotify:playlist:${playlistId}`;
+            window.location.href = `spotify:playlist:${playlistId}`;
             
             // Fallback for Android
-            setTimeout(() => {
+            const androidTimeout = setTimeout(() => {
               window.location.href = `https://play.google.com/store/apps/details?id=com.spotify.music`;
             }, 2500);
+            
+            // Clear the timeout if the page is left before timeout completes
+            window.addEventListener("blur", () => {
+              clearTimeout(androidTimeout);
+            }, { once: true });
 
           } else {
             // Desktop browser - try URI first with iframe
