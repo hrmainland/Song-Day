@@ -52,8 +52,6 @@ router.put(
         message: "You've already submitted a track group",
       });
     }
-    // TODO remove!
-    game.trackGroups.push(trackGroupId);
     game.trackGroups.push(trackGroupId);
     await game.save();
 
