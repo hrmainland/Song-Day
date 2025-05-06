@@ -58,6 +58,20 @@ export default function PlaylistDisplay({}) {
         onClick={() => {
           const uri = `spotify:playlist:${game.playlistId}`;
           const fallbackUrl = `https://open.spotify.com/playlist/${game.playlistId}`;
+          
+          // Check device type
+          const userAgent = navigator.userAgent || window.opera;
+          const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+          const isAndroid = /android/i.test(userAgent);
+          const isMobile = isIOS || isAndroid || /Mobi|Android/i.test(userAgent);
+
+          // Set appropriate fallback for each platform
+          let storeUrl;
+          if (isIOS) {
+            storeUrl = "https://apps.apple.com/app/spotify-music/id324684580";
+          } else if (isAndroid) {
+            storeUrl = "https://play.google.com/store/apps/details?id=com.spotify.music";
+          }
 
           // Try to open in app
           const iframe = document.createElement("iframe");
@@ -67,7 +81,13 @@ export default function PlaylistDisplay({}) {
 
           // Set a timeout to use the fallback URL if the app doesn't open
           const timeout = setTimeout(() => {
-            window.open(fallbackUrl, "_blank");
+            // For mobile without app, go to appropriate store
+            // For desktop, go to web player
+            if (isMobile && storeUrl) {
+              window.open(storeUrl, "_blank");
+            } else {
+              window.open(fallbackUrl, "_blank");
+            }
           }, 2000);
 
           // Clear the timeout if the page is left before timeout completes
