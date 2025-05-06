@@ -65,7 +65,15 @@ export default function PlaylistDisplay({}) {
           iframe.src = uri;
           document.body.appendChild(iframe);
 
+          // Set a timeout to use the fallback URL if the app doesn't open
+          const timeout = setTimeout(() => {
+            window.open(fallbackUrl, "_blank");
+          }, 2000);
 
+          // Clear the timeout if the page is left before timeout completes
+          window.addEventListener("blur", () => {
+            clearTimeout(timeout);
+          }, { once: true });
         }}
         sx={{
           my: 2,
