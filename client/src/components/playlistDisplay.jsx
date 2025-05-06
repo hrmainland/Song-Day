@@ -46,20 +46,19 @@ export default function PlaylistDisplay({}) {
             // Fallback timer for iOS - direct to App Store
             const iosTimeout = setTimeout(() => {
               window.location.href = "https://apps.apple.com/app/spotify-music/id324684580";
-            }, 2500);
+            }, 1500);
             
             // No need to clear on IOS
             
           } else if (isAndroid) {
             // Android deep linking
-            // window.location.href = `spotify:playlist:${playlistId}`;
-            window.location.href = `fakeapp:playlist:${playlistId}`;
+            window.location.href = `spotify:playlist:${playlistId}`;
 
             
             // Fallback for Android
             const androidTimeout = setTimeout(() => {
               window.location.href = `https://play.google.com/store/apps/details?id=com.spotify.music`;
-            }, 2500);
+            }, 1500);
             
             // Clear the timeout if the page is left before timeout completes
             window.addEventListener("blur", () => {
@@ -76,7 +75,7 @@ export default function PlaylistDisplay({}) {
 
             const timeout = setTimeout(() => {
                 window.open(fallbackUrl, "_blank");
-            }, 2500);
+            }, 1500);
   
             // Clear the timeout if the page is left before timeout completes
             window.addEventListener("blur", () => {
