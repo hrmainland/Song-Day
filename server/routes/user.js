@@ -12,7 +12,8 @@ const redirectSuffix = "/login-redirect";
 
 // set callback url and redirect url based on the envrionment
 if (process.env.NODE_ENV === "production") {
-  serverUrlBase = process.env.RENDER_EXTERNAL_URL;
+  // serverUrlBase = process.env.RENDER_EXTERNAL_URL;
+  serverUrlBase = process.env.PUBLIC_BASE_URL;
 } else {
   clientUrlBase = process.env.CLIENT_URL_BASE;
   serverUrlBase = process.env.SERVER_URL_BASE;
@@ -20,11 +21,12 @@ if (process.env.NODE_ENV === "production") {
 
 var redirectUrl;
 
-if (process.env.NODE_ENV === "dev") {
-  redirectUrl = clientUrlBase + redirectSuffix;
-} else {
+if (process.env.NODE_ENV === "production") {
   redirectUrl = serverUrlBase + redirectSuffix;
+} else {
+  redirectUrl = clientUrlBase + redirectSuffix;
 }
+
 
 const callbackUrl = serverUrlBase + userRouteSuffix + callbackSuffix;
 
