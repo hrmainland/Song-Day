@@ -26,6 +26,7 @@ import { Droppable, Draggable } from "react-beautiful-dnd";
 
 import { useRef, useState } from "react";
 import useResizeObserver from "@react-hook/resize-observer";
+import { openSpotify } from "../../../utils/spotifyApiUtils";
 
 // Common style constants
 const STYLES = {
@@ -225,25 +226,6 @@ function TrackItem({
     setMenuAnchorEl(null);
   };
 
-  // Play track on Spotify
-  const handlePlayOnSpotify = () => {
-    handleCloseMenu();
-    
-    const uri = `spotify:track:${track.id}`;
-    const fallbackUrl = `https://open.spotify.com/track/${track.id}`;
-    
-    // Try to open in app
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.src = uri;
-    document.body.appendChild(iframe);
-    
-    // Fallback to browser
-    setTimeout(() => {
-      window.open(fallbackUrl, "_blank");
-      document.body.removeChild(iframe);
-    }, 1000);
-  };
 
   // Create the item content
   const item = (
@@ -460,7 +442,7 @@ function TrackItem({
           }
         }}
       >
-        <MenuItem onClick={handlePlayOnSpotify} sx={{ px: 2 }}>
+        <MenuItem onClick={() => openSpotify(true, track.id)} sx={{ px: 2 }}>
           <Box
             component="img"
             src="/Spotify_Icon.svg"

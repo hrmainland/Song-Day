@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import CenterBox from "./base/centerBox";
 import { useGame } from "../hooks/useGame";
+import { openSpotify } from "../../utils/spotifyApiUtils";
 
 export default function PlaylistDisplay({}) {
   const { game } = useGame();
@@ -28,61 +29,7 @@ export default function PlaylistDisplay({}) {
       </Typography>
       <Button
         variant="contained"
-        onClick={() => {
-          // Check device type
-          const userAgent = navigator.userAgent;
-          const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
-          const isAndroid = /android/i.test(userAgent);
-          const isMobile = isIOS || isAndroid || /Mobi|Android/i.test(userAgent);
-
-          const playlistId = game.playlistId;
-          const fallbackUrl = `https://open.spotify.com/playlist/${playlistId}`;
-          
-          // Different handling based on device
-          if (isIOS) {
-            // iOS requires different handling - direct link often works better than iframe
-            window.location.href = `spotify:playlist:${playlistId}`;
-            
-            // Fallback timer for iOS - direct to App Store
-            const iosTimeout = setTimeout(() => {
-              window.location.href = "https://apps.apple.com/app/spotify-music/id324684580";
-            }, 1500);
-            
-            // No need to clear on IOS
-            
-          } else if (isAndroid) {
-            // Android deep linking
-            window.location.href = `spotify:playlist:${playlistId}`;
-
-            
-            // Fallback for Android
-            const androidTimeout = setTimeout(() => {
-              window.location.href = `https://play.google.com/store/apps/details?id=com.spotify.music`;
-            }, 1500);
-            
-            // Clear the timeout if the page is left before timeout completes
-            window.addEventListener("blur", () => {
-              clearTimeout(androidTimeout);
-            }, { once: true });
-
-          } else {
-            // Desktop browser - try URI first with iframe
-            const iframe = document.createElement("iframe");
-            iframe.style.display = "none";
-            iframe.src = `spotify:playlist:${playlistId}`;
-            document.body.appendChild(iframe);
-            
-
-            const timeout = setTimeout(() => {
-                window.open(fallbackUrl, "_blank");
-            }, 1500);
-  
-            // Clear the timeout if the page is left before timeout completes
-            window.addEventListener("blur", () => {
-              clearTimeout(timeout);
-            }, { once: true });
-          }
-        }}
+        onClick={() => openSpotify(false, game.playlistId)}
         sx={{
           my: 2,
           mx: 2,

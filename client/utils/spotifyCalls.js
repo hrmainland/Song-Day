@@ -58,24 +58,12 @@ async function apiRequest(
   }
 }
 
-export async function getProfile(accessToken) {
-  return await apiRequest(
-    "https://api.spotify.com/v1/me",
-    "GET",
-    null,
-    accessToken
-  );
-}
 
 export async function searchTracks(accessToken, query) {
     const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track`;
     return await apiRequest(url, "GET", null, accessToken);
   }
 
-export async function getTrackById(accessToken, trackId) {
-  const url = `https://api.spotify.com/v1/tracks/${trackId}`;
-  return await apiRequest(url, "GET", null, accessToken);
-}
 
 export async function getMultipleTracksById(accessToken, trackIds) {
   const url = `https://api.spotify.com/v1/tracks?ids=${encodeURIComponent(trackIds.join(","))}`;

@@ -27,6 +27,7 @@ const passport = require("passport");
 
 const port = process.env.PORT || 3500;
 const dbUrl = process.env.DB_URL
+const sessionSecret = process.env.SESSION_SECRET
 
 // this is what gets stored in the session
 // called once after login
@@ -44,7 +45,6 @@ passport.deserializeUser(async function (id, done) {
   }
 });
 
-// TODO update secret
 const sessionConfig = {
   store: MongoStore.create({ 
     mongoUrl: dbUrl,
@@ -52,7 +52,7 @@ const sessionConfig = {
     ttl: 24 * 60 * 60,
   }),
   name: "session",
-  secret: "thisshouldbeabettersecret!",
+  secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
   cookie: {
