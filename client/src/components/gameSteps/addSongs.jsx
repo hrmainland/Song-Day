@@ -17,7 +17,7 @@ import { myTrackGroup } from '../../../utils/gameUtils';
 
 export default function AddSongs() {
   const { game, refreshGame } = useGame();
-  const { userId, accessToken } = useContext(UserContext);
+  const { userId } = useContext(UserContext);
   
   // AddSongs state
   const TRACK_KEY = `${game?.gameCode}: tracks`;
@@ -120,7 +120,6 @@ export default function AddSongs() {
 
     try {
       setSearching(true);
-      // const result = await searchTracks(accessToken, query);
       const result = await searchTracks(query);
 
       // Filter out tracks that are already added

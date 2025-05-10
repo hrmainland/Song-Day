@@ -150,15 +150,6 @@ export async function fetchMyGames() {
   return result.data;
 }
 
-export async function refreshToken() {
-  const result = await unwrapResponse(apiRequest("/user/refresh-token"));
-  return result.data;
-}
-
-export async function fetchAccessToken() {
-  const result = await unwrapResponse(apiRequest("/user/access-token"));
-  return result.data;
-}
 
 export async function logout() {
   await apiRequest("/user/logout", "POST");

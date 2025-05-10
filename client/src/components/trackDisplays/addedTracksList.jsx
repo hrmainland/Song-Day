@@ -268,12 +268,23 @@ function TrackItem({
         sx={{
           width: "100%",
           py: 1.5, // Match the original padding
-          px: 2, // Add horizontal padding
+          px: { xs: 1, sm: 2 }, // Reduce horizontal padding on mobile
           position: "relative",
           zIndex: 1,
+          overflow: "hidden" // Prevent content overflow
         }}
       >
-        <Grid container spacing={1} alignItems="center" sx={{ height: "100%" }}>
+        <Grid 
+          container 
+          spacing={1} 
+          alignItems="center" 
+          sx={{ 
+            height: "100%",
+            width: "100%",
+            m: 0, // Remove margin
+            flexWrap: "nowrap" // Prevent wrapping to a new line
+          }}
+        >
           {/* Track number */}
           <Grid
             item
@@ -298,8 +309,8 @@ function TrackItem({
               variant="square"
               src={track.img}
               sx={{
-                width: width < smallWidth ? 60 : 50,
-                height: width < smallWidth ? 60 : 50,
+                width: width < smallWidth ? 55 : 50,
+                height: width < smallWidth ? 55 : 50,
                 borderRadius: width < smallWidth ? "4px" : "2px",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
               }}
@@ -310,26 +321,52 @@ function TrackItem({
           <Grid 
             item 
             xs={getGridSize(width, 2).size}
-            sx={{ display: getGridSize(width, 2).display ? "block" : "none" }}
+            sx={{ 
+              display: getGridSize(width, 2).display ? "block" : "none",
+              minWidth: 0, // Allow grid item to shrink below content size
+              overflow: "hidden" // Ensure content doesn't overflow
+            }}
           >
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <ListItemText
-                primary={track.name}
-                secondary={track.artists}
-                primaryTypographyProps={{
-                  variant: "body1",
-                  sx: STYLES.TRACK_NAME,
-                }}
-                secondaryTypographyProps={{
-                  variant: "body2",
-                  sx: STYLES.ALBUM_TEXT,
-                }}
-              />
+            <Box sx={{ 
+              display: "flex", 
+              flexDirection: "column", 
+              pl: 1,
+              width: "100%", // Take full width of the grid item
+              overflow: "hidden" // Ensure the Box doesn't overflow
+            }}>
+              <Box sx={{ width: "100%", overflow: "hidden" }}>
+                <ListItemText
+                  primary={track.name}
+                  secondary={track.artists}
+                  primaryTypographyProps={{
+                    variant: "body1",
+                    sx: {
+                      ...STYLES.TRACK_NAME,
+                      width: "100%", // Ensure text uses available space
+                      display: "block" // Make sure it behaves as a block element
+                    },
+                  }}
+                  secondaryTypographyProps={{
+                    variant: "body2",
+                    sx: {
+                      ...STYLES.ALBUM_TEXT,
+                      width: "100%", // Ensure text uses available space
+                    },
+                  }}
+                  sx={{ 
+                    m: 0, // Remove margins
+                    width: "100%" // Ensure ListItemText uses available space
+                  }}
+                />
+              </Box>
               {!getGridSize(width, 3).display && track.album ? (
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  sx={STYLES.ALBUM_TEXT}
+                  sx={{
+                    ...STYLES.ALBUM_TEXT,
+                    width: "100%" // Ensure text uses available space
+                  }}
                 >
                   {track.album}
                 </Typography>
@@ -367,7 +404,10 @@ function TrackItem({
           <Grid
             item
             xs={getGridSize(width, 5).size}
-            sx={{ display: getGridSize(width, 5).display ? "flex" : "none" }}
+            sx={{ 
+              display: getGridSize(width, 5).display ? "flex" : "none",
+              minWidth: width < verySmallWidth ? 50 : 70 // Ensure minimum width for action button column
+            }}
             container
             justifyContent="center"
           >
@@ -652,8 +692,23 @@ function ListItemHeader({ isOptions = false }) {
         p: 0, // Remove default padding
       }}
     >
-      <Box sx={{ width: "100%", py: 1.5, px: 2 }}>
-        <Grid container spacing={1} alignItems="center" sx={{ height: "100%" }}>
+      <Box sx={{ 
+        width: "100%", 
+        py: 1.5, 
+        px: { xs: 1, sm: 2 },
+        overflow: "hidden"
+      }}>
+        <Grid 
+          container 
+          spacing={1} 
+          alignItems="center" 
+          sx={{ 
+            height: "100%",
+            width: "100%",
+            m: 0,
+            flexWrap: "nowrap"
+          }}
+        >
         {/* Track number header */}
         <Grid 
           item 

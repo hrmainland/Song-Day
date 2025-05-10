@@ -162,59 +162,6 @@ router.get("/access-token", isLoggedIn, (req, res) => {
 });
 
 
-router.get('/refresh-token', isLoggedIn, async function(req, res) {
-  try {
-    const refresh_token = req.user.refresh_token;
-    const authHeader = 'Basic ' + Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`).toString('base64');
-    
-    // Create form data
-    const formData = new URLSearchParams();
-    formData.append('grant_type', 'refresh_token');
-    formData.append('refresh_token', refresh_token);
-    
-    // Send request to Spotify API
-    const response = await fetch('https://accounts.spotify.com/api/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': authHeader
-      },
-      body: formData
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Error refreshing token: ${response.status} ${response.statusText}`);
-    }
-    
-    const data = await response.json();
-    const access_token = data.access_token;
-    const new_refresh_token = data.refresh_token || refresh_token;
-    
-    // Calculate token expiry time (subtract 5 minutes for safety)
-    const expiryTime = Date.now() + (data.expires_in * 1000) - 300000;
-    
-    // Update user with new tokens and expiry time
-    req.user.access_token = access_token;
-    req.user.token_expiry = expiryTime;
-    if (data.refresh_token) {
-      req.user.refresh_token = new_refresh_token;
-    }
-    
-    await req.user.save();
-    
-    // Return the new access token
-    return res.status(200).json({ 
-      access_token,
-      expires_in: data.expires_in,
-      token_expiry: expiryTime
-    });
-    
-  } catch (error) {
-    console.error('Error refreshing token:', error);
-    res.status(500).json({ error: 'Failed to refresh token' });
-  }
-});
-
 // Authentication route, this passes you to Spotify
 router.get(
   "/auth",

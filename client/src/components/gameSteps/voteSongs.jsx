@@ -12,7 +12,7 @@ import { newVoteGroup, addVoteGroupToGame } from '../../../utils/apiCalls';
 
 export default function VoteSongs() {
   const { game, refreshGame } = useGame();
-  const { userId, accessToken } = useContext(UserContext);
+  const { userId } = useContext(UserContext);
   
   // VoteSongs state
   const OPTIONS_KEY = `${game?.gameCode}: options`;

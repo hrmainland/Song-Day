@@ -46,7 +46,7 @@ import { createPlaylist } from "../../utils/apiCalls";
 import { myTrackGroup, myVoteGroup, gameStatus } from "../../utils/gameUtils";
 
 export default function Game() {
-  const { userId, accessToken, tokenLoading } = useContext(UserContext);
+  const { userId,  } = useContext(UserContext);
   const { game, refreshGame, loading, gameError, isHost } = useGame();
 
   const location = useLocation();
@@ -173,7 +173,7 @@ export default function Game() {
   };
 
   // Loading state
-  if (loading || tokenLoading) {
+  if (loading) {
     return (
       <ThemeProvider theme={theme}>
         <Navbar />
@@ -187,9 +187,7 @@ export default function Game() {
           }}
         >
           <Typography variant="h6">
-            {tokenLoading
-              ? "Retrieving Spotify access..."
-              : "Loading game data..."}
+            "Loading game data..."
           </Typography>
         </Box>
       </ThemeProvider>

@@ -3,28 +3,99 @@ const { ensureValidToken } = require("../utils/tokenRefresh");
 
 const router = express.Router();
 
-// Helper function for common Spotify API error handling
-const handleSpotifyApiErrors = (response, res) => async () => {
-  if (!response.ok) {
-    const errorData = await response.json();
-    
-    // Handle rate limiting specifically
-    if (response.status === 429) {
-      const retryAfter = response.headers.get('Retry-After') || 60;
-      return res.status(429).json({
-        error: 'Rate limit exceeded',
-        message: `Spotify API rate limit exceeded. Try again after ${retryAfter} seconds.`,
-        retryAfter
-      });
+/**
+ * Makes a request to the Spotify API with automatic retry for rate limiting
+ * @param {string} url - The Spotify API endpoint URL
+ * @param {string} access_token - Valid Spotify access token
+ * @param {string} method - HTTP method (GET, POST, etc.)
+ * @param {Object} body - Request body for POST/PUT requests
+ * @param {number} maxRetries - Maximum number of retry attempts
+ * @returns {Promise<Object>} Response object with data and status info
+ */
+const spotifyApiRequest = async (url, access_token, method = "GET", body = null, maxRetries = 3) => {
+  let retryCount = 0;
+  let lastError = null;
+  
+  const options = {
+    method,
+    headers: { 
+      Authorization: `Bearer ${access_token}`,
+      "Content-Type": "application/json"
     }
-    
-    return res.status(response.status).json({
-      error: errorData.error?.message || 'Spotify API error',
-      message: errorData.error?.message || 'An error occurred while fetching from Spotify API'
-    });
+  };
+  
+  if (body && (method === "POST" || method === "PUT")) {
+    options.body = JSON.stringify(body);
   }
-  return false;
+
+  while (retryCount <= maxRetries) {
+    try {
+      const response = await fetch(url, options);
+      
+      // Check if rate limited (429)
+      if (response.status === 429) {
+        const retryAfter = parseInt(response.headers.get('Retry-After') || '60', 10);
+        console.warn(`Rate limited by Spotify API. Retry attempt ${retryCount + 1}/${maxRetries + 1}. Waiting ${retryAfter} seconds...`);
+        
+        // If we've exhausted our retries, return the error response
+        if (retryCount === maxRetries) {
+          const errorData = await response.json().catch(() => ({}));
+          return {
+            ok: false,
+            status: 429,
+            statusText: "Too Many Requests",
+            retryAfter,
+            data: errorData,
+            headers: response.headers
+          };
+        }
+        
+        // Wait for the specified time before retrying
+        await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+        retryCount++;
+        continue;
+      }
+      
+      // For successful responses or non-429 errors, parse and return
+      try {
+        const data = await response.json();
+        return {
+          ok: response.ok,
+          status: response.status,
+          statusText: response.statusText,
+          data,
+          headers: response.headers
+        };
+      } catch (e) {
+        // If we can't parse JSON (e.g., empty response)
+        return {
+          ok: response.ok,
+          status: response.status,
+          statusText: response.statusText,
+          data: {},
+          headers: response.headers
+        };
+      }
+    } catch (error) {
+      // Network errors, retrying
+      lastError = error;
+      
+      if (retryCount < maxRetries) {
+        const backoffTime = Math.pow(2, retryCount) * 1000;
+        console.warn(`Network error when calling Spotify API. Retry attempt ${retryCount + 1}/${maxRetries + 1}. Waiting ${backoffTime/1000} seconds...`);
+        await new Promise(resolve => setTimeout(resolve, backoffTime));
+        retryCount++;
+      } else {
+        // Exhausted retries, throw the last error
+        throw error;
+      }
+    }
+  }
+  
+  // If we've exhausted retries due to network errors
+  throw lastError || new Error('Failed to connect to Spotify API after multiple retries');
 };
+
 
 
 // TODO add auth middleware
@@ -49,25 +120,24 @@ router.get("/searchTracks", async (req, res) => {
     // Get a valid token
     const access_token = await ensureValidToken(req.user);
 
-
-
-    // Make the request to Spotify API
-    const response = await fetch(
+    // Make the request to Spotify API with automatic retry
+    const apiResponse = await spotifyApiRequest(
       `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track`,
-      {
-        headers: { Authorization: `Bearer ${access_token}` },
-      }
+      access_token
     );
 
-
-    // Handle Spotify API errors
-    const error = await handleSpotifyApiErrors(response, res)();
-    if (error) return error;
+    // Check for API errors
+    if (!apiResponse.ok) {
+      // Pass along error from Spotify API
+      return res.status(apiResponse.status).json({
+        error: apiResponse.data.error?.message || 'Spotify API error',
+        message: apiResponse.data.error?.message || `Error from Spotify API: ${apiResponse.statusText}`
+      });
+    }
 
 
     // Return successful response
-    const data = await response.json();
-    return res.status(200).json(data);
+    return res.status(200).json(apiResponse.data);
   } catch (error) {
     console.error('Error in searchTracks:', error);
     return res.status(500).json({
@@ -113,21 +183,23 @@ router.get("/tracks", async (req, res) => {
     // Get a valid token
     const access_token = await ensureValidToken(req.user);
 
-    // Make the request to Spotify API
-    const response = await fetch(
+    // Make the request to Spotify API with automatic retry
+    const apiResponse = await spotifyApiRequest(
       `https://api.spotify.com/v1/tracks?ids=${encodeURIComponent(trackIds.join(','))}`,
-      {
-        headers: { Authorization: `Bearer ${access_token}` },
-      }
+      access_token
     );
 
-    // Handle Spotify API errors
-    const error = await handleSpotifyApiErrors(response, res)();
-    if (error) return error;
+    // Check for API errors
+    if (!apiResponse.ok) {
+      // Pass along error from Spotify API
+      return res.status(apiResponse.status).json({
+        error: apiResponse.data.error?.message || 'Spotify API error',
+        message: apiResponse.data.error?.message || `Error from Spotify API: ${apiResponse.statusText}`
+      });
+    }
 
     // Return successful response
-    const data = await response.json();
-    return res.status(200).json(data.tracks);
+    return res.status(200).json(apiResponse.data.tracks);
   } catch (error) {
     console.error('Error in getMultipleTracksById:', error);
     return res.status(500).json({

@@ -7,7 +7,6 @@ import {
   StepLabel,
 } from "@mui/material";
 import { useGame } from "../hooks/useGame";
-import { UserContext } from "../context/userProvider";
 import { gameStatus } from "../../utils/gameUtils";
 
 export default function GuestStepper({ myTracksSubmitted, myVotesSubmitted }) {

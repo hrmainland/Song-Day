@@ -58,29 +58,51 @@ export default function SearchDialog({
         open={open}
         onClose={onClose}
         maxWidth={false}
+        fullScreen
+        sx={{
+          '& .MuiDialog-container': {
+            alignItems: { xs: 'flex-start', sm: 'center' }
+          }
+        }}
         PaperProps={{
           sx: {
-            width: { xs: "90%", sm: "1000px" },
-            borderRadius: "20px",
+            width: { xs: "100%", sm: "90%", md: "1000px" },
+            borderRadius: { xs: "0", sm: "20px" },
             position: "absolute",
-            top: { xs: "100px", sm: "127px" },
-            maxHeight: "calc(100vh - 150px)",
-            overflow: "auto",
-            padding: { xs: "16px 0", sm: "20px 0" },
+            height: { xs: "100vh", sm: "auto" },
+            top: { xs: "0", sm: "100px", md: "127px" },
+            maxHeight: { xs: "100vh", sm: "calc(100vh - 150px)" },
+            overflow: "auto", // Allow scrolling on the dialog paper
+            padding: { xs: "0", sm: "20px 0" }, // Remove padding on xs
+            margin: 0,
+            display: "flex",
+            flexDirection: "column"
           },
         }}
       >
         <DialogTitle sx={{ 
           px: { xs: 3, sm: 4 },
-          pt: { xs: 1, sm: 1 },
-          pb: 0,
+          pt: { xs: 2, sm: 1 },
+          pb: { xs: 1, sm: 0 },
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          position: 'sticky',
+          top: 0,
+          bgcolor: 'background.paper',
+          zIndex: 10,
+          borderBottom: { xs: '1px solid rgba(0,0,0,0.08)', sm: 'none' }
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <SearchIcon sx={{ color: 'primary.main', mr: 1.5, fontSize: 24 }} />
-            <Typography variant="h5" fontWeight={600} sx={{ letterSpacing: '-0.3px' }}>
+            <SearchIcon sx={{ color: 'primary.main', mr: 1.5, fontSize: { xs: 28, sm: 24 } }} />
+            <Typography 
+              variant="h5" 
+              fontWeight={600} 
+              sx={{ 
+                letterSpacing: '-0.3px',
+                fontSize: { xs: '1.3rem', sm: '1.5rem' }
+              }}
+            >
               Search
             </Typography>
           </Box>
@@ -88,13 +110,21 @@ export default function SearchDialog({
             edge="end" 
             onClick={onClose}
             aria-label="close"
-            sx={{ color: 'text.secondary' }}
+            sx={{ 
+              color: 'text.secondary',
+              padding: { xs: '12px', sm: '8px' }
+            }}
           >
-            <CloseIcon />
+            <CloseIcon sx={{ fontSize: { xs: '1.5rem', sm: '1.25rem' } }} />
           </IconButton>
         </DialogTitle>
         
-        <Box sx={{ width: "90%", p: { xs: 1, sm: 2 }, mx: "auto" }}>
+        <Box sx={{ 
+          width: { xs: "95%", sm: "90%" }, 
+          p: { xs: "0 0 8px 0", sm: 2 }, 
+          mx: "auto",
+          mt: { xs: 1, sm: 0 }
+        }}>
           <TextField
             inputRef={searchInputRef}
             fullWidth
@@ -114,12 +144,22 @@ export default function SearchDialog({
             }}
             InputProps={{
               endAdornment: (
-                <IconButton disabled={searching}>
+                <IconButton 
+                  disabled={searching}
+                  sx={{ 
+                    padding: { xs: '10px', sm: '8px' } 
+                  }}
+                  onClick={() => {
+                    if (searchQuery.trim().length >= 3 && onSearch) {
+                      onSearch();
+                    }
+                  }}
+                >
                   {searching ? (
                     <Box
                       sx={{
-                        width: 24,
-                        height: 24,
+                        width: { xs: 28, sm: 24 },
+                        height: { xs: 28, sm: 24 },
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -127,8 +167,8 @@ export default function SearchDialog({
                     >
                       <Box
                         sx={{
-                          width: 16,
-                          height: 16,
+                          width: { xs: 18, sm: 16 },
+                          height: { xs: 18, sm: 16 },
                           border: "2px solid",
                           borderColor: "grey.300",
                           borderRadius: "50%",
@@ -138,13 +178,14 @@ export default function SearchDialog({
                       />
                     </Box>
                   ) : (
-                    <SearchIcon />
+                    <SearchIcon sx={{ fontSize: { xs: '1.5rem', sm: '1.25rem' } }} />
                   )}
                 </IconButton>
               ),
               sx: {
-                borderRadius: "16px",
+                borderRadius: { xs: "8px", sm: "16px" },
                 pr: 1,
+                height: { xs: '48px', sm: 'auto' }
               },
             }}
             sx={{
@@ -154,6 +195,9 @@ export default function SearchDialog({
                   boxShadow: "0 0 0 3px rgba(64,126,160,0.1)",
                 },
               },
+              "& .MuiInputBase-input": {
+                fontSize: { xs: '1rem', sm: '0.875rem' }
+              }
             }}
           />
         </Box>
@@ -163,7 +207,13 @@ export default function SearchDialog({
         searchResult.tracks &&
         searchResult.tracks.items &&
         searchResult.tracks.items.length > 0 ? (
-          <Box sx={{ px: { xs: 2, sm: 3 }, pt: 2 }}>
+          <Box sx={{ 
+            px: { xs: 1, sm: 3 }, 
+            pt: { xs: 1, sm: 2 },
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
             <AddedTracksList
               tracks={searchResult.tracks.items.map(track => formatTrack(track))}
               title="Add Tracks"
@@ -175,18 +225,45 @@ export default function SearchDialog({
             />
           </Box>
         ) : searching ? (
-          <Box sx={{ p: 4, textAlign: "center" }}>
-            <Typography color="text.secondary">Searching...</Typography>
+          <Box sx={{ 
+            p: 4, 
+            textAlign: "center",
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: { xs: 'calc(100vh - 140px)', sm: 'auto' },
+            overflow: 'auto'
+          }}>
+            <Typography color="text.secondary" variant="body1">Searching...</Typography>
           </Box>
         ) : searchResult ? (
-          <Box sx={{ p: 4, textAlign: "center" }}>
-            <Typography color="text.secondary">
+          <Box sx={{ 
+            p: 4, 
+            textAlign: "center",
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: { xs: 'calc(100vh - 140px)', sm: 'auto' },
+            overflow: 'auto'
+          }}>
+            <Typography color="text.secondary" variant="body1">
               No results found. Try a different search term.
             </Typography>
           </Box>
         ) : (
-          <Box sx={{ p: 4, textAlign: "center" }}>
-            <Typography color="text.secondary">
+          <Box sx={{ 
+            p: 4, 
+            textAlign: "center",
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: { xs: 'calc(100vh - 140px)', sm: 'auto' },
+            overflow: 'auto'
+          }}>
+            <Typography color="text.secondary" variant="body1">
               Search for songs to add to your list
             </Typography>
           </Box>

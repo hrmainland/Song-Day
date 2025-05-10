@@ -1,6 +1,6 @@
-// UserContext.js
+
 import { createContext, useContext, useState, useEffect } from "react";
-import { fetchMyId, fetchAccessToken } from "../../utils/apiCalls";
+import { fetchMyId} from "../../utils/apiCalls";
 
 export const UserContext = createContext();
 
@@ -9,8 +9,7 @@ export const UserProvider = ({ children }) => {
     const savedUser = localStorage.getItem("userId");
     return savedUser ? savedUser : null;
   });
-  const [accessToken, setAccessToken] = useState(null);
-  const [tokenLoading, setTokenLoading] = useState(true);
+  
 
   // Check if logged in on first mount
   useEffect(() => {
@@ -46,26 +45,9 @@ export const UserProvider = ({ children }) => {
     setUserId(newUser);
   };
 
-  useEffect(() => {
-    const checkAccessToken = async () => {
-      if (!userId) {
-        setTokenLoading(false);
-        return;
-      }
-      try {
-        const accessToken = await fetchAccessToken();
-        setAccessToken(accessToken);
-        setTokenLoading(false);
-      } catch (error) {
-        console.error("Error checking access token:", error);
-        setTokenLoading(false);
-      }
-    };
-    checkAccessToken();
-  }, [userId]);
 
   return (
-    <UserContext.Provider value={{ userId, setUserId: updateUser, accessToken, tokenLoading }}>
+    <UserContext.Provider value={{ userId, setUserId: updateUser }}>
       {children}
     </UserContext.Provider>
   );
