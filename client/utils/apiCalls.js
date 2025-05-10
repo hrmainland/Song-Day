@@ -1,6 +1,54 @@
 import baseUrl from "./urlPrefix.js";
 
-async function apiRequest(endpoint, method = "GET", body = null) {
+class ApiError extends Error {
+  constructor(message, status, endpoint, retryAfter = null) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.endpoint = endpoint;
+    this.retryAfter = retryAfter;
+  }
+}
+
+// Helper to handle common response status checks
+const handleResponseStatus = async (response, endpoint) => {
+  // Handle specific status codes
+  if (response.status === 401) {
+    // Redirect to home-login on 401 Unauthorized errors
+    window.location.href = "/home-login";
+    throw new ApiError("Unauthorized access. Please log in again.", 401, endpoint);
+  }
+  
+  if (response.status === 429) {
+    // Handle rate limiting according to Spotify API terms
+    const retryAfter = response.headers.get("Retry-After") || 60; // Default to 60 seconds if header not present
+    throw new ApiError(
+      `Rate limit exceeded. Please try again later.`, 
+      429, 
+      endpoint, 
+      parseInt(retryAfter, 10)
+    );
+  }
+  
+  if (response.status >= 400) {
+    // Get error message from response if possible
+    let errorMessage;
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.message || errorData.error || `Request failed with status ${response.status}`;
+    } catch (e) {
+      errorMessage = `Request failed with status ${response.status}`;
+    }
+    throw new ApiError(errorMessage, response.status, endpoint);
+  }
+  
+  return response;
+};
+
+// Core API request function
+async function apiRequest(endpoint, method = "GET", body = null, retryCount = 0) {
+  const maxRetries = 3;
+  
   try {
     const options = {
       method,
@@ -15,60 +63,101 @@ async function apiRequest(endpoint, method = "GET", body = null) {
     }
 
     const response = await fetch(`${baseUrl}${endpoint}`, options);
-
-    if (response.status === 401) {
-      // Redirect to home-login on 401 Unauthorized errors
-      window.location.href = "/home-login";
-      return false;
-    }
-
-    return response;
+    return await handleResponseStatus(response, endpoint);
   } catch (error) {
-    console.error(`There was a problem with the request to ${endpoint}`, error);
-    throw error;
+    // Handle network errors and retry logic
+    if (error.name === "ApiError") {
+      // For rate limit errors, we can implement retry with delay
+      if (error.status === 429 && retryCount < maxRetries) {
+        console.warn(`Rate limited on ${endpoint}. Retrying after ${error.retryAfter} seconds...`);
+        await new Promise(resolve => setTimeout(resolve, error.retryAfter * 1000));
+        return apiRequest(endpoint, method, body, retryCount + 1);
+      }
+      // Re-throw API errors for caller handling
+      throw error;
+    }
+    
+    // Network or other fetch errors
+    if (retryCount < maxRetries && !navigator.onLine) {
+      // Wait and retry if it's a network issue
+      console.warn(`Network error on ${endpoint}. Retrying...`);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      return apiRequest(endpoint, method, body, retryCount + 1);
+    }
+    
+    console.error(`Request failed for ${endpoint}:`, error);
+    throw new ApiError(
+      "Network error. Please check your connection and try again.",
+      0,
+      endpoint
+    );
   }
 }
 
-// login endpoints
+// Helper to safely unwrap API responses
+async function unwrapResponse(promise) {
+  try {
+    const response = await promise;
+    if (!response) return { success: false, data: null };
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return { 
+        success: false, 
+        error: {
+          message: error.message,
+          status: error.status,
+          endpoint: error.endpoint
+        }
+      };
+    }
+    return { 
+      success: false, 
+      error: {
+        message: error.message || "Unknown error occurred",
+        status: 0,
+        endpoint: "unknown"
+      }
+    };
+  }
+}
 
-// TODO add login function here that accepts redirect route and sends login request
-// if successful redirect otherwise return to home-login
-
-// User endoints
+// User endpoints
 
 export async function fetchMe() {
-  const response = await apiRequest("/user/me");
-  return await response.json();
+  const result = await unwrapResponse(apiRequest("/user/me"));
+  return result.data;
 }
 
 export async function fetchMyId() {
-  const response = await apiRequest("/user/my-id");
-  return await response.json();
+  const result = await unwrapResponse(apiRequest("/user/my-id"));
+  return result.data;
 }
 
 export async function addGameToMe(gameId) {
-  const response = await apiRequest(`/user/game/${gameId}`, "PUT");
-  return await response.json();
+  const result = await unwrapResponse(apiRequest(`/user/game/${gameId}`, "PUT"));
+  return result.data;
 }
 
 export async function isLoggedIn() {
-  const response = await apiRequest("/user/isLoggedIn");
-  return await response.json();
+  const result = await unwrapResponse(apiRequest("/user/isLoggedIn"));
+  return result.data;
 }
 
 export async function fetchMyGames() {
-  const response = await apiRequest("/user/my-games");
-  return await response.json();
+  const result = await unwrapResponse(apiRequest("/user/my-games"));
+  return result.data;
 }
 
 export async function refreshToken() {
-  const response = await apiRequest("/user/refresh-token");
-  return await response.json();
+  const result = await unwrapResponse(apiRequest("/user/refresh-token"));
+  return result.data;
 }
 
 export async function fetchAccessToken() {
-  const response = await apiRequest("/user/access-token");
-  return await response.json();
+  const result = await unwrapResponse(apiRequest("/user/access-token"));
+  return result.data;
 }
 
 export async function logout() {
@@ -84,68 +173,70 @@ export async function deleteMe() {
 // Game endpoints
 
 export async function fetchGame(gameCode, authRequired = true) {
-  const response = await apiRequest(`/game/${gameCode}?authRequired=${authRequired}`);
-  if ([403, 404].includes(response.status)) {
-    return false;
+  try {
+    const response = await apiRequest(`/game/${gameCode}?authRequired=${authRequired}`);
+    if ([403, 404].includes(response.status)) {
+      return false;
+    }
+    return await response.json();
+  } catch (error) {
+    if (error instanceof ApiError && [403, 404].includes(error.status)) {
+      return false;
+    }
+    throw error;
   }
-  return await response.json();
 }
 
 export async function newGame(gameName, settings) {
-  const response = await apiRequest("/game/new", "POST", { gameName, settings });
-  return await response.json();
+  const result = await unwrapResponse(apiRequest("/game/new", "POST", { gameName, settings }));
+  return result.data;
 }
 
 export async function addMeToGame(gameId) {
-  const response = await apiRequest(`/game/${gameId}/add-me`, "PUT");
-  return await response.json();
+  const result = await unwrapResponse(apiRequest(`/game/${gameId}/add-me`, "PUT"));
+  return result.data;
 }
 
 export async function removePlayerFromGame(gameId, userId) {
-  const response = await apiRequest(`/game/${gameId}/remove-player/${userId}`, "DELETE");
-  return await response.json();
+  const result = await unwrapResponse(apiRequest(`/game/${gameId}/remove-player/${userId}`, "DELETE"));
+  return result.data;
 }
 
 export async function addTrackGroupToGame(gameId, trackGroupId) {
-  const response = await apiRequest(`/game/${gameId}/track-group/${trackGroupId}`, "PUT");
-  return await response.json();
+  const result = await unwrapResponse(apiRequest(`/game/${gameId}/track-group/${trackGroupId}`, "PUT"));
+  return result.data;
 }
 
 export async function addVoteGroupToGame(gameId, voteGroupId) {
-  const response = await apiRequest(`/game/${gameId}/vote-group/${voteGroupId}`, "PUT");
-  return await response.json();
+  const result = await unwrapResponse(apiRequest(`/game/${gameId}/vote-group/${voteGroupId}`, "PUT"));
+  return result.data;
 }
 
-// export async function getAllGameTracks(gameId) {
-//   return await apiRequest(`/game/${gameId}/all-tracks`);
-// }
-
 export async function updateDisplayName(gameId, displayName) {
-  const response = await apiRequest(`/game/${gameId}/display-name`, "PUT", {
+  const result = await unwrapResponse(apiRequest(`/game/${gameId}/display-name`, "PUT", {
     displayName,
-  })
-  return await response.json();
+  }));
+  return result.data;
 }
 
 export async function newVoteGroup(gameId, items) {
-  const response = await apiRequest(`/game/${gameId}/vote-group`, "POST", { items });
-  return await response.json();
+  const result = await unwrapResponse(apiRequest(`/game/${gameId}/vote-group`, "POST", { items }));
+  return result.data;
 }
 
 export async function moveToVoting(gameId) {
-  const response = await apiRequest(`/game/${gameId}/move-to-voting`, "POST");
-  return await response.json();
+  const result = await unwrapResponse(apiRequest(`/game/${gameId}/move-to-voting`, "POST"));
+  return result.data;
 }
 
 export async function createPlaylist(gameId) {
-  const response = await apiRequest(`/game/${gameId}/create-playlist`);
-  return await response.json();
+  const result = await unwrapResponse(apiRequest(`/game/${gameId}/create-playlist`));
+  return result.data;
 }
 
 // Trackgroup endpoints
 
 export async function addSessionTracks(sessionTracks) {
-  const response = await apiRequest("/track-group", "POST", { sessionTracks });
-  return await response.json();
+  const result = await unwrapResponse(apiRequest("/track-group", "POST", { sessionTracks }));
+  return result.data;
 }
-

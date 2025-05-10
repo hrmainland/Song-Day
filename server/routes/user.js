@@ -45,10 +45,14 @@ passport.use(
     },
     async (req, accessToken, refreshToken, expires_in, profile, done) => {
       const existingUser = await User.findOne({ spotify_id: profile.id });
+      
+      // Calculate token expiry time (subtract 5 minutes for safety)
+      const expiryTime = Date.now() + (expires_in * 1000) - 300000;
 
       if (existingUser) {
         existingUser.access_token = accessToken;
         existingUser.refresh_token = refreshToken;
+        existingUser.token_expiry = expiryTime;
         existingUser.spotify_display_name = profile.displayName;
         await existingUser.save();
         done(null, existingUser);
@@ -58,6 +62,7 @@ passport.use(
           spotify_display_name: profile.displayName,
           access_token: accessToken,
           refresh_token: refreshToken,
+          token_expiry: expiryTime,
         });
         await newUser.save();
         done(null, newUser);
@@ -185,8 +190,12 @@ router.get('/refresh-token', isLoggedIn, async function(req, res) {
     const access_token = data.access_token;
     const new_refresh_token = data.refresh_token || refresh_token;
     
-    // Update user with new tokens
+    // Calculate token expiry time (subtract 5 minutes for safety)
+    const expiryTime = Date.now() + (data.expires_in * 1000) - 300000;
+    
+    // Update user with new tokens and expiry time
     req.user.access_token = access_token;
+    req.user.token_expiry = expiryTime;
     if (data.refresh_token) {
       req.user.refresh_token = new_refresh_token;
     }
@@ -194,7 +203,11 @@ router.get('/refresh-token', isLoggedIn, async function(req, res) {
     await req.user.save();
     
     // Return the new access token
-    return res.status(200).json({ access_token });
+    return res.status(200).json({ 
+      access_token,
+      expires_in: data.expires_in,
+      token_expiry: expiryTime
+    });
     
   } catch (error) {
     console.error('Error refreshing token:', error);

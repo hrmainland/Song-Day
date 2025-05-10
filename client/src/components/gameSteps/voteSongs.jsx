@@ -6,7 +6,7 @@ import CenterBox from '../base/centerBox';
 import { UserContext } from '../../context/userProvider';
 import { useGame } from '../../hooks/useGame';
 import { votableTracks, myVoteGroup } from '../../../utils/gameUtils';
-import { getMultipleTracksById } from '../../../utils/spotifyCalls';
+import { getMultipleTracksById } from '../../../utils/spotifyApiCalls';
 import { usefulTrackComponents } from '../../../utils/spotifyApiUtils';
 import { newVoteGroup, addVoteGroupToGame } from '../../../utils/apiCalls';
 
@@ -65,7 +65,6 @@ export default function VoteSongs() {
     }
     
     const SpotifyTracks = await getMultipleTracksById(
-      accessToken,
       tracksResponse
     );
     const trackObjects = SpotifyTracks.map((trackId) => {
@@ -224,7 +223,7 @@ export default function VoteSongs() {
         }}
       >
         <Typography variant="h5" textAlign="center" sx={{ mb: 2 }}>
-          You've already submitted your votes
+          You've submitted your votes
         </Typography>
         <Typography variant="body1" textAlign="center" color="text.secondary">
           Your votes have been recorded. Check back later to see the final playlist.

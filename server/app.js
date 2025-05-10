@@ -17,6 +17,7 @@ const browserSessionRouter = require("./routes/test_browserSession.js");
 const userRouter = require("./routes/user.js");
 const gameRouter = require("./routes/game.js");
 const trackGroupRouter = require("./routes/trackGroup.js");
+const spotifyRouter = require("./routes/spotify.js");
 
 const devRouter = require("./routes/test_dev.js");
 
@@ -79,6 +80,7 @@ app.use("/browser-session", browserSessionRouter);
 app.use("/user", userRouter);
 app.use("/game", gameRouter);
 app.use("/track-group", trackGroupRouter);
+app.use("/spotify", spotifyRouter);
 
 app.use("/dev", devRouter);
 

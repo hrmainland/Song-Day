@@ -10,6 +10,7 @@ const userSchema = new Schema({
   spotify_display_name: String,
   access_token: String,
   refresh_token: String,
+  token_expiry: { type: Number, default: 0 },
   games: [
     {
       type: Schema.Types.ObjectId,

@@ -8,7 +8,9 @@ import CenterBox from '../base/centerBox';
 import SubmittedView from '../trackDisplays/submittedView';
 import { UserContext } from '../../context/userProvider';
 import { useGame } from '../../hooks/useGame';
-import { searchTracks } from '../../../utils/spotifyCalls';
+// import { searchTracks } from '../../../utils/spotifyCalls';
+import { searchTracks } from '../../../utils/spotifyApiCalls';
+
 import { artistString } from '../../../utils/spotifyApiUtils';
 import { addSessionTracks, addTrackGroupToGame } from '../../../utils/apiCalls';
 import { myTrackGroup } from '../../../utils/gameUtils';
@@ -118,7 +120,8 @@ export default function AddSongs() {
 
     try {
       setSearching(true);
-      const result = await searchTracks(accessToken, query);
+      // const result = await searchTracks(accessToken, query);
+      const result = await searchTracks(query);
 
       // Filter out tracks that are already added
       const currentTracks = getSessionTracks();
