@@ -57,17 +57,30 @@ export default function VoteSongs() {
   // Load tracks from Spotify and set options
   const setOptionsFromDb = async () => {
     if (!game) return;
-    const tracksResponse = votableTracks(game, userId);
-    if (tracksResponse.length === 0) {
+    const trackIds = votableTracks(game, userId);
+    if (trackIds.length === 0) {
       setSessionOptions([]);
       setOptions([]);
       return;
     }
+
+    // Function to chunk the array into parts of 50
+    const chunkArray = (array, chunkSize) => {
+      const chunks = [];
+      for (let i = 0; i < array.length; i += chunkSize) {
+        chunks.push(array.slice(i, i + chunkSize));
+      }
+      return chunks;
+    };
+  
+    const chunks = chunkArray(trackIds, 50);
+    const fullTrackObjects = [];
+  
+    for (const chunk of chunks) {
+      fullTrackObjects.push(...(await getMultipleTracksById(chunk)));
+    }
     
-    const SpotifyTracks = await getMultipleTracksById(
-      tracksResponse
-    );
-    const trackObjects = SpotifyTracks.map((trackId) => {
+    const trackObjects = fullTrackObjects.map((trackId) => {
       return usefulTrackComponents(trackId);
     });
     setSessionOptions(trackObjects);
