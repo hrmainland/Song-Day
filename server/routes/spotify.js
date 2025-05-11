@@ -1,5 +1,6 @@
 const express = require("express");
 const { ensureValidToken } = require("../utils/tokenRefresh");
+const { isLoggedIn } = require("../middleware");
 
 const router = express.Router();
 
@@ -12,18 +13,24 @@ const router = express.Router();
  * @param {number} maxRetries - Maximum number of retry attempts
  * @returns {Promise<Object>} Response object with data and status info
  */
-const spotifyApiRequest = async (url, access_token, method = "GET", body = null, maxRetries = 3) => {
+const spotifyApiRequest = async (
+  url,
+  access_token,
+  method = "GET",
+  body = null,
+  maxRetries = 3
+) => {
   let retryCount = 0;
   let lastError = null;
-  
+
   const options = {
     method,
-    headers: { 
+    headers: {
       Authorization: `Bearer ${access_token}`,
-      "Content-Type": "application/json"
-    }
+      "Content-Type": "application/json",
+    },
   };
-  
+
   if (body && (method === "POST" || method === "PUT")) {
     options.body = JSON.stringify(body);
   }
@@ -31,12 +38,19 @@ const spotifyApiRequest = async (url, access_token, method = "GET", body = null,
   while (retryCount <= maxRetries) {
     try {
       const response = await fetch(url, options);
-      
+
       // Check if rate limited (429)
       if (response.status === 429) {
-        const retryAfter = parseInt(response.headers.get('Retry-After') || '60', 10);
-        console.warn(`Rate limited by Spotify API. Retry attempt ${retryCount + 1}/${maxRetries + 1}. Waiting ${retryAfter} seconds...`);
-        
+        const retryAfter = parseInt(
+          response.headers.get("Retry-After") || "60",
+          10
+        );
+        console.warn(
+          `Rate limited by Spotify API. Retry attempt ${retryCount + 1}/${
+            maxRetries + 1
+          }. Waiting ${retryAfter} seconds...`
+        );
+
         // If we've exhausted our retries, return the error response
         if (retryCount === maxRetries) {
           const errorData = await response.json().catch(() => ({}));
@@ -46,16 +60,16 @@ const spotifyApiRequest = async (url, access_token, method = "GET", body = null,
             statusText: "Too Many Requests",
             retryAfter,
             data: errorData,
-            headers: response.headers
+            headers: response.headers,
           };
         }
-        
+
         // Wait for the specified time before retrying
-        await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+        await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
         retryCount++;
         continue;
       }
-      
+
       // For successful responses or non-429 errors, parse and return
       try {
         const data = await response.json();
@@ -64,7 +78,7 @@ const spotifyApiRequest = async (url, access_token, method = "GET", body = null,
           status: response.status,
           statusText: response.statusText,
           data,
-          headers: response.headers
+          headers: response.headers,
         };
       } catch (e) {
         // If we can't parse JSON (e.g., empty response)
@@ -73,17 +87,21 @@ const spotifyApiRequest = async (url, access_token, method = "GET", body = null,
           status: response.status,
           statusText: response.statusText,
           data: {},
-          headers: response.headers
+          headers: response.headers,
         };
       }
     } catch (error) {
       // Network errors, retrying
       lastError = error;
-      
+
       if (retryCount < maxRetries) {
         const backoffTime = Math.pow(2, retryCount) * 1000;
-        console.warn(`Network error when calling Spotify API. Retry attempt ${retryCount + 1}/${maxRetries + 1}. Waiting ${backoffTime/1000} seconds...`);
-        await new Promise(resolve => setTimeout(resolve, backoffTime));
+        console.warn(
+          `Network error when calling Spotify API. Retry attempt ${
+            retryCount + 1
+          }/${maxRetries + 1}. Waiting ${backoffTime / 1000} seconds...`
+        );
+        await new Promise((resolve) => setTimeout(resolve, backoffTime));
         retryCount++;
       } else {
         // Exhausted retries, throw the last error
@@ -91,12 +109,13 @@ const spotifyApiRequest = async (url, access_token, method = "GET", body = null,
       }
     }
   }
-  
+
   // If we've exhausted retries due to network errors
-  throw lastError || new Error('Failed to connect to Spotify API after multiple retries');
+  throw (
+    lastError ||
+    new Error("Failed to connect to Spotify API after multiple retries")
+  );
 };
-
-
 
 // TODO add auth middleware
 
@@ -106,14 +125,14 @@ const spotifyApiRequest = async (url, access_token, method = "GET", body = null,
  * @param {string} q - Search query
  * @returns {Object} Spotify search results
  */
-router.get("/searchTracks", async (req, res) => {
+router.get("/searchTracks", isLoggedIn, async (req, res) => {
   try {
     // Input validation
     const query = req.query.q;
-    if (!query || typeof query !== 'string' || query.trim() === '') {
-      return res.status(400).json({ 
-        error: 'Invalid search query',
-        message: 'Search query (q) is required and must be a non-empty string'
+    if (!query || typeof query !== "string" || query.trim() === "") {
+      return res.status(400).json({
+        error: "Invalid search query",
+        message: "Search query (q) is required and must be a non-empty string",
       });
     }
 
@@ -122,7 +141,9 @@ router.get("/searchTracks", async (req, res) => {
 
     // Make the request to Spotify API with automatic retry
     const apiResponse = await spotifyApiRequest(
-      `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track`,
+      `https://api.spotify.com/v1/search?q=${encodeURIComponent(
+        query
+      )}&type=track`,
       access_token
     );
 
@@ -130,19 +151,20 @@ router.get("/searchTracks", async (req, res) => {
     if (!apiResponse.ok) {
       // Pass along error from Spotify API
       return res.status(apiResponse.status).json({
-        error: apiResponse.data.error?.message || 'Spotify API error',
-        message: apiResponse.data.error?.message || `Error from Spotify API: ${apiResponse.statusText}`
+        error: apiResponse.data.error?.message || "Spotify API error",
+        message:
+          apiResponse.data.error?.message ||
+          `Error from Spotify API: ${apiResponse.statusText}`,
       });
     }
-
 
     // Return successful response
     return res.status(200).json(apiResponse.data);
   } catch (error) {
-    console.error('Error in searchTracks:', error);
+    console.error("Error in searchTracks:", error);
     return res.status(500).json({
-      error: 'Server error',
-      message: 'An unexpected error occurred while processing your request'
+      error: "Server error",
+      message: "An unexpected error occurred while processing your request",
     });
   }
 });
@@ -153,30 +175,31 @@ router.get("/searchTracks", async (req, res) => {
  * @param {string} ids - Comma-separated list of Spotify track IDs
  * @returns {Object} Array of Spotify track objects
  */
-router.get("/tracks", async (req, res) => {
+router.get("/tracks", isLoggedIn, async (req, res) => {
   try {
     // Input validation
     const ids = req.query.ids;
-    if (!ids || typeof ids !== 'string' || ids.trim() === '') {
-      return res.status(400).json({ 
-        error: 'Invalid track IDs',
-        message: 'Track IDs (ids) parameter is required and must be a non-empty string'
+    if (!ids || typeof ids !== "string" || ids.trim() === "") {
+      return res.status(400).json({
+        error: "Invalid track IDs",
+        message:
+          "Track IDs (ids) parameter is required and must be a non-empty string",
       });
     }
 
     // Check if we exceed Spotify's limit (max 50 IDs per request)
-    const trackIds = ids.split(',').filter(id => id.trim() !== '');
+    const trackIds = ids.split(",").filter((id) => id.trim() !== "");
     if (trackIds.length === 0) {
       return res.status(400).json({
-        error: 'Invalid track IDs',
-        message: 'No valid track IDs provided'
+        error: "Invalid track IDs",
+        message: "No valid track IDs provided",
       });
     }
-    
+
     if (trackIds.length > 50) {
       return res.status(400).json({
-        error: 'Too many track IDs',
-        message: 'Spotify API allows a maximum of 50 track IDs per request'
+        error: "Too many track IDs",
+        message: "Spotify API allows a maximum of 50 track IDs per request",
       });
     }
 
@@ -185,7 +208,9 @@ router.get("/tracks", async (req, res) => {
 
     // Make the request to Spotify API with automatic retry
     const apiResponse = await spotifyApiRequest(
-      `https://api.spotify.com/v1/tracks?ids=${encodeURIComponent(trackIds.join(','))}`,
+      `https://api.spotify.com/v1/tracks?ids=${encodeURIComponent(
+        trackIds.join(",")
+      )}`,
       access_token
     );
 
@@ -193,18 +218,20 @@ router.get("/tracks", async (req, res) => {
     if (!apiResponse.ok) {
       // Pass along error from Spotify API
       return res.status(apiResponse.status).json({
-        error: apiResponse.data.error?.message || 'Spotify API error',
-        message: apiResponse.data.error?.message || `Error from Spotify API: ${apiResponse.statusText}`
+        error: apiResponse.data.error?.message || "Spotify API error",
+        message:
+          apiResponse.data.error?.message ||
+          `Error from Spotify API: ${apiResponse.statusText}`,
       });
     }
 
     // Return successful response
     return res.status(200).json(apiResponse.data.tracks);
   } catch (error) {
-    console.error('Error in getMultipleTracksById:', error);
+    console.error("Error in getMultipleTracksById:", error);
     return res.status(500).json({
-      error: 'Server error',
-      message: 'An unexpected error occurred while processing your request'
+      error: "Server error",
+      message: "An unexpected error occurred while processing your request",
     });
   }
 });

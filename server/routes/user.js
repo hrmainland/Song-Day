@@ -13,8 +13,8 @@ const redirectSuffix = "/login-redirect";
 // set callback url and redirect url based on the envrionment
 if (process.env.NODE_ENV === "production") {
   // old way
-  // serverUrlBase = process.env.RENDER_EXTERNAL_URL;
-  serverUrlBase = process.env.PUBLIC_BASE_URL;
+  serverUrlBase = process.env.RENDER_EXTERNAL_URL;
+  // serverUrlBase = process.env.PUBLIC_BASE_URL;
 } else {
   clientUrlBase = process.env.CLIENT_URL_BASE;
   serverUrlBase = process.env.SERVER_URL_BASE;
