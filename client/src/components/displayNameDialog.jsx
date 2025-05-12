@@ -22,15 +22,45 @@ export default function DisplayNameDialog({ open, onClose }) {
   const { game, refreshGame, loading, gameError } = useGame();
   const [displayName, setDisplayName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  // Validate display name
+  const validateDisplayName = (name) => {
+    if (!name) return "Display name is required";
+    if (name.length < 1) return "Display name is too short";
+    if (name.length > 20) return "Display name must be less than 20 characters";
+    return "";
+  };
+
+  // Handle display name change with validation
+  const handleDisplayNameChange = (e) => {
+    const value = e.target.value;
+    setDisplayName(value);
+    setError(validateDisplayName(value));
+  };
 
   const handleSubmit = async () => {
-    if (displayName && displayName.length >= 2) {
+    // Validate before submission
+    const validationError = validateDisplayName(displayName);
+    setError(validationError);
+
+    if (!validationError) {
       setIsSubmitting(true);
       try {
         await updateDisplayName(game._id, displayName);
         onClose(displayName);
       } catch (error) {
         console.error("Error updating display name:", error);
+        // Handle server validation errors
+        if (error.response && error.response.data && error.response.data.errors) {
+          const serverErrors = error.response.data.errors;
+          const displayNameError = serverErrors.find(err => err.param === 'displayName');
+          if (displayNameError) {
+            setError(displayNameError.msg);
+          } else {
+            setError("An error occurred while updating your display name");
+          }
+        }
       } finally {
         setIsSubmitting(false);
       }
@@ -88,12 +118,14 @@ export default function DisplayNameDialog({ open, onClose }) {
             variant="outlined"
             placeholder="eg. Jeff"
             value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
+            onChange={handleDisplayNameChange}
             onKeyPress={(e) => {
-              if (e.key === 'Enter' && displayName && displayName.length >= 2 && !isSubmitting) {
+              if (e.key === 'Enter' && !error && displayName && !isSubmitting) {
                 handleSubmit();
               }
             }}
+            error={!!error}
+            helperText={error}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -120,7 +152,7 @@ export default function DisplayNameDialog({ open, onClose }) {
               size="large"
               fullWidth
               onClick={handleSubmit}
-              disabled={!displayName || displayName.length < 2 || isSubmitting}
+              disabled={!!error || !displayName || isSubmitting}
               sx={{ 
                 borderRadius: '12px',
                 py: 1.5,

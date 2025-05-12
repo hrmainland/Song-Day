@@ -5,6 +5,7 @@ const SpotifyStrategy = require("passport-spotify").Strategy;
 const User = require("../models/user");
 const Game = require("../models/game");
 const { isLoggedIn } = require("../middleware");
+const { validate, userValidators } = require("../validators");
 
 const userRouteSuffix = "/user";
 const callbackSuffix = "/callback";
@@ -79,26 +80,32 @@ router.get("/isLoggedIn", async (req, res) => {
 });
 
 // route to add game to user
-router.put("/game/:id", isLoggedIn, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const game = await Game.findById(id);
+router.put(
+  "/game/:id",
+  userValidators.addGameToUser,
+  validate,
+  isLoggedIn,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const game = await Game.findById(id);
 
-    if (!game) {
-      return res
-        .status(404)
-        .json({ error: `Game with code ${code} not found` });
+      if (!game) {
+        return res
+          .status(404)
+          .json({ error: `Game with code ${code} not found` });
+      }
+
+      req.user.games.push(game._id);
+      await req.user.save();
+
+      res.status(200).json(req.user);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
     }
-
-    req.user.games.push(game._id);
-    await req.user.save();
-
-    res.status(200).json(req.user);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Server error" });
   }
-});
+);
 
 router.get("/my-games", isLoggedIn, async (req, res) => {
   try {

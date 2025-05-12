@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import Dialog from "@mui/material/Dialog";
-import { 
-  Box, 
-  Button, 
-  TextField, 
-  Typography, 
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
   IconButton,
   Divider,
   DialogContent,
   DialogTitle,
   Grid,
-  CircularProgress
+  CircularProgress,
+  FormHelperText
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -25,33 +26,126 @@ export default function CreateSessionDialog({ open, onClose }) {
   const [numVotes, setNumVotes] = useState("");
   const [gameName, setGameName] = useState("");
   const [loading, setLoading] = useState(false);
-  
+
+  // Validation states
+  const [errors, setErrors] = useState({
+    gameName: "",
+    numSongs: "",
+    numVotes: ""
+  });
+
+  // Validation functions
+  const validateGameName = (name) => {
+    if (!name) return "Session name is required";
+    if (name.length < 1) return "Session name is too short";
+    if (name.length > 50) return "Session name must be less than 50 characters";
+    return "";
+  };
+
+  const validateNumSongs = (value) => {
+    if (!value) return "Number of songs is required";
+    const num = Number(value);
+    if (isNaN(num)) return "Must be a number";
+    if (num < 1) return "Minimum is 1 song";
+    if (num > 100) return "Maximum is 100 songs";
+    return "";
+  };
+
+  const validateNumVotes = (value) => {
+    if (!value) return "Number of votes is required";
+    const num = Number(value);
+    if (isNaN(num)) return "Must be a number";
+    if (num < 1) return "Minimum is 1 vote";
+    if (num > 100) return "Maximum is 100 votes";
+    return "";
+  };
+
+  // Handle input changes with validation
+  const handleGameNameChange = (e) => {
+    const value = e.target.value;
+    setGameName(value);
+    setErrors(prev => ({
+      ...prev,
+      gameName: validateGameName(value)
+    }));
+  };
+
+  const handleNumSongsChange = (e) => {
+    const value = e.target.value;
+    setNumSongs(value);
+    setErrors(prev => ({
+      ...prev,
+      numSongs: validateNumSongs(value)
+    }));
+  };
+
+  const handleNumVotesChange = (e) => {
+    const value = e.target.value;
+    setNumVotes(value);
+    setErrors(prev => ({
+      ...prev,
+      numVotes: validateNumVotes(value)
+    }));
+  };
+
+  const isFormValid = !errors.gameName && !errors.numSongs && !errors.numVotes &&
+                       gameName && numSongs && numVotes;
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!gameName || !numSongs || !numVotes) {
+
+    // Validate all fields before submission
+    const gameNameError = validateGameName(gameName);
+    const numSongsError = validateNumSongs(numSongs);
+    const numVotesError = validateNumVotes(numVotes);
+
+    setErrors({
+      gameName: gameNameError,
+      numSongs: numSongsError,
+      numVotes: numVotesError
+    });
+
+    if (gameNameError || numSongsError || numVotesError) {
       return;
     }
-    
+
     setLoading(true);
     try {
-      const settings = { numSongs, numVotes };
+      const settings = {
+        numSongs: Number(numSongs),
+        numVotes: Number(numVotes)
+      };
       const game = await newGame(gameName, settings);
       await addGameToMe(game._id);
-      
+
       // Close the current dialog
       onClose();
-      
+
       // Navigate to game page and pass showGameCodeDialog state
-      navigate(`/session/${game.gameCode}`, { 
+      navigate(`/session/${game.gameCode}`, {
         state: { showGameCodeDialog: true }
       });
-      
+
       // Reset the form
       setNumSongs("");
       setNumVotes("");
       setGameName("");
+      setErrors({ gameName: "", numSongs: "", numVotes: "" });
     } catch (error) {
       console.error("Error creating session:", error);
+      // Handle server validation errors
+      if (error.response && error.response.data && error.response.data.errors) {
+        const serverErrors = error.response.data.errors;
+        const newErrors = { ...errors };
+
+        serverErrors.forEach(err => {
+          if (err.param === 'gameName') newErrors.gameName = err.msg;
+          if (err.param === 'settings.numSongs') newErrors.numSongs = err.msg;
+          if (err.param === 'settings.numVotes') newErrors.numVotes = err.msg;
+        });
+
+        setErrors(newErrors);
+      }
     } finally {
       setLoading(false);
     }
@@ -112,56 +206,64 @@ export default function CreateSessionDialog({ open, onClose }) {
                   label="Session Name"
                   variant="outlined"
                   value={gameName}
-                  onChange={(e) => setGameName(e.target.value)}
+                  onChange={handleGameNameChange}
                   InputProps={{
-                    sx: { 
+                    sx: {
                       borderRadius: '12px'
                     }
                   }}
                   required
                   disabled={loading}
+                  error={!!errors.gameName}
+                  helperText={errors.gameName}
                 />
               </Grid>
-              
+
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Songs Per Player"
                   variant="outlined"
                   value={numSongs}
-                  onChange={(e) => setNumSongs(e.target.value)}
+                  onChange={handleNumSongsChange}
                   type="number"
                   InputProps={{
                     startAdornment: (
                       <LibraryMusicIcon sx={{ color: 'text.secondary', mr: 1 }} />
                     ),
-                    sx: { 
+                    sx: {
                       borderRadius: '12px'
                     }
                   }}
                   required
                   disabled={loading}
+                  error={!!errors.numSongs}
+                  helperText={errors.numSongs}
+                  inputProps={{ min: 1, max: 100 }}
                 />
               </Grid>
-              
+
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Votes Per Player"
                   variant="outlined"
                   value={numVotes}
-                  onChange={(e) => setNumVotes(e.target.value)}
+                  onChange={handleNumVotesChange}
                   type="number"
                   InputProps={{
                     startAdornment: (
                       <HowToVoteIcon sx={{ color: 'text.secondary', mr: 1 }} />
                     ),
-                    sx: { 
+                    sx: {
                       borderRadius: '12px'
                     }
                   }}
                   required
                   disabled={loading}
+                  error={!!errors.numVotes}
+                  helperText={errors.numVotes}
+                  inputProps={{ min: 1, max: 100 }}
                 />
               </Grid>
             </Grid>
@@ -177,7 +279,7 @@ export default function CreateSessionDialog({ open, onClose }) {
                 color="primary"
                 size="large"
                 fullWidth
-                disabled={loading || !gameName || !numSongs || !numVotes}
+                disabled={loading || !isFormValid}
                 sx={{ 
                   borderRadius: '12px',
                   py: 1.5,

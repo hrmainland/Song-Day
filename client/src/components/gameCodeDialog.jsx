@@ -1,9 +1,9 @@
 import React, { useState, useContext } from "react";
 import Dialog from "@mui/material/Dialog";
-import { 
-  Box, 
-  Button, 
-  Typography, 
+import {
+  Box,
+  Button,
+  Typography,
   IconButton,
   Divider,
   DialogContent,
@@ -13,6 +13,7 @@ import {
   ThemeProvider,
   TextField,
   InputAdornment,
+  FormHelperText
 } from "@mui/material";
 
 import CelebrationIcon from '@mui/icons-material/Celebration';
@@ -27,8 +28,25 @@ import { useGame } from "../hooks/useGame";
 export default function GameCodeDialog({ open, onClose }) {
   const { game, refreshGame, loading, error } = useGame();
   const [copied, setCopied] = useState(false);
-  const [displayName, setDisplayName] = useState(null);
-  
+  const [displayName, setDisplayName] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Validate display name
+  const validateDisplayName = (name) => {
+    if (!name) return "Display name is required";
+    if (name.length < 1) return "Display name is too short";
+    if (name.length > 20) return "Display name must be less than 20 characters";
+    return "";
+  };
+
+  // Handle display name change
+  const handleDisplayNameChange = (e) => {
+    const value = e.target.value;
+    setDisplayName(value);
+    setNameError(validateDisplayName(value));
+  };
+
   const handleCopy = () => {
     navigator.clipboard.writeText(game.gameCode);
     setCopied(true);
@@ -36,13 +54,29 @@ export default function GameCodeDialog({ open, onClose }) {
   };
 
   const handleSubmit = async () => {
-    if (displayName && displayName.length >= 2) {
+    // Validate before submission
+    const validationError = validateDisplayName(displayName);
+    setNameError(validationError);
+
+    if (!validationError) {
+      setIsSubmitting(true);
       try {
         await updateDisplayName(game._id, displayName);
         onClose();
       } catch (error) {
         console.error("Error updating display name:", error);
-        // Keep dialog open if there's an error
+        // Handle server validation errors
+        if (error.response && error.response.data && error.response.data.errors) {
+          const serverErrors = error.response.data.errors;
+          const displayNameError = serverErrors.find(err => err.param === 'displayName');
+          if (displayNameError) {
+            setNameError(displayNameError.msg);
+          } else {
+            setNameError("An error occurred while updating your display name");
+          }
+        }
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };
@@ -103,19 +137,23 @@ export default function GameCodeDialog({ open, onClose }) {
             </Typography>
           </Box>
 
-          <TextField 
-            fullWidth 
+          <TextField
+            fullWidth
             variant="outlined"
             placeholder="Your name"
-            onChange={(e) => setDisplayName(e.target.value)}
+            value={displayName}
+            onChange={handleDisplayNameChange}
+            error={!!nameError}
+            helperText={nameError}
             InputProps={{
-              sx: { 
+              sx: {
                 borderRadius: '12px',
                 fontSize: '1.1rem',
               }
             }}
-            sx={{ mb: 4 }}
+            sx={{ mb: nameError ? 2 : 4 }}
             autoFocus
+            disabled={isSubmitting}
           />
           
           <Box sx={{ mb: 1 }}>
@@ -197,7 +235,7 @@ export default function GameCodeDialog({ open, onClose }) {
               size="large"
               fullWidth
               onClick={handleSubmit}
-              disabled={!displayName || displayName.length < 2}
+              disabled={isSubmitting || !!nameError || !displayName}
               sx={{ 
                 borderRadius: '12px',
                 py: 1.8,

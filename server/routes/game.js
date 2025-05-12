@@ -8,21 +8,31 @@ const generateGameCode = require("../utils/gameCode");
 const passport = require("passport");
 const { isLoggedIn, findGame, isAuthorized } = require("../middleware");
 const { MongoClient, ObjectId } = require("mongodb");
+const { validate, gameValidators } = require("../validators");
 
 function isAuthorizedFunc(game, user) {
   return game.players.some((entry) => entry.user.equals(user._id));
 }
 
-router.put("/:gameId/add-me", findGame, isLoggedIn, async (req, res) => {
-  const game = req.game;
-  game.players.push({ user: req.user._id, displayName: null });
-  await game.save();
+router.put(
+  "/:gameId/add-me",
+  gameValidators.addMe,
+  validate,
+  findGame,
+  isLoggedIn,
+  async (req, res) => {
+    const game = req.game;
+    game.players.push({ user: req.user._id, displayName: null });
+    await game.save();
 
-  res.status(200).json(game);
-});
+    res.status(200).json(game);
+  }
+);
 
 router.delete(
   "/:gameId/remove-player/:userId",
+  gameValidators.removePlayer,
+  validate,
   findGame,
   isLoggedIn,
   isAuthorized,
@@ -37,6 +47,8 @@ router.delete(
 
 router.put(
   "/:gameId/track-group/:trackGroupId",
+  gameValidators.addTrackGroup,
+  validate,
   findGame,
   isLoggedIn,
   isAuthorized,
@@ -59,35 +71,43 @@ router.put(
   }
 );
 
-router.post("/new", isLoggedIn, async (req, res, next) => {
-  const { gameName, settings } = req.body;
-  const gameCode = generateGameCode();
+router.post(
+  "/new",
+  gameValidators.createGame,
+  validate,
+  isLoggedIn,
+  async (req, res, next) => {
+    const { gameName, settings } = req.body;
+    const gameCode = generateGameCode();
 
-  const config = {
-    nSongs: settings.numSongs,
-    nVotes: settings.numVotes,
-    negativeVote: false,
-  };
+    const config = {
+      nSongs: settings.numSongs,
+      nVotes: settings.numVotes,
+      negativeVote: false,
+    };
 
-  const userId = req.user._id;
-  const params = {
-    title: gameName,
-    config,
-    gameCode,
-    status: "add",
-    host: userId,
-    players: [{ user: userId, displayName: null }],
-  };
+    const userId = req.user._id;
+    const params = {
+      title: gameName,
+      config,
+      gameCode,
+      status: "add",
+      host: userId,
+      players: [{ user: userId, displayName: null }],
+    };
 
-  const thisGame = new Game(params);
-  await thisGame.save();
+    const thisGame = new Game(params);
+    await thisGame.save();
 
-  res.status(200).json(thisGame);
-});
+    res.status(200).json(thisGame);
+  }
+);
 
 
 router.post(
   "/:gameId/move-to-voting",
+  gameValidators.moveToVoting,
+  validate,
   findGame,
   isLoggedIn,
   isAuthorized,
@@ -102,6 +122,8 @@ router.post(
 
 router.put(
   "/:gameId/display-name",
+  gameValidators.updateDisplayName,
+  validate,
   findGame,
   isLoggedIn,
   isAuthorized,
@@ -119,6 +141,8 @@ router.put(
 
 router.post(
   "/:gameId/vote-group",
+  gameValidators.createVoteGroup,
+  validate,
   findGame,
   isLoggedIn,
   isAuthorized,
@@ -166,22 +190,28 @@ router.delete("/vote-group/:voteGroupId", isLoggedIn, async (req, res) => {
 });
 
 
-router.get("/:gameCode", isLoggedIn, async (req, res) => {
-  const { gameCode } = req.params;
-  const { authRequired } = req.query;
-  const authRequiredBool = authRequired === "true";
-  const game = await Game.findOne({ gameCode })
-    .populate("trackGroups")
-    .populate("voteGroups");
-  if (!game) {
-    return res
-      .status(404)
-      .json({ error: `Game with code '${gameCode}' not found` });
-  } else if (authRequiredBool && !isAuthorizedFunc(game, req.user)) {
-    return res.status(403).json({ error: "User not authorized" });
+router.get(
+  "/:gameCode",
+  gameValidators.getGameByCode,
+  validate,
+  isLoggedIn,
+  async (req, res) => {
+    const { gameCode } = req.params;
+    const { authRequired } = req.query;
+    const authRequiredBool = authRequired === "true";
+    const game = await Game.findOne({ gameCode })
+      .populate("trackGroups")
+      .populate("voteGroups");
+    if (!game) {
+      return res
+        .status(404)
+        .json({ error: `Game with code '${gameCode}' not found` });
+    } else if (authRequiredBool && !isAuthorizedFunc(game, req.user)) {
+      return res.status(403).json({ error: "User not authorized" });
+    }
+    return res.status(200).json(game);
   }
-  return res.status(200).json(game);
-});
+);
 
 const createPlaylist = async (user, playlistName) => {
   const user_id = user.spotify_id;
