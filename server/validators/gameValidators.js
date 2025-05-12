@@ -66,10 +66,6 @@ const gameValidators = {
       .notEmpty().withMessage('Game code is required')
       .isLength({ min: 12, max: 12 }).withMessage('Game code must be exactly 12 characters')
       .isAlphanumeric().withMessage('Game code must contain only letters and numbers'),
-    
-    query('authRequired')
-      .optional()
-      .isBoolean().withMessage('authRequired must be a boolean value'),
   ],
 
   // POST /game/:gameId/move-to-voting

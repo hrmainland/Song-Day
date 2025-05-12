@@ -5,6 +5,7 @@ const SpotifyStrategy = require("passport-spotify").Strategy;
 const User = require("../models/user");
 const Game = require("../models/game");
 const { isLoggedIn } = require("../middleware");
+const { sanitizeParams } = require("../middleware/sanitize");
 const { validate, userValidators } = require("../validators");
 
 const userRouteSuffix = "/user";

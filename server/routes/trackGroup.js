@@ -9,6 +9,7 @@ const passport = require("passport");
 const { isLoggedIn } = require("../middleware");
 const { MongoClient, ObjectId } = require("mongodb");
 const { validate, trackGroupValidators } = require("../validators");
+// Note: No sanitization needed for trackGroup routes as they only contain IDs and references, not user-generated text
 
 
 router.post(

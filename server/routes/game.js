@@ -7,6 +7,7 @@ const router = express.Router();
 const generateGameCode = require("../utils/gameCode");
 const passport = require("passport");
 const { isLoggedIn, findGame, isAuthorized } = require("../middleware");
+const { sanitizeBody, sanitizeParams } = require("../middleware/sanitize");
 const { MongoClient, ObjectId } = require("mongodb");
 const { validate, gameValidators } = require("../validators");
 
@@ -73,6 +74,7 @@ router.put(
 
 router.post(
   "/new",
+  sanitizeBody(['gameName']), // Sanitize game name before validation
   gameValidators.createGame,
   validate,
   isLoggedIn,
@@ -122,6 +124,7 @@ router.post(
 
 router.put(
   "/:gameId/display-name",
+  sanitizeBody(['displayName']), // Sanitize display name before validation
   gameValidators.updateDisplayName,
   validate,
   findGame,
@@ -192,6 +195,7 @@ router.delete("/vote-group/:voteGroupId", isLoggedIn, async (req, res) => {
 
 router.get(
   "/:gameCode",
+  sanitizeParams(['gameCode']), // Sanitize game code parameter
   gameValidators.getGameByCode,
   validate,
   isLoggedIn,
