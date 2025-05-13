@@ -1,5 +1,6 @@
 // src/App.jsx
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 import Home from "./routes/home";
 
@@ -19,14 +20,28 @@ import { UserProvider } from "./context/userProvider";
 import { GameProvider } from "./context/gameContext";
 
 import PrivateRoutes from "../utils/privateRoutes";
+import { fetchCsrfToken } from "../utils/csrfUtils";
 
 // for dev only
 import Pad from "./routes/pad";
+
+// CSRF initializer component
+function CsrfInitializer() {
+  useEffect(() => {
+    // Fetch CSRF token on app initialization
+    fetchCsrfToken().catch(err => {
+      console.warn('Failed to fetch initial CSRF token:', err);
+    });
+  }, []);
+
+  return null;
+}
 
 export default function App() {
   return (
     <UserProvider>
       <Router>
+        <CsrfInitializer />
         <Routes>
           <Route path="/" element={<Root />} />
           <Route path="/login" element={<Login />} />

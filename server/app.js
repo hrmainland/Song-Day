@@ -12,12 +12,14 @@ const mongoose = require("mongoose");
 const querystring = require("querystring");
 const session = require("express-session");
 const MongoStore = require('connect-mongo');
+const csrf = require('csurf');
 
 const browserSessionRouter = require("./routes/test_browserSession.js");
 const userRouter = require("./routes/user.js");
 const gameRouter = require("./routes/game.js");
 const trackGroupRouter = require("./routes/trackGroup.js");
 const spotifyRouter = require("./routes/spotify.js");
+const { setCsrfCookie } = require("./middleware/csrfMiddleware");
 
 const devRouter = require("./routes/test_dev.js");
 
@@ -62,8 +64,8 @@ const sessionConfig = {
     // secure: process.env.NODE_ENV === "production",
     // secure: true,
     sameSite: 'lax',
-    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
-    maxAge: 1000 * 60 * 60 * 24 * 7,
+    expires: Date.now() + 1000 * 60 * 60 * 24,
+    maxAge: 1000 * 60 * 60 * 24,
   },
 };
 
@@ -76,16 +78,53 @@ app.use(bodyParser.json());
 // this uses the express-session middleware
 app.use(passport.session());
 
-app.use("/browser-session", browserSessionRouter);
-app.use("/user", userRouter);
-app.use("/game", gameRouter);
-app.use("/track-group", trackGroupRouter);
-app.use("/spotify", spotifyRouter);
+// Configure CSRF protection - use the session instead of a separate cookie
+const csrfProtection = csrf({ cookie: false });
+
+// Create a CSRF token endpoint - without CSRF protection first to debug
+app.get('/csrf-token', (req, res) => {
+  // First, make sure the session is established
+  req.session.touch(); // Touch the session
+
+  try {
+    // Now add CSRF protection
+    csrfProtection(req, res, (err) => {
+      if (err) {
+        console.error('CSRF Error:', err);
+        return res.status(500).json({ error: 'Failed to establish CSRF protection', details: err.message });
+      }
+
+      // Generate and return token
+      const token = req.csrfToken();
+      res.json({ csrfToken: token });
+    });
+  } catch (error) {
+    console.error('Exception in CSRF endpoint:', error);
+    res.status(500).json({ error: 'Exception in CSRF endpoint', details: error.message });
+  }
+});
+
+// Apply CSRF protection to routes that modify state
+app.use("/user", csrfProtection, userRouter);
+app.use("/game", csrfProtection, gameRouter);
+app.use("/track-group", csrfProtection, trackGroupRouter);
+app.use("/spotify", csrfProtection, spotifyRouter);
+
 
 app.use("/dev", devRouter);
 
 app.use((err, req, res, next) => {
   console.error(err); // Log the full error server-side
+
+  // Handle CSRF errors specifically
+  if (err.code === 'EBADCSRFTOKEN') {
+    return res.status(403).json({
+      error: "Invalid CSRF token. Request denied for security reasons.",
+      code: "CSRF_ERROR"
+    });
+  }
+
+  // Handle other errors
   res.status(500).json({ error: "An unexpected error occurred" });
 });
 

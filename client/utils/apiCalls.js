@@ -1,4 +1,5 @@
 import baseUrl from "./urlPrefix.js";
+import { addCsrfHeader, invalidateCsrfToken } from './csrfUtils';
 
 class ApiError extends Error {
   constructor(message, status, endpoint, retryAfter = null) {
@@ -48,7 +49,7 @@ const handleResponseStatus = async (response, endpoint) => {
 // Core API request function
 async function apiRequest(endpoint, method = "GET", body = null, retryCount = 0) {
   const maxRetries = 3;
-  
+
   try {
     const options = {
       method,
@@ -56,13 +57,37 @@ async function apiRequest(endpoint, method = "GET", body = null, retryCount = 0)
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      credentials: 'include', // Important to include cookies for CSRF
     };
+
+    // Add CSRF token header for state-changing methods
+    if (method !== "GET" && method !== "HEAD") {
+      options.headers = await addCsrfHeader(options.headers);
+    }
 
     if (body) {
       options.body = JSON.stringify(body);
     }
 
     const response = await fetch(`${baseUrl}${endpoint}`, options);
+
+    // Check if we need to refresh CSRF token (based on 403 with specific error)
+    if (response.status === 403) {
+      try {
+        const errorData = await response.clone().json();
+        if (errorData.code === "CSRF_ERROR") {
+          // Invalidate token and retry once
+          invalidateCsrfToken();
+          if (retryCount === 0) {
+            console.warn("CSRF token expired, retrying with new token");
+            return apiRequest(endpoint, method, body, 1);
+          }
+        }
+      } catch (e) {
+        // If we can't parse JSON, continue with normal error handling
+      }
+    }
+
     return await handleResponseStatus(response, endpoint);
   } catch (error) {
     // Handle network errors and retry logic
