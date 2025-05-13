@@ -117,7 +117,6 @@ const spotifyApiRequest = async (
   );
 };
 
-// TODO add auth middleware
 
 /**
  * Search for tracks on Spotify
@@ -236,4 +235,97 @@ router.get("/tracks", isLoggedIn, async (req, res) => {
   }
 });
 
+/**
+ * Create a new Spotify playlist for a user
+ * @param {Object} user - User object with Spotify credentials
+ * @param {string} playlistName - Name for the new playlist
+ * @param {string} description - Optional playlist description
+ * @returns {Promise<Object>} Playlist data
+ */
+const createSpotifyPlaylist = async (user, playlistName, description = "A playlist created with Song Day") => {
+  try {
+    // Get a valid token
+    const accessToken = await ensureValidToken(user);
+    const userId = user.spotify_id;
+
+    // Make the request to Spotify API with automatic retry
+    const apiResponse = await spotifyApiRequest(
+      `https://api.spotify.com/v1/users/${userId}/playlists`,
+      accessToken,
+      "POST",
+      {
+        name: playlistName,
+        description: description,
+        public: true,
+      }
+    );
+
+    // Check for API errors
+    if (!apiResponse.ok) {
+      throw new Error(
+        apiResponse.data.error?.message ||
+        `Error creating playlist: ${apiResponse.statusText}`
+      );
+    }
+
+    return apiResponse.data;
+  } catch (error) {
+    console.error("Error creating Spotify playlist:", error);
+    throw error;
+  }
+};
+
+/**
+ * Add tracks to a Spotify playlist
+ * @param {Object} user - User object with Spotify credentials
+ * @param {string} playlistId - Spotify playlist ID
+ * @param {Array<string>} trackURIs - Array of Spotify track URIs
+ * @returns {Promise<void>}
+ */
+const addTracksToSpotifyPlaylist = async (user, playlistId, trackURIs) => {
+  try {
+    // Get a valid token
+    const accessToken = await ensureValidToken(user);
+
+    // Function to chunk the array into parts of 100 (Spotify's limit)
+    const chunkArray = (array, chunkSize) => {
+      const chunks = [];
+      for (let i = 0; i < array.length; i += chunkSize) {
+        chunks.push(array.slice(i, i + chunkSize));
+      }
+      return chunks;
+    };
+
+    const chunks = chunkArray(trackURIs, 100);
+
+    // Process each chunk of track URIs
+    for (const chunk of chunks) {
+      const apiResponse = await spotifyApiRequest(
+        `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+        accessToken,
+        "POST",
+        {
+          uris: chunk,
+        }
+      );
+
+      // Check for API errors
+      if (!apiResponse.ok) {
+        throw new Error(
+          apiResponse.data.error?.message ||
+          `Error adding tracks to playlist: ${apiResponse.statusText}`
+        );
+      }
+    }
+  } catch (error) {
+    console.error("Error adding tracks to Spotify playlist:", error);
+    throw error;
+  }
+};
+
+// Add playlist functions to the router
+router.createSpotifyPlaylist = createSpotifyPlaylist;
+router.addTracksToSpotifyPlaylist = addTracksToSpotifyPlaylist;
+
+// Export the router
 module.exports = router;

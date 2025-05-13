@@ -186,10 +186,7 @@ router.get(
   "/auth",
   passport.authenticate("spotify", {
     scope: [
-      "user-read-private", // Read access to user's private information
-      "user-read-email", // Read access to user's email address
-      "playlist-read-private", // Read access to user's private playlists
-      "playlist-modify-public", // Write access to a user's public playlists
+      "playlist-modify-public",
       "playlist-modify-private",
     ],
     showDialog: false,

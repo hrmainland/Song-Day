@@ -10,6 +10,7 @@ const { isLoggedIn, findGame, isAuthorized } = require("../middleware");
 const { sanitizeBody, sanitizeParams } = require("../middleware/sanitize");
 const { MongoClient, ObjectId } = require("mongodb");
 const { validate, gameValidators } = require("../validators");
+const spotifyRouter = require("./spotify");
 
 function isAuthorizedFunc(game, user) {
   return game.players.some((entry) => entry.user.equals(user._id));
@@ -247,62 +248,6 @@ router.get(
   }
 );
 
-const createPlaylist = async (user, playlistName) => {
-  const user_id = user.spotify_id;
-  const accessToken = user.access_token;
-  const playlist = await fetch(
-    `https://api.spotify.com/v1/users/${user_id}/playlists`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: playlistName,
-        description: "A new playlist created with Spotify API",
-        public: true,
-      }),
-    }
-  );
-  return playlist;
-};
-
-const addTracksToPlaylist = async (user, playlistId, trackURIs) => {
-  const accessToken = user.access_token;
-
-  // Function to chunk the array into parts of 100
-  const chunkArray = (array, chunkSize) => {
-    const chunks = [];
-    for (let i = 0; i < array.length; i += chunkSize) {
-      chunks.push(array.slice(i, i + chunkSize));
-    }
-    return chunks;
-  };
-
-  const chunks = chunkArray(trackURIs, 100);
-
-  for (const chunk of chunks) {
-    const addTracksResponse = await fetch(
-      `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          uris: chunk,
-        }),
-      }
-    );
-
-    if (!addTracksResponse.ok) {
-      const addTracksData = await addTracksResponse.json();
-      throw new Error(`Error adding tracks: ${addTracksData.error.message}`);
-    }
-  }
-};
 
 
 router.get(
@@ -357,14 +302,24 @@ router.get(
     const sortedIds = Array.from(sortedScores.keys());
     const sortedURIs = sortedIds.map((id) => "spotify:track:" + id);
 
-    const playlistData = await createPlaylist(req.user, game.title);
-    const playlistJSON = await playlistData.json();
-    await addTracksToPlaylist(req.user, playlistJSON.id, sortedURIs);
-    game.playlistId = playlistJSON.id;
-    game.status = "completed";
-    await game.save();
-    
-    res.json(playlistJSON.id);
+    try {
+      // Use the Spotify router's playlist functions
+      const playlist = await spotifyRouter.createSpotifyPlaylist(req.user, game.title);
+      await spotifyRouter.addTracksToSpotifyPlaylist(req.user, playlist.id, sortedURIs);
+
+      // Update game with playlist ID and mark as completed
+      game.playlistId = playlist.id;
+      game.status = "completed";
+      await game.save();
+
+      res.json(playlist.id);
+    } catch (error) {
+      console.error("Error creating playlist:", error);
+      res.status(500).json({
+        error: "Failed to create playlist",
+        message: error.message
+      });
+    }
   }
 );
 
