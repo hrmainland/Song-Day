@@ -80,7 +80,6 @@ export default function Game() {
   const [myVotesSubmitted, setMyVotesSubmitted] = useState(false);
 
   // CreatePlaylist state
-  // const [playlistId, setPlaylistId] = useState(null);
 
   useEffect(() => {
     const pullGame = async () => {

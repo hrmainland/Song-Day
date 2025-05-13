@@ -2,7 +2,6 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const Game = require("../models/game");
 const TrackGroup = require("../models/trackGroup");
-// const Track = require("../models/track");
 const router = express.Router();
 const generateGameCode = require("../utils/gameCode");
 const passport = require("passport");

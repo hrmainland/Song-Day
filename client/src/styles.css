@@ -9,7 +9,6 @@ HTML, body {
   }
 
 body {
-  /* background-color: #f9fefe; */
   background-color: #ffffff;
 }
 
@@ -28,10 +27,9 @@ body {
 }
 
 .home-background {
-  /* background-image: url("https://images.unsplash.com/photo-1603850121303-d4ade9e5ba65?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"); */
   background-image: url("/island-trees.svg");
   background-size: cover;
-  background-position: center center; /* Keep the center in frame */
+  background-position: center center;
   background-repeat: no-repeat;
   width: 99vw;
   height: 100vh;
@@ -44,7 +42,7 @@ body {
 
 .white-div {
   position: relative;
-  z-index: 1;  /* Lower z-index so it stays behind */
+  z-index: 1;
   width: 100%;
   min-height: 100vh;
   background-color: white;
@@ -115,9 +113,8 @@ body {
 }
 
 .secondary-background {
-  /* background-image: url("https://images.unsplash.com/photo-1496293455970-f8581aae0e3b?q=80&w=2913&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"); */
   background-size: cover;
-  background-position: center center; /* Keep the center in frame */
+  background-position: center center;
   background-repeat: no-repeat;
   width: 100vw;
   height: 100vh;

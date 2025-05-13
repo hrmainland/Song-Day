@@ -6,10 +6,10 @@ const { encrypt, decrypt } = require("../utils/encryption");
 
 // Define a schema for encrypted tokens with data, IV, and auth tag
 const encryptedTokenSchema = new Schema({
-  encryptedData: String, // The encrypted token
-  iv: String,            // Initialization vector used for encryption
-  authTag: String        // Authentication tag for GCM mode
-}, { _id: false });      // Don't create a separate _id for this subdocument
+  encryptedData: String,
+  iv: String,
+  authTag: String
+}, { _id: false });
 
 const userSchema = new Schema({
   name: String,

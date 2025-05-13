@@ -56,7 +56,7 @@ async function removeDuplicateGroups(game) {
   }
 }
 
-// adds game to req
+// Adds game to req
 module.exports.findGame = async function (req, res, next) {
   const { gameId } = req.params;
   const game = await Game.findById(gameId)

@@ -2,7 +2,6 @@ const APPLE_APP_STORE_URL = "https://apps.apple.com/app/spotify-music/id32468458
 const GOOGLE_PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.spotify.music";
 
 export function openSpotify(isTrack, assetId) {
-  // Check device type
   const userAgent = navigator.userAgent;
   const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
   const isAndroid = /android/i.test(userAgent);
@@ -11,9 +10,7 @@ export function openSpotify(isTrack, assetId) {
   const fallbackUrl = isTrack ? `https://open.spotify.com/track/${assetId}` : `https://open.spotify.com/playlist/${assetId}`;
   const uri = isTrack ? `spotify:track:${assetId}` : `spotify:playlist:${assetId}`;
 
-  // Different handling based on device
   if (isIOS) {
-    // iOS requires different handling - direct link often works better than iframe
     window.location.href = uri;
     
     // Fallback timer for iOS - direct to App Store
@@ -21,13 +18,10 @@ export function openSpotify(isTrack, assetId) {
       window.location.href = APPLE_APP_STORE_URL;
     }, 1500);
     
-    // No need to clear on IOS
-    
   } else if (isAndroid) {
     // Android deep linking
     window.location.href = uri;
 
-    
     // Fallback for Android
     const androidTimeout = setTimeout(() => {
       window.location.href = GOOGLE_PLAY_STORE_URL;

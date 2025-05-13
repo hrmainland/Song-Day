@@ -157,7 +157,6 @@ router.get("/searchTracks", isLoggedIn, async (req, res) => {
       });
     }
 
-    // Return successful response
     return res.status(200).json(apiResponse.data);
   } catch (error) {
     console.error("Error in searchTracks:", error);

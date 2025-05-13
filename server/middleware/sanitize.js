@@ -1,10 +1,9 @@
 const sanitizeHtml = require('sanitize-html');
 
-// Configure sanitize options (stricter than defaults)
 const sanitizeOptions = {
-  allowedTags: [], // No HTML tags allowed
-  allowedAttributes: {}, // No attributes allowed
-  disallowedTagsMode: 'recursiveEscape', // Escape rather than remove
+  allowedTags: [],
+  allowedAttributes: {},
+  disallowedTagsMode: 'recursiveEscape',
 };
 
 /**
@@ -18,7 +17,7 @@ const sanitizeBody = (fields) => {
 
     fields.forEach(field => {
       if (req.body[field] !== undefined) {
-        // Handle nested fields like "settings.numSongs"
+        // Handle nested fields
         if (field.includes('.')) {
           const [parent, child] = field.split('.');
           if (req.body[parent] && req.body[parent][child] !== undefined) {

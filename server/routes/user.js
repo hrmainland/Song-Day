@@ -14,8 +14,6 @@ const redirectSuffix = "/login-redirect";
 
 // set callback url and redirect url based on the envrionment
 if (process.env.NODE_ENV === "production") {
-  // old way
-  // serverUrlBase = process.env.RENDER_EXTERNAL_URL;
   serverUrlBase = process.env.PUBLIC_BASE_URL;
 } else {
   clientUrlBase = process.env.CLIENT_URL_BASE;
@@ -121,7 +119,6 @@ router.get("/my-games", isLoggedIn, async (req, res) => {
       }
     });
 
-    // this should never happen once we have proper route protection on
     if (!user) {
       return res.status(404).send("User not found");
     }
@@ -192,12 +189,10 @@ router.get(
 );
 
 // callback route - Spotify passes you back here to complete the auth flow
-// this exchanges the code for an access token, then serializes the user
 router.get(
-  "/callback", // Assuming authCallbackPath is "/callback"
+  "/callback",
   passport.authenticate("spotify", { failureRedirect: "/home" }),
   (req, res) => {
-    // or better just return the user ID or a failure and let the frontend handle redirect
     res.redirect(redirectUrl);
   }
 );
@@ -206,7 +201,6 @@ router.post('/logout', function(req, res, next){
   req.logout(function(err) {
     if (err) { return next(err); }
     return res.status(200).json({ message: 'Successfully logged out' });
-    // res.redirect(redirectUrl);
   });
 });
 

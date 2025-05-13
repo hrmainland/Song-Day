@@ -5,10 +5,8 @@
  * using AES-256-GCM, a strong authenticated encryption algorithm.
  */
 
-const crypto = require('crypto'); // Using built-in Node.js crypto module
+const crypto = require('crypto');
 
-// The encryption key should be set in environment variables
-// For AES-256, we need a 32-byte (256-bit) key
 const getEncryptionKey = () => {
   const key = process.env.ENCRYPTION_KEY;
   
@@ -16,7 +14,6 @@ const getEncryptionKey = () => {
     throw new Error('ENCRYPTION_KEY environment variable is not set');
   }
   
-  // The key should be 32 bytes for AES-256
   if (Buffer.from(key, 'hex').length !== 32) {
     throw new Error('ENCRYPTION_KEY must be 32 bytes (64 hex characters)');
   }
@@ -49,7 +46,7 @@ const encrypt = (text, providedIv = null) => {
     let encrypted = cipher.update(text, 'utf8', 'hex');
     encrypted += cipher.final('hex');
     
-    // Get the authentication tag
+    // Get authentication tag
     const authTag = cipher.getAuthTag().toString('hex');
     
     // Return encrypted data, IV, and authentication tag

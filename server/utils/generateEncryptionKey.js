@@ -9,7 +9,4 @@ const crypto = require('crypto');
 const encryptionKey = crypto.randomBytes(32).toString('hex');
 
 console.log('\n=== ENCRYPTION KEY GENERATED ===');
-console.log(`Add the following to your environment variables (.env file):`);
 console.log(`\nENCRYPTION_KEY=${encryptionKey}\n`);
-console.log('IMPORTANT: Store this key securely. If you lose it, you cannot decrypt existing tokens!');
-console.log('=================================\n');

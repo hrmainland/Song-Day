@@ -15,7 +15,7 @@ async function ensureValidToken(user) {
   // Check if token is expired (or will expire soon)
   const tokenExpiryTime = user.token_expiry || 0;
   const currentTime = Date.now();
-  const timeBuffer = 60000; // 1 minute buffer to prevent edge cases
+  const timeBuffer = 60000;
 
   // If token is still valid, return it decrypted
   if (tokenExpiryTime > currentTime + timeBuffer) {

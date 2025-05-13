@@ -25,7 +25,6 @@ const devRouter = require("./routes/test_dev.js");
 
 const User = require("./models/user.js");
 
-// ************************** passport
 const passport = require("passport");
 
 const port = process.env.PORT || 3500;
@@ -37,13 +36,10 @@ if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
 }
 
-// this is what gets stored in the session
-// called once after login
 passport.serializeUser(function (user, done) {
   done(null, user._id);
 });
 
-// this populates req.user
 passport.deserializeUser(async function (id, done) {
   try {
     const user = await User.findById(id);
@@ -78,19 +74,14 @@ app.use(cors());
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
-// this uses the express-session middleware
 app.use(passport.session());
 
-// Configure CSRF protection - use the session instead of a separate cookie
 const csrfProtection = csrf({ cookie: false });
 
-// Create a CSRF token endpoint - without CSRF protection first to debug
 app.get('/csrf-token', (req, res) => {
-  // First, make sure the session is established
-  req.session.touch(); // Touch the session
+  req.session.touch();
 
   try {
-    // Now add CSRF protection
     csrfProtection(req, res, (err) => {
       if (err) {
         console.error('CSRF Error:', err);
@@ -107,7 +98,6 @@ app.get('/csrf-token', (req, res) => {
   }
 });
 
-// Apply CSRF protection to routes that modify state
 app.use("/user", csrfProtection, userRouter);
 app.use("/game", csrfProtection, gameRouter);
 app.use("/track-group", csrfProtection, trackGroupRouter);
@@ -117,7 +107,7 @@ app.use("/spotify", csrfProtection, spotifyRouter);
 app.use("/dev", devRouter);
 
 app.use((err, req, res, next) => {
-  console.error(err); // Log the full error server-side
+  console.error(err);
 
   // Handle CSRF errors specifically
   if (err.code === 'EBADCSRFTOKEN') {

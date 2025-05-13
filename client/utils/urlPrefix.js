@@ -1,5 +1,4 @@
 /* eslint-disable no-undef */
-// For test and deploy update NODE_ENV
 
 var baseUrl;
 

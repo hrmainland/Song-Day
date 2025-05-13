@@ -18,7 +18,6 @@ export default function NewGameCode() {
           mt: 5,
         }}
       >
-        {/* form goes here */}
         <Box display="flex" justifyContent="center">
           <Grid container maxWidth={600}>
             <h1>Create Session</h1>
