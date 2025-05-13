@@ -47,13 +47,14 @@ passport.use(
     },
     async (req, accessToken, refreshToken, expires_in, profile, done) => {
       const existingUser = await User.findOne({ spotify_id: profile.id });
-      
+
       // Calculate token expiry time (subtract 5 minutes for safety)
       const expiryTime = Date.now() + (expires_in * 1000) - 300000;
 
       if (existingUser) {
-        existingUser.access_token = accessToken;
-        existingUser.refresh_token = refreshToken;
+        // Encrypt tokens before saving to database
+        existingUser.setEncryptedToken('access_token', accessToken);
+        existingUser.setEncryptedToken('refresh_token', refreshToken);
         existingUser.token_expiry = expiryTime;
         existingUser.spotify_display_name = profile.displayName;
         await existingUser.save();
@@ -62,10 +63,13 @@ passport.use(
         const newUser = new User({
           spotify_id: profile.id,
           spotify_display_name: profile.displayName,
-          access_token: accessToken,
-          refresh_token: refreshToken,
           token_expiry: expiryTime,
         });
+
+        // Encrypt tokens before saving to database
+        newUser.setEncryptedToken('access_token', accessToken);
+        newUser.setEncryptedToken('refresh_token', refreshToken);
+
         await newUser.save();
         done(null, newUser);
       }
@@ -166,7 +170,14 @@ router.get("/my-id", (req, res) => {
 });
 
 router.get("/access-token", isLoggedIn, (req, res) => {
-  res.status(200).json(req.user.access_token);
+  // Use the virtual property to get the decrypted access token
+  const accessToken = req.user.decryptedAccessToken;
+
+  if (!accessToken) {
+    return res.status(400).json({ error: "Access token not available" });
+  }
+
+  res.status(200).json(accessToken);
 });
 
 
