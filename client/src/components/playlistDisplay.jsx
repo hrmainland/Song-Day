@@ -13,7 +13,7 @@ export default function PlaylistDisplay({}) {
         <Typography variant="h4" sx={{ mt: 4, mx: 2 }}>
           Something's gone wrong
         </Typography>
-        <Typography gutterTop variant="body1" sx={{ my: 2, mx: 2 }}>
+        <Typography variant="body1" sx={{ my: 2, mx: 2 }}>
           Unfortunately we were unable to show a preview of your playlist
         </Typography>
       </CenterBox>
@@ -24,7 +24,7 @@ export default function PlaylistDisplay({}) {
       <Typography variant="h4" sx={{ mt: 4, mx: 2 }}>
         Here's your playlist!
       </Typography>
-      <Typography gutterTop variant="body1" sx={{ my: 2, mx: 2 }}>
+      <Typography variant="body1" sx={{ my: 2, mx: 2 }}>
         It's been saved to your Spotify library
       </Typography>
       <Button

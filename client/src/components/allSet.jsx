@@ -8,7 +8,7 @@ export default function AllSet({}) {
       <Typography variant="h4" sx={{ mt: 4, mx: 2 }}>
         You're all set
       </Typography>
-      <Typography gutterTop variant="body1" sx={{ my: 2, mx:2}}>
+      <Typography variant="body1" sx={{ my: 2, mx:2}}>
         You're good to go, the host is able to create the playlist once everyone has voted.
       </Typography>
       <CenterBox maxWidth="500px">

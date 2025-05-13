@@ -32,6 +32,11 @@ const port = process.env.PORT || 3500;
 const dbUrl = process.env.DB_URL
 const sessionSecret = process.env.SESSION_SECRET
 
+if (process.env.NODE_ENV === 'production') {
+  // Trust the proxy so Express can detect secure connections correctly
+  app.set('trust proxy', 1);
+}
+
 // this is what gets stored in the session
 // called once after login
 passport.serializeUser(function (user, done) {
@@ -61,11 +66,11 @@ const sessionConfig = {
   cookie: {
     httpOnly: true,
     // TODO update this when all domains point to songday.co
-    // secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "production",
     // secure: true,
     sameSite: 'lax',
-    expires: Date.now() + 1000 * 60 * 60 * 24,
-    maxAge: 1000 * 60 * 60 * 24,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 5,
+    maxAge: 1000 * 60 * 60 * 24 * 5,
   },
 };
 
