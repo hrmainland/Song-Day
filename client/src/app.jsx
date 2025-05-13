@@ -22,8 +22,6 @@ import { GameProvider } from "./context/gameContext";
 import PrivateRoutes from "../utils/privateRoutes";
 import { fetchCsrfToken } from "../utils/csrfUtils";
 
-// for dev only
-import Pad from "./routes/pad";
 
 // CSRF initializer component
 function CsrfInitializer() {
@@ -65,7 +63,7 @@ export default function App() {
             />
           {/* </Route> */}
           {/* for dev only */}
-          <Route path="/pad" element={<Pad />} />
+
           <Route path="/no-session-found" element={<NoSessionFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

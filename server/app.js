@@ -14,14 +14,12 @@ const session = require("express-session");
 const MongoStore = require('connect-mongo');
 const csrf = require('csurf');
 
-const browserSessionRouter = require("./routes/test_browserSession.js");
 const userRouter = require("./routes/user.js");
 const gameRouter = require("./routes/game.js");
 const trackGroupRouter = require("./routes/trackGroup.js");
 const spotifyRouter = require("./routes/spotify.js");
 const { setCsrfCookie } = require("./middleware/csrfMiddleware");
 
-const devRouter = require("./routes/test_dev.js");
 
 const User = require("./models/user.js");
 
@@ -103,8 +101,6 @@ app.use("/game", csrfProtection, gameRouter);
 app.use("/track-group", csrfProtection, trackGroupRouter);
 app.use("/spotify", csrfProtection, spotifyRouter);
 
-
-app.use("/dev", devRouter);
 
 app.use((err, req, res, next) => {
   console.error(err);
