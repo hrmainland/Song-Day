@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogTitle,
@@ -18,20 +19,40 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { deleteMe } from "../../utils/apiCalls";
+import { UserContext } from "../context/userProvider";
 
 export default function DeleteAccountDialog({ open, onClose }) {
+  const navigate = useNavigate();
+  const { setUserId } = useContext(UserContext);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [redirectTimer, setRedirectTimer] = useState(null);
 
   const handleDeleteAccount = async () => {
     setLoading(true);
     setError("");
-    
+
     try {
-      await deleteMe();
-      setSuccess(true);
-      // The deleteMe function already handles redirection to home
+      const result = await deleteMe();
+
+      if (result.success) {
+        // Clear user data from context
+        setUserId(null);
+
+        // Show success message and set up redirect
+        setSuccess(true);
+
+        // Set up a delayed redirect to prevent immediate navigation
+        const timer = setTimeout(() => {
+          navigate('/home-login', { replace: true });
+          onClose();
+        }, 2000);
+
+        setRedirectTimer(timer);
+      } else {
+        throw new Error(result.error?.message || "Failed to delete account");
+      }
     } catch (error) {
       console.error("Error deleting account:", error);
       setError("An error occurred while deleting your account. Please try again.");
@@ -41,11 +62,26 @@ export default function DeleteAccountDialog({ open, onClose }) {
 
   const handleClose = () => {
     if (!loading) {
+      // Clear any pending redirect timer
+      if (redirectTimer) {
+        clearTimeout(redirectTimer);
+        setRedirectTimer(null);
+      }
+
       setError("");
       setSuccess(false);
       onClose();
     }
   };
+
+  // Clean up the timer if the component unmounts
+  React.useEffect(() => {
+    return () => {
+      if (redirectTimer) {
+        clearTimeout(redirectTimer);
+      }
+    };
+  }, [redirectTimer]);
 
   return (
     <Dialog 

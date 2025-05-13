@@ -182,8 +182,19 @@ export async function logout() {
 }
 
 export async function deleteMe() {
-  await apiRequest("/user/delete-me", "DELETE");
-  window.location.href = "/home";
+  const result = await unwrapResponse(apiRequest("/user/delete-me", "DELETE"));
+  return result;
+}
+
+// Terms acceptance endpoints
+export async function checkTermsStatus() {
+  const result = await unwrapResponse(apiRequest("/user/terms-status"));
+  return result.data;
+}
+
+export async function acceptTerms() {
+  const result = await unwrapResponse(apiRequest("/user/accept-terms", "POST"));
+  return result.data;
 }
 
 // Game endpoints

@@ -230,4 +230,49 @@ router.delete('/delete-me', isLoggedIn, async (req, res) => {
   }
 });
 
+/**
+ * Accept Terms of Service and Privacy Policy
+ * @route POST /user/accept-terms
+ */
+router.post('/accept-terms', isLoggedIn, async (req, res) => {
+  try {
+    // Update the user's terms acceptance status
+    await User.findByIdAndUpdate(req.user._id, {
+      hasAcceptedTerms: true
+    });
+
+    // Return success response
+    res.status(200).json({
+      success: true,
+      message: 'Terms accepted successfully'
+    });
+  } catch (error) {
+    console.error('Error accepting terms:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Server error',
+      message: 'Failed to save terms acceptance'
+    });
+  }
+});
+
+/**
+ * Check if user has accepted terms
+ * @route GET /user/terms-status
+ */
+router.get('/terms-status', isLoggedIn, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    res.status(200).json({
+      hasAcceptedTerms: user.hasAcceptedTerms || false
+    });
+  } catch (error) {
+    console.error('Error checking terms status:', error);
+    res.status(500).json({
+      error: 'Server error',
+      message: 'Failed to check terms status'
+    });
+  }
+});
+
 module.exports = router;

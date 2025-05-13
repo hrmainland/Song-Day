@@ -22,6 +22,10 @@ const userSchema = new Schema({
   refresh_token: encryptedTokenSchema,
 
   token_expiry: { type: Number, default: 0 },
+
+  // Flag to track terms acceptance
+  hasAcceptedTerms: { type: Boolean, default: false },
+
   games: [
     {
       type: Schema.Types.ObjectId,
