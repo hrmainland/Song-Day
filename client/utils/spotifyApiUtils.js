@@ -60,7 +60,6 @@ export function openSpotify(isTrack, assetId) {
 
 export function usefulTrackComponents(track) {
   const artists = artistString(track.artists);
-  // TODO add error handling here
   const img = track.album.images[2].url;
   return {
     id: track.id,

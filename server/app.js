@@ -65,9 +65,7 @@ const sessionConfig = {
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    // TODO update this when all domains point to songday.co
     secure: process.env.NODE_ENV === "production",
-    // secure: true,
     sameSite: 'lax',
     expires: Date.now() + 1000 * 60 * 60 * 24 * 5,
     maxAge: 1000 * 60 * 60 * 24 * 5,

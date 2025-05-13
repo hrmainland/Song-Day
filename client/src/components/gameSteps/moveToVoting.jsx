@@ -116,7 +116,6 @@ export default function MoveToVoting({
               setDialogOpen(false);
               handleMoveToVotingPhase();
             }}
-            // TODO update
             isProcessing={false}
             participantCount={participantCount}
             expectedParticipants={expectedParticipants}

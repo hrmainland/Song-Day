@@ -3,7 +3,6 @@ const Schema = mongoose.Schema;
 const Game = require("./game");
 const { encrypt, decrypt } = require("../utils/encryption");
 
-// TODO camel case or underscore consistency
 
 // Define a schema for encrypted tokens with data, IV, and auth tag
 const encryptedTokenSchema = new Schema({

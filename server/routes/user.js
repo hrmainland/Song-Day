@@ -142,7 +142,6 @@ router.get("/display-name", isLoggedIn, (req, res) => {
   }
 });
 
-// TODO update or delete
 router.get("/id", (req, res) => {
   if (req.user !== undefined) {
     res.status(200).json(req.user._id);
@@ -151,7 +150,6 @@ router.get("/id", (req, res) => {
   }
 });
 
-// TODO proper error handling here
 router.get("/me", isLoggedIn, (req, res) => {
   if (req.user !== undefined) {
     res.status(200).json(req.user);
@@ -199,7 +197,6 @@ router.get(
   "/callback", // Assuming authCallbackPath is "/callback"
   passport.authenticate("spotify", { failureRedirect: "/home" }),
   (req, res) => {
-    // TODO add user here as context
     // or better just return the user ID or a failure and let the frontend handle redirect
     res.redirect(redirectUrl);
   }
