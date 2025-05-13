@@ -84,9 +84,9 @@ app.use("/spotify", spotifyRouter);
 
 app.use("/dev", devRouter);
 
-// TODO - something about this
 app.use((err, req, res, next) => {
-  res.send(`${err}`);
+  console.error(err); // Log the full error server-side
+  res.status(500).json({ error: "An unexpected error occurred" });
 });
 
 async function main() {

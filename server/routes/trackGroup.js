@@ -38,13 +38,25 @@ router.delete(
   isLoggedIn,
   async (req, res) => {
     const { id } = req.params;
-    const trackGroup = await TrackGroup.findById(id);
     try {
+      // First find the track group to check authorization
+      const trackGroup = await TrackGroup.findById(id);
+
+      if (!trackGroup) {
+        return res.status(404).json({ error: "Track group not found" });
+      }
+
+      // Check if the user owns this track group
+      if (!trackGroup.player.equals(req.user._id)) {
+        return res.status(403).json({ error: "Not authorized to delete this track group" });
+      }
+
+      // If authorization passes, delete the track group
       await TrackGroup.findByIdAndDelete(id);
-      res.status(200).json({ message: `Deleted track group with id ${id}` });
+      return res.status(200).json({ message: `Deleted track group with id ${id}` });
     } catch (error) {
-      res.status(500).json({
-        error: `Error deleting track group with id ${id}.`,
+      return res.status(500).json({
+        error: "Error deleting track group"
       });
     }
   }

@@ -21,7 +21,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 import { 
-  fetchGame, 
+  fetchGameInfo, 
   fetchMe, 
   addGameToMe, 
   addMeToGame 
@@ -54,7 +54,7 @@ export default function JoinSessionDialog({ open, onClose }) {
     
     try {
       // Fetch the game with the provided code  
-      const game = await fetchGame(code, false);
+      const game = await fetchGame(code);
       
       if (!game) {
         setError("Session not found. Please check the code and try again.");

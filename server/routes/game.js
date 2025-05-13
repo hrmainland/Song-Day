@@ -179,10 +179,22 @@ router.put(
   }
 );
 
-// TODO add authorization here
 router.delete("/vote-group/:voteGroupId", isLoggedIn, async (req, res) => {
   const { voteGroupId } = req.params;
   try {
+    // First find the vote group to check authorization
+    const voteGroup = await VoteGroup.findById(voteGroupId);
+
+    if (!voteGroup) {
+      return res.status(404).json({ error: "Vote group not found" });
+    }
+
+    // Check if the user owns this vote group
+    if (!voteGroup.player.equals(req.user._id)) {
+      return res.status(403).json({ error: "Not authorized to delete this vote group" });
+    }
+
+    // If authorization passes, delete the vote group
     await VoteGroup.findByIdAndDelete(voteGroupId);
     return res
       .status(200)
@@ -193,16 +205,16 @@ router.delete("/vote-group/:voteGroupId", isLoggedIn, async (req, res) => {
 });
 
 
+
+
 router.get(
   "/:gameCode",
-  sanitizeParams(['gameCode']), // Sanitize game code parameter
+  sanitizeParams(['gameCode']),
   gameValidators.getGameByCode,
   validate,
   isLoggedIn,
   async (req, res) => {
     const { gameCode } = req.params;
-    const { authRequired } = req.query;
-    const authRequiredBool = authRequired === "true";
     const game = await Game.findOne({ gameCode })
       .populate("trackGroups")
       .populate("voteGroups");
@@ -210,8 +222,26 @@ router.get(
       return res
         .status(404)
         .json({ error: `Game with code '${gameCode}' not found` });
-    } else if (authRequiredBool && !isAuthorizedFunc(game, req.user)) {
-      return res.status(403).json({ error: "User not authorized" });
+    } else if (!isAuthorizedFunc(game, req.user)) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+    return res.status(200).json(game);
+  }
+);
+
+router.get(
+  "/info/:gameCode",
+  sanitizeParams(['gameCode']),
+  gameValidators.getGameByCode,
+  validate,
+  isLoggedIn,
+  async (req, res) => {
+    const { gameCode } = req.params;
+    const game = await Game.findOne({ gameCode })
+    if (!game) {
+      return res
+        .status(404)
+        .json({ error: `Game with code '${gameCode}' not found` });
     }
     return res.status(200).json(game);
   }

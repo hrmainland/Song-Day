@@ -163,19 +163,15 @@ export async function deleteMe() {
 
 // Game endpoints
 
-export async function fetchGame(gameCode, authRequired = true) {
-  try {
-    const response = await apiRequest(`/game/${gameCode}?authRequired=${authRequired}`);
-    if ([403, 404].includes(response.status)) {
-      return false;
-    }
-    return await response.json();
-  } catch (error) {
-    if (error instanceof ApiError && [403, 404].includes(error.status)) {
-      return false;
-    }
-    throw error;
-  }
+export async function fetchGame(gameCode) {
+  const result = await unwrapResponse(apiRequest(`/game/${gameCode}`));
+  return result.data;
+}
+
+// used for checking game info before adding user to game
+export async function fetchGameInfo(gameCode) {
+  const result = await unwrapResponse(apiRequest(`/game/info/${gameCode}`));
+  return result.data;
 }
 
 export async function newGame(gameName, settings) {
