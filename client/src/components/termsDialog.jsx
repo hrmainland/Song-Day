@@ -94,21 +94,18 @@ export default function TermsDialog({ open, onClose }) {
       <DialogContent
         dividers
         sx={{
-          // Set a fixed height for consistency across devices
-          height: { xs: '60vh', sm: '60vh' },
-          p: 2,
-          display: 'flex',
-          flexDirection: 'column'
+          height: '60vh',
+          p: 0
         }}
       >
         {tabValue === 0 ? (
-          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <Box sx={{ height: '100%' }}>
             <Paper
               id="terms-content-container"
               elevation={0}
               sx={{
                 p: 2,
-                flex: 1,
+                height: '100%',
                 overflow: 'auto',
                 bgcolor: 'background.paper',
                 WebkitOverflowScrolling: 'touch'
@@ -129,45 +126,15 @@ export default function TermsDialog({ open, onClose }) {
                 {termsOfService.content}
               </ReactMarkdown>
             </Paper>
-            <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Checkbox
-                id="terms-checkbox"
-                checked={termsAccepted}
-                onChange={(e) => {
-                  setTermsAccepted(e.target.checked);
-                  // If checkbox is checked, switch to privacy policy tab
-                  if (e.target.checked) {
-                    handleTabChange(null, 1);
-                  }
-                }}
-                color="primary"
-                sx={{
-                  padding: 1.5,
-                  '& .MuiSvgIcon-root': { fontSize: 24 }
-                }}
-              />
-              <Typography
-                component="label"
-                htmlFor="terms-checkbox"
-                variant="body1"
-                sx={{
-                  cursor: 'pointer',
-                  userSelect: 'none', // Prevent text selection on tap
-                  WebkitUserSelect: 'none' // For Safari
-                }}
-              >
-                I accept the End-User Agreement
-              </Typography>
-            </Box>
           </Box>
         ) : (
-          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <Box sx={{ height: '100%' }}>
             <Paper
               id="privacy-content-container"
               elevation={0}
               sx={{
                 p: 2,
-                flex: 1,
+                height: '100%',
                 overflow: 'auto',
                 bgcolor: 'background.paper',
                 WebkitOverflowScrolling: 'touch'
@@ -188,57 +155,136 @@ export default function TermsDialog({ open, onClose }) {
                 {privacyPolicy.content}
               </ReactMarkdown>
             </Paper>
-            <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Checkbox
-                id="privacy-checkbox"
-                checked={privacyAccepted}
-                onChange={(e) => {
-                  setPrivacyAccepted(e.target.checked);
-                  // If checkbox is checked but terms not yet accepted, switch to terms tab
-                  if (e.target.checked && !termsAccepted) {
-                    handleTabChange(null, 0);
-                  }
-                }}
-                color="primary"
-                sx={{
-                  padding: 1.5,
-                  '& .MuiSvgIcon-root': { fontSize: 24 }
-                }}
-              />
-              <Typography
-                component="label"
-                htmlFor="privacy-checkbox"
-                variant="body1"
-                sx={{
-                  cursor: 'pointer',
-                  userSelect: 'none',
-                  WebkitUserSelect: 'none'
-                }}
-              >
-                I accept the Privacy Policy
-              </Typography>
-            </Box>
           </Box>
         )}
       </DialogContent>
       
-      <DialogActions>
-        <Button onClick={handleCancel} disabled={isSubmitting}>Cancel</Button>
-        <Button
-          onClick={handleAccept}
-          variant="contained"
-          color="primary"
-          disabled={!termsAccepted || !privacyAccepted || isSubmitting}
-        >
-          {isSubmitting ? (
-            <>
-              <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
-              Saving...
-            </>
-          ) : (
-            'Accept'
-          )}
-        </Button>
+      <DialogActions sx={{
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        p: 2,
+        pb: 3,
+        gap: 2
+      }}>
+        {/* Checkbox Container */}
+        <Box sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2,
+          mb: 1
+        }}>
+          {/* Terms Checkbox */}
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            border: tabValue === 0 ? '1px solid #3f51b5' : 'none',
+            bgcolor: tabValue === 0 ? 'rgba(63, 81, 181, 0.05)' : 'transparent',
+            borderRadius: 1.5,
+            p: 1
+          }}>
+            <Checkbox
+              id="terms-checkbox"
+              checked={termsAccepted}
+              onChange={(e) => {
+                setTermsAccepted(e.target.checked);
+                // If checkbox is checked, switch to privacy policy tab
+                if (e.target.checked) {
+                  handleTabChange(null, 1);
+                }
+              }}
+              color="primary"
+              sx={{
+                padding: 1.5,
+                '& .MuiSvgIcon-root': { fontSize: 28 }
+              }}
+            />
+            <Typography
+              component="label"
+              htmlFor="terms-checkbox"
+              variant="body1"
+              sx={{
+                cursor: 'pointer',
+                fontWeight: 500,
+                userSelect: 'none',
+                WebkitUserSelect: 'none'
+              }}
+            >
+              I accept the End-User Agreement
+            </Typography>
+          </Box>
+
+          {/* Privacy Checkbox */}
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            border: tabValue === 1 ? '1px solid #3f51b5' : 'none',
+            bgcolor: tabValue === 1 ? 'rgba(63, 81, 181, 0.05)' : 'transparent',
+            borderRadius: 1.5,
+            p: 1
+          }}>
+            <Checkbox
+              id="privacy-checkbox"
+              checked={privacyAccepted}
+              onChange={(e) => {
+                setPrivacyAccepted(e.target.checked);
+                // If checkbox is checked but terms not yet accepted, switch to terms tab
+                if (e.target.checked && !termsAccepted) {
+                  handleTabChange(null, 0);
+                }
+              }}
+              color="primary"
+              sx={{
+                padding: 1.5,
+                '& .MuiSvgIcon-root': { fontSize: 28 }
+              }}
+            />
+            <Typography
+              component="label"
+              htmlFor="privacy-checkbox"
+              variant="body1"
+              sx={{
+                cursor: 'pointer',
+                fontWeight: 500,
+                userSelect: 'none',
+                WebkitUserSelect: 'none'
+              }}
+            >
+              I accept the Privacy Policy
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Buttons */}
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: 2
+        }}>
+          <Button
+            onClick={handleCancel}
+            disabled={isSubmitting}
+            size="large"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleAccept}
+            variant="contained"
+            color="primary"
+            disabled={!termsAccepted || !privacyAccepted || isSubmitting}
+            size="large"
+            sx={{ px: 3 }}
+          >
+            {isSubmitting ? (
+              <>
+                <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
+                Saving...
+              </>
+            ) : (
+              'Accept'
+            )}
+          </Button>
+        </Box>
       </DialogActions>
     </Dialog>
   );
