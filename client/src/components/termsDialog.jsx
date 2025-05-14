@@ -51,7 +51,6 @@ export default function TermsDialog({ open, onClose }) {
 
     setIsSubmitting(true);
     try {
-      // Call the acceptTerms function from context to update backend
       const success = await acceptTerms();
       if (success) {
         onClose(true);
@@ -92,17 +91,27 @@ export default function TermsDialog({ open, onClose }) {
         </Tabs>
       </Box>
       
-      <DialogContent dividers>
+      <DialogContent
+        dividers
+        sx={{
+          // Set a fixed height for consistency across devices
+          height: { xs: '60vh', sm: '60vh' },
+          p: 2,
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
         {tabValue === 0 ? (
-          <Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <Paper
               id="terms-content-container"
               elevation={0}
               sx={{
                 p: 2,
-                maxHeight: '60vh',
+                flex: 1,
                 overflow: 'auto',
-                bgcolor: 'background.paper'
+                bgcolor: 'background.paper',
+                WebkitOverflowScrolling: 'touch'
               }}
             >
               <ReactMarkdown
@@ -120,34 +129,48 @@ export default function TermsDialog({ open, onClose }) {
                 {termsOfService.content}
               </ReactMarkdown>
             </Paper>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={termsAccepted}
-                  onChange={(e) => {
-                    setTermsAccepted(e.target.checked);
-                    // If checkbox is checked, switch to privacy policy tab
-                    if (e.target.checked) {
-                      handleTabChange(null, 1);
-                    }
-                  }}
-                  color="primary"
-                />
-              }
-              label="I accept the End-User Agreement"
-              sx={{ mt: 2 }}
-            />
+            <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Checkbox
+                id="terms-checkbox"
+                checked={termsAccepted}
+                onChange={(e) => {
+                  setTermsAccepted(e.target.checked);
+                  // If checkbox is checked, switch to privacy policy tab
+                  if (e.target.checked) {
+                    handleTabChange(null, 1);
+                  }
+                }}
+                color="primary"
+                sx={{
+                  padding: 1.5,
+                  '& .MuiSvgIcon-root': { fontSize: 24 }
+                }}
+              />
+              <Typography
+                component="label"
+                htmlFor="terms-checkbox"
+                variant="body1"
+                sx={{
+                  cursor: 'pointer',
+                  userSelect: 'none', // Prevent text selection on tap
+                  WebkitUserSelect: 'none' // For Safari
+                }}
+              >
+                I accept the End-User Agreement
+              </Typography>
+            </Box>
           </Box>
         ) : (
-          <Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <Paper
               id="privacy-content-container"
               elevation={0}
               sx={{
                 p: 2,
-                maxHeight: '60vh',
+                flex: 1,
                 overflow: 'auto',
-                bgcolor: 'background.paper'
+                bgcolor: 'background.paper',
+                WebkitOverflowScrolling: 'touch'
               }}
             >
               <ReactMarkdown
@@ -165,23 +188,36 @@ export default function TermsDialog({ open, onClose }) {
                 {privacyPolicy.content}
               </ReactMarkdown>
             </Paper>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={privacyAccepted}
-                  onChange={(e) => {
-                    setPrivacyAccepted(e.target.checked);
-                    // If checkbox is checked but terms not yet accepted, switch to terms tab
-                    if (e.target.checked && !termsAccepted) {
-                      handleTabChange(null, 0);
-                    }
-                  }}
-                  color="primary"
-                />
-              }
-              label="I accept the Privacy Policy"
-              sx={{ mt: 2 }}
-            />
+            <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Checkbox
+                id="privacy-checkbox"
+                checked={privacyAccepted}
+                onChange={(e) => {
+                  setPrivacyAccepted(e.target.checked);
+                  // If checkbox is checked but terms not yet accepted, switch to terms tab
+                  if (e.target.checked && !termsAccepted) {
+                    handleTabChange(null, 0);
+                  }
+                }}
+                color="primary"
+                sx={{
+                  padding: 1.5,
+                  '& .MuiSvgIcon-root': { fontSize: 24 }
+                }}
+              />
+              <Typography
+                component="label"
+                htmlFor="privacy-checkbox"
+                variant="body1"
+                sx={{
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  WebkitUserSelect: 'none'
+                }}
+              >
+                I accept the Privacy Policy
+              </Typography>
+            </Box>
           </Box>
         )}
       </DialogContent>
