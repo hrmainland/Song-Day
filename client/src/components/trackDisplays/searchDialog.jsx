@@ -134,7 +134,7 @@ export default function SearchDialog({
             variant="outlined"
             autoFocus
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && searchQuery.trim().length >= 3) {
+              if (e.key === 'Enter' && searchQuery.trim().length >= 1) {
                 e.preventDefault();
                 // Call the parent's search function if provided
                 if (onSearch) {

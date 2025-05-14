@@ -113,7 +113,7 @@ export default function AddSongs() {
 
   // Search for tracks
   const performSearch = async (query) => {
-    if (!query || query.trim().length < 3) {
+    if (!query || query.trim().length < 1) {
       setSearchResult(null);
       return;
     }
@@ -142,7 +142,7 @@ export default function AddSongs() {
 
   // Handle search submission
   const handleSearch = () => {
-    if (searchQuery.trim().length >= 3) {
+    if (searchQuery.trim().length >= 1) {
       performSearch(searchQuery);
     }
   };

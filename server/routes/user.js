@@ -184,7 +184,7 @@ router.get(
       "playlist-modify-public",
       "playlist-modify-private",
     ],
-    showDialog: false,
+    showDialog: true,
   })
 );
 

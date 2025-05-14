@@ -331,6 +331,7 @@ export default function VoteSongs() {
                   tracks={getSessionOptions()}
                   onRemoveTrack={() => {}}
                   title="Your Options"
+                  subtitle="Select songs to shortlist"
                   isOptions={true}
                   addFunc={addTrackToShortlist}
                   isShortlist={false}
@@ -343,6 +344,7 @@ export default function VoteSongs() {
                   tracks={getSessionShortlist()}
                   onRemoveTrack={shortlistToOptions}
                   title="Your Shortlist"
+                  subtitle="Drag and drop to rearrange"
                   isShortlist={true}
                   submitFunc={submitVotes}
                   isMissingTracks={voteLimit > getSessionShortlist().length}
