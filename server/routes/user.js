@@ -96,7 +96,7 @@ router.put(
       if (!game) {
         return res
           .status(404)
-          .json({ error: `Game with code ${code} not found` });
+          .json({ error: `Game with id ${id} not found` });
       }
 
       req.user.games.push(game._id);
