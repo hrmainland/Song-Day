@@ -63,12 +63,12 @@ module.exports.findGame = async function (req, res, next) {
     .populate("trackGroups")
     .populate("voteGroups");
 
-  await removeDuplicateGroups(game);
-
   if (!game) {
     res.status(404).json({ message: `No game found with ID ${gameId}` });
     return;
   }
+
+  await removeDuplicateGroups(game);
   req.game = game;
   next();
 };
