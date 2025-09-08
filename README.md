@@ -1,6 +1,7 @@
 # Song Day
 
-A collaborative music voting platform that enables groups to create countdown-style playlists through democratic song selection and voting.
+A collaborative music voting platform that enables groups to create countdown-style playlists through song selection and voting.
+View a live version of the website here: [Song Day](https://songday.co)
 
 ## Overview
 
@@ -41,13 +42,13 @@ This project is currently in active development. The initial release is planned 
 ## Getting Started
 
 ### Prerequisites
-- Node.js (version requirements TBD)
+- Node.js
 - Spotify Developer Account for API access
 
 ### Installation
 ```bash
 # Clone the repository
-git clone [repository-url]
+git clone https://github.com/hrmainland/Song-Day.git
 cd Song-Day
 
 # Install dependencies
@@ -70,10 +71,7 @@ We welcome contributions to Song Day. Please follow these guidelines:
 3. Make your changes
 4. Submit a pull request
 
-## License
-
-[License information to be added]
 
 ## Contact
 
-For questions or support, please [contact information to be added].
+For questions or support, please email hrrmainland@gmail.com
