@@ -1,6 +1,7 @@
 # Song Day
 
 A collaborative music voting platform that enables groups to create countdown-style playlists through song selection and voting.
+
 View a live version of the website here: [Song Day](https://songday.co)
 
 ## Overview
